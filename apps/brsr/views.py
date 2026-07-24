@@ -12,7 +12,7 @@ from apps.accounts.models import Department
 from apps.organizations.models import ApprovalConfigurationTemplate, FinancialYear, Plant
 from apps.organizations.workflow_configuration_engine import WorkflowConfigurationEngine
 from .forms import BRSRAssignmentForm
-from .models import Assignment, AssignmentReviewer, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse
+from .models import Assignment, AssignmentReviewer, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse, QuestionResponseDocument
 from django.db.models import Case, When, Value, IntegerField
 
 
@@ -927,8 +927,8 @@ class AssignmentDashboardView(LoginRequiredMixin, TemplateView):
                 "questions__section",
                 "questions__principle",
                 "responses__question",
-                "reviewer_links",  # Add this to prefetch reviewer links
-                "reviewer_links__reviewer_content_type",  # Add this for reviewer details
+                "reviewer_links",
+                "reviewer_links__reviewer_content_type",
             )
         )
         assignments.sort(key=lambda x: (x.overall_status == "completed", -x.created_at.timestamp()))
@@ -1303,7 +1303,7 @@ class BRSRQuestionWorkspaceView(LoginRequiredMixin, TemplateView):
         if assignment_id:
             assignment = (
                 Assignment.objects.select_related("plant", "section", "principle", "workflow_template")
-                .prefetch_related("questions", "questions__section", "questions__principle", "responses")
+                .prefetch_related("questions", "questions__section", "questions__principle", "responses", "responses__documents")
                 .filter(pk=assignment_id)
                 .first()
             )
@@ -1349,8 +1349,19 @@ class BRSRQuestionWorkspaceView(LoginRequiredMixin, TemplateView):
             response_qs = QuestionResponse.objects.filter(question=active_question)
             if assignment:
                 response_qs = response_qs.filter(assignment=assignment)
-            response = response_qs.select_related("assignment").order_by("-updated_at", "-created_at").first()
+            response = (response_qs.select_related("assignment").prefetch_related("documents").order_by("-updated_at", "-created_at").first())
             task = assignment.workflow_task if assignment and assignment.workflow_task else (response.workflow_task if response else None)
+            documents = []
+            if response:
+                documents = [
+                    {
+                        "id": doc.id,
+                        "name": doc.original_name,
+                        "url": doc.document.url,
+                        "uploaded_at": doc.uploaded_at,
+                    }
+                    for doc in response.documents.all()
+                ]
             active_question_payload = {
                 "question_id": active_question.question_id,
                 "title": active_question.question_text,
@@ -1360,6 +1371,7 @@ class BRSRQuestionWorkspaceView(LoginRequiredMixin, TemplateView):
                 "help_text": active_question.help_text or "",
                 "placeholder_text": active_question.placeholder_text or "",
                 "options": active_question.options or [],
+                "documents": documents,
                 "validation_rules": active_question.validation_rules or {},
                 **_question_metadata(active_question),
                 "status": response.status if response else "draft",

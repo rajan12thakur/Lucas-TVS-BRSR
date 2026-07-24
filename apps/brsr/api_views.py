@@ -7,10 +7,12 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+import json
 from apps.organizations.models import FinancialYear, Plant
 from apps.organizations.workflow_configuration_engine import WorkflowConfigurationEngine
 from .forms import BRSRAssignmentForm
-from .models import Assignment, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse, WorkflowStatus
+from .models import Assignment, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse, WorkflowStatus, QuestionResponseDocument
 from .views import (
     _assignment_context,
     _assignment_queryset_for_user,
@@ -79,6 +81,17 @@ def _serialize_question(question, assignment=None, user=None):
     workflow_stage_type = task_info.get("stage_type", "") if task_info else ""
     can_act = task_info.get("can_act", False) if task_info else False
     status_display = "Final Approved & Locked" if (task and task.is_completed) else ((response.status if response else "draft").replace("_", " ").title())
+    documents = []
+    if response:
+        documents = [
+            {
+                "id": doc.id,
+                "name": doc.original_name,
+                "url": doc.document.url,
+                "uploaded_at": doc.uploaded_at,
+            }
+            for doc in response.documents.all()
+        ]
     return {
         "question_id": question.question_id,
         "title": question.question_text,
@@ -104,6 +117,7 @@ def _serialize_question(question, assignment=None, user=None):
         "review_remark": response.review_remark if response else "",
         "is_editable": response.is_editable if response else True,
         "assignment_id": response.assignment.assignment_id if response else "",
+        "documents": documents,
     }
 
 
@@ -568,6 +582,7 @@ class QuestionDetailAPIView(APIView):
 
 
 class QuestionSaveAPIView(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     def put(self, request, question_id):
         question = get_object_or_404(_pdf_questions_queryset(), question_id=question_id)
         assignment_id = request.data.get("assignment_id")
@@ -616,8 +631,22 @@ class QuestionSaveAPIView(APIView):
         if "response_value" in request.data:
             response.response_value = request.data.get("response_value") or ""
         if "response_json" in request.data:
-            response.response_json = request.data.get("response_json") or {}
+            try:
+                response.response_json = json.loads(request.data.get("response_json") or "{}")
+            except json.JSONDecodeError:
+                response.response_json = {}
         response.save()
+
+        # Save Uploaded Files
+        uploaded_files = request.FILES.getlist("documents")
+        for uploaded_file in uploaded_files:
+            QuestionResponseDocument.objects.create(
+                response=response,
+                document=uploaded_file,
+                original_name=uploaded_file.name,
+                uploaded_by=request.user,
+                )
+
         stage_type = ""
         if assignment.workflow_task and assignment.workflow_task.current_stage:
             stage_type = assignment.workflow_task.current_stage.stage_type
@@ -625,9 +654,19 @@ class QuestionSaveAPIView(APIView):
             from .views import _advance_assignment_to_entry_stage
             _advance_assignment_to_entry_stage(assignment, actor=request.user)
         response.refresh_from_db()
+        documents = [
+            {
+                "id": doc.id,
+                "name": doc.original_name,
+                "url": doc.document.url,
+                "uploaded_at": doc.uploaded_at,
+            }
+            for doc in response.documents.all()
+        ]
         return Response(
             {
                 **_serialize_question(question, assignment=assignment),
+                "documents": documents,
                 "message": f"Draft saved for question {question.question_number}.",
             }
         )
