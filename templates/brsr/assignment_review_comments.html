@@ -433,17 +433,8 @@
     color:var(--muted);
   }
 
-  .response-box .response-body{
+  .response-render{
     padding:10px 14px 14px;
-    color:var(--ink);
-    font-size:14px;
-    line-height:1.75;
-    white-space:pre-wrap;
-    word-break:break-word;
-  }
-
-  .response-value{
-    background:#fff;
   }
 
   .no-response{
@@ -452,79 +443,178 @@
     font-style:italic;
   }
 
-  .data-table-container{
-    width:100%;
-    overflow-x:auto;
-    padding:0 14px 14px;
+  /* ---- Workspace-style form rendering (read-only), matches assignment_detail.html ---- */
+  .form-group{
+    margin-bottom:16px;
   }
 
-  .data-table{
-    width:100%;
-    border-collapse:collapse;
+  .form-group:last-child{
+    margin-bottom:0;
+  }
+
+  .form-label{
+    display:block;
+    margin-bottom:8px;
     font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+  }
+
+  .workspace-select,
+  .workspace-input,
+  .workspace-textarea{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+    color:var(--ink);
+    font-size:13px;
+    padding:10px 12px;
+    outline:none;
+  }
+
+  .workspace-textarea.form-textarea{
+    width:100%;
+    min-height:110px;
+    resize:vertical;
+  }
+
+  .workspace-select:disabled,
+  .workspace-input:disabled,
+  .workspace-textarea:disabled{
+    background:#f8fafc;
+    color:var(--ink-soft);
+    opacity:1;
+    cursor:default;
+  }
+
+  .choice-stack{
+    display:grid;
+    gap:10px;
+  }
+
+  .choice-item{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+  }
+
+  .choice-item input{
+    margin-top:3px;
+    flex-shrink:0;
+  }
+
+  .choice-item input:checked ~ span,
+  .choice-item:has(input:checked){
+    color:var(--ink);
+  }
+
+  .choice-item:has(input:checked){
+    border-color:var(--brand);
+    background:var(--brand-bg);
+  }
+
+  .choice-item span{
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.4;
+  }
+
+  .table-container{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow-x:auto;
+    overflow-y:hidden;
+    display:block;
     border:1px solid var(--border);
     border-radius:12px;
-    overflow:hidden;
+    background:#fff;
+    -webkit-overflow-scrolling:touch;
   }
 
+  .table-container > table,
+  .data-table{
+    width:max-content;
+    max-width:none;
+    table-layout:auto;
+    border-collapse:collapse;
+    min-width:560px;
+  }
+
+  .table-container > table th,
+  .table-container > table td,
+  .data-table th,
+  .data-table td{
+    border:1px solid var(--border);
+    padding:10px 12px;
+    vertical-align:top;
+    font-size:13px;
+    white-space:nowrap;
+  }
+
+  .table-container > table th,
   .data-table th{
     background:#f8fafc;
     color:var(--ink);
     font-weight:700;
-    padding:10px 14px;
-    text-align:left;
-    border-bottom:2px solid var(--border);
-    white-space:nowrap;
   }
 
-  .data-table td{
-    padding:10px 14px;
-    border-bottom:1px solid var(--border);
+  .table-container > table input,
+  .table-container > table textarea,
+  .table-container > table select,
+  .data-table input,
+  .data-table textarea,
+  .data-table select{
+    width:100%;
+    min-width:140px;
+    box-sizing:border-box;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:13px;
+    background:#fff;
+  }
+
+  .table-container > table input:disabled,
+  .table-container > table textarea:disabled,
+  .table-container > table select:disabled,
+  .data-table input:disabled,
+  .data-table textarea:disabled,
+  .data-table select:disabled{
+    background:#f8fafc;
     color:var(--ink-soft);
+    opacity:1;
   }
 
-  .data-table tr:last-child td{
-    border-bottom:none;
+  .table-container > table textarea,
+  .data-table textarea{
+    min-width:220px;
+    min-height:64px;
+    resize:vertical;
   }
 
-  .data-table tr:hover td{
-    background:#f8faff;
-  }
-
-  .kv-container{
-    padding:10px 14px 14px;
+  .uploaded-files{
+    margin-top:10px;
     display:grid;
-    gap:8px;
+    gap:6px;
   }
 
-  .kv-row{
-    display:grid;
-    grid-template-columns:200px 1fr;
-    gap:12px;
-    padding:6px 0;
-    border-bottom:1px solid var(--border);
-  }
-
-  .kv-row:last-child{
-    border-bottom:none;
-  }
-
-  .kv-key{
-    font-weight:700;
-    color:var(--ink-soft);
-  }
-
-  .kv-value{
-    color:var(--ink);
-    word-break:break-word;
-  }
-
-  .sub-section-title{
-    font-weight:700;
+  .uploaded-file a{
+    font-size:13px;
     color:var(--brand);
-    padding:8px 0 4px;
-    font-size:14px;
+    text-decoration:none;
+    font-weight:600;
   }
+
+  .uploaded-file a:hover{
+    text-decoration:underline;
+  }
+  /* ---- end workspace-style form rendering ---- */
 
   .comment-box{
     border:1px solid #fdba74;
@@ -747,11 +837,6 @@
     .data-table td{
       padding:8px 10px;
     }
-
-    .kv-row{
-      grid-template-columns:1fr;
-      gap:4px;
-    }
   }
 </style>
 {% endblock %}
@@ -777,7 +862,8 @@
         <div>
           <h2 class="hero-title">{{ assignment.assignment_id }} · {{ assignment.plant }}</h2>
           <p class="hero-copy">
-            Use this page to add comments for the whole assignment without leaving the review stage early.
+            Each response below is rendered the same way it was captured in the question workspace, in
+            read-only form. Add comments for the whole assignment without leaving the review stage early.
             Each comment saves independently, and the final button will move the assignment forward once you are done.
           </p>
           <div class="hero-pills">
@@ -866,12 +952,18 @@
                 <div class="question-content">
                   <div class="response-box">
                     <span class="response-label">Submitted Response</span>
-                    {% if question.response_value %}
-                      <div class="response-body response-value">{{ question.response_value|linebreaksbr }}</div>
-                    {% elif question.response_json %}
-                      <div class="response-body response-value">{{ question.response_json|json_script:"response-json"|safe }}</div>
-                    {% else %}
-                      <div class="no-response">No response was provided.</div>
+                    <div class="response-render" id="response-render-{{ question.question_id }}" data-question-id="{{ question.question_id }}">
+                      <div class="no-response">Loading response…</div>
+                    </div>
+
+                    {% if question.documents %}
+                      <div class="uploaded-files" style="padding:0 14px 14px;">
+                        {% for doc in question.documents %}
+                          <div class="uploaded-file">
+                            <a href="{{ doc.url }}" target="_blank">📄 {{ doc.name }}</a>
+                          </div>
+                        {% endfor %}
+                      </div>
                     {% endif %}
                   </div>
 
@@ -940,6 +1032,9 @@
     </div>
   </div>
 </div>
+
+{{ questions_json|json_script:"review-questions-data" }}
+
 {% endblock %}
 
 {% block extra_js %}
@@ -997,17 +1092,17 @@
   async function saveComment(questionId) {
     const textarea = document.querySelector(`.js-review-comment-input[data-question-id="${CSS.escape(questionId)}"]`);
     if (!textarea) return;
-    
+
     const remark = textarea.value.trim();
     const assignmentId = "{{ assignment.id }}";
-    
+
     try {
       const data = await postAction(apiUrl(COMMENT_URL, questionId), {
         assignment_id: assignmentId,
         remark: remark,
       });
       showReviewMessage(data.message || 'Comment saved successfully.', 'success');
-      
+
       // Update the footer note if it exists
       const container = textarea.closest('.question-container');
       if (container) {
@@ -1046,10 +1141,10 @@
       showReviewMessage('No editable comments to save.', 'error');
       return;
     }
-    
+
     let successCount = 0;
     let errorCount = 0;
-    
+
     for (const button of buttons) {
       const questionId = button.getAttribute('data-question-id');
       try {
@@ -1059,7 +1154,7 @@
         errorCount++;
       }
     }
-    
+
     if (errorCount === 0 && successCount > 0) {
       showReviewMessage(`All ${successCount} comments saved successfully.`, 'success');
     } else if (errorCount > 0) {
@@ -1071,7 +1166,7 @@
   document.getElementById('finalizeReviewBtn').addEventListener('click', async () => {
     const button = document.getElementById('finalizeReviewBtn');
     const originalText = button.textContent;
-    
+
     // Check if all questions have comments
     const textareas = document.querySelectorAll('.js-review-comment-input:not([disabled])');
     let emptyComments = [];
@@ -1082,16 +1177,16 @@
         emptyComments.push(number ? number.textContent : 'Unknown question');
       }
     });
-    
+
     if (emptyComments.length > 0) {
       if (!confirm(`You have ${emptyComments.length} question(s) without comments: ${emptyComments.join(', ')}. Continue anyway?`)) {
         return;
       }
     }
-    
+
     button.disabled = true;
     button.textContent = 'Finalizing...';
-    
+
     try {
       const data = await postAction(APPROVE_URL, {});
       showReviewMessage(data.message || 'Review finalized successfully.', 'success');
@@ -1115,5 +1210,392 @@
       }
     }
   });
+
+  // ---------------------------------------------------------------------
+  // Read-only response rendering, reusing the exact same field-rendering
+  // logic used by brsr_question_workspace.html / assignment_detail.html
+  // so a response looks identical here as it did in the workspace.
+  // ---------------------------------------------------------------------
+
+  function escapeHtml(value) {
+    return (value ?? '')
+      .toString()
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  function getQuestionId(question) {
+    return question.question_id || question.local_id || null;
+  }
+
+  function tableSchema(question) {
+    return (question.validation_rules && question.validation_rules.table_schema) || {};
+  }
+
+  function defaultTableColumns(question) {
+    const schema = tableSchema(question);
+    if (schema && Array.isArray(schema.columns) && schema.columns.length) {
+      return schema.columns;
+    }
+    const fromSchema = question.validation_rules && Array.isArray(question.validation_rules.columns)
+      ? question.validation_rules.columns
+      : [];
+    if (fromSchema.length) return fromSchema;
+    const options = Array.isArray(question.options) ? question.options : [];
+    if (options.length && typeof options[0] === 'object' && options[0] !== null && options[0].label) {
+      return options;
+    }
+    return [
+      { key: 'particulars', label: 'Particulars', type: 'text' },
+      { key: 'current_year', label: 'Current Year', type: 'text' },
+      { key: 'previous_year', label: 'Previous Year', type: 'text' },
+    ];
+  }
+
+  function defaultChoiceOptions(question) {
+    const options = Array.isArray(question.options) ? question.options : [];
+    if (options.length) {
+      return options.map((option, index) => {
+        if (typeof option === 'object' && option !== null) {
+          return {
+            value: option.value ?? option.label ?? String(index),
+            label: option.label ?? option.value ?? String(index),
+            order: option.order ?? index + 1,
+          };
+        }
+        return { value: option, label: option, order: index + 1 };
+      });
+    }
+    if (question.question_type === 'yes_no') {
+      return [
+        { value: 'Yes', label: 'Yes', order: 1 },
+        { value: 'No', label: 'No', order: 2 },
+      ];
+    }
+    return [];
+  }
+
+  function initTableRows(question) {
+    const existing = question.response_json && Array.isArray(question.response_json.rows)
+      ? question.response_json.rows
+      : null;
+    return existing && existing.length ? existing : [];
+  }
+
+  function getStoredFieldValue(question, fieldName, fallback = '') {
+    const responseJson = question.response_json && typeof question.response_json === 'object' ? question.response_json : {};
+    if (Object.prototype.hasOwnProperty.call(responseJson, fieldName)) {
+      return responseJson[fieldName];
+    }
+    return fallback;
+  }
+
+  function renderFieldControl(question, field, index) {
+    const fieldName = field.name || `field_${index + 1}`;
+    const fieldLabel = field.label || field.name || `Field ${index + 1}`;
+    const fieldValue = getStoredFieldValue(question, fieldName, '');
+    const disabledAttr = 'disabled aria-disabled="true"';
+
+    if (field.kind === 'radio') {
+      const options = Array.isArray(field.options) ? field.options : [];
+      return `
+        <div class="form-group">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <div class="choice-stack">
+            ${options.map((option) => {
+              const label = option.label ?? option.value ?? option;
+              const optionValue = option.value ?? option.label ?? option;
+              const checked = String(optionValue) === String(fieldValue) ? 'checked' : '';
+              return `
+                <label class="choice-item">
+                  <input type="radio" name="responseValue-${escapeHtml(fieldName)}" value="${escapeHtml(optionValue)}" data-field-name="${escapeHtml(fieldName)}" ${checked} ${disabledAttr}>
+                  <span>${escapeHtml(label)}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    if (field.kind === 'checkbox_group') {
+      const selected = Array.isArray(fieldValue) ? fieldValue : String(fieldValue || '').split(',').map((item) => item.trim()).filter(Boolean);
+      const items = Array.isArray(field.items) ? field.items : [];
+      return `
+        <div class="form-group">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <div class="choice-stack">
+            ${items.map((item) => {
+              const label = item.label ?? item.value ?? item.name ?? '';
+              const optionValue = item.value ?? item.label ?? item.name ?? '';
+              const checked = selected.includes(String(optionValue)) ? 'checked' : '';
+              return `
+                <label class="choice-item">
+                  <input type="checkbox" value="${escapeHtml(optionValue)}" data-field-name="${escapeHtml(fieldName)}" ${checked} ${disabledAttr}>
+                  <span>${escapeHtml(label)}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    if (field.kind === 'textarea') {
+      return `
+        <div class="form-group">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <textarea class="workspace-textarea form-textarea" data-field-name="${escapeHtml(fieldName)}" ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+        </div>
+      `;
+    }
+
+    if (field.kind === 'input') {
+      const inputType = field.type || 'text';
+      return `
+        <div class="form-group">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <input class="workspace-input" data-field-name="${escapeHtml(fieldName)}" type="${escapeHtml(inputType)}" value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}" ${disabledAttr}>
+        </div>
+      `;
+    }
+
+    if (field.kind === 'table') {
+      const columns = Array.isArray(field.columns) ? field.columns : [];
+      const rows = Array.isArray(fieldValue) ? fieldValue : [];
+      if (!rows.length) {
+        return `
+          <div class="form-group">
+            <label class="form-label">${escapeHtml(fieldLabel)}</label>
+            <div class="no-response">No data submitted</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="form-group">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  ${columns.map((column) => `<th>${escapeHtml(column)}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map((row) => `
+                  <tr>
+                    ${columns.map((column) => {
+                      const cellValue = row?.[column] ?? row?.[column.toLowerCase()] ?? '';
+                      return `<td><input type="text" value="${escapeHtml(cellValue)}" ${disabledAttr}></td>`;
+                    }).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="form-group">
+        <label class="form-label">${escapeHtml(fieldLabel)}</label>
+        <textarea class="workspace-textarea form-textarea" ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+      </div>
+    `;
+  }
+
+  function renderQuestionInput(question) {
+    const value = question.response_value || '';
+    const options = defaultChoiceOptions(question);
+    const schema = tableSchema(question);
+    const fields = Array.isArray(question.validation_rules && question.validation_rules.fields) ? question.validation_rules.fields : [];
+    const qId = getQuestionId(question);
+    const disabledAttr = 'disabled aria-disabled="true"';
+
+    if (fields.length) {
+      return `
+        <div class="form-group">
+          <div class="choice-stack">
+            ${fields.map((field, index) => renderFieldControl(question, field, index)).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    if (question.question_type === 'textarea' || question.question_type === 'text') {
+      if (!value) return '<div class="no-response">No response submitted yet</div>';
+      return `
+        <div class="form-group">
+          <label class="form-label">Response</label>
+          <textarea class="workspace-textarea form-textarea" id="responseValue-${escapeHtml(qId)}" ${disabledAttr}>${escapeHtml(value)}</textarea>
+        </div>
+      `;
+    }
+
+    if (['number', 'decimal', 'currency', 'percentage', 'year', 'email', 'url', 'date', 'phone'].includes(question.question_type)) {
+      if (!value) return '<div class="no-response">No response submitted yet</div>';
+      const typeMap = {
+        number: 'number', decimal: 'text', currency: 'text', percentage: 'text',
+        year: 'number', email: 'email', url: 'url', date: 'date', phone: 'tel',
+      };
+      const type = typeMap[question.question_type] || 'text';
+      return `
+        <div class="form-group">
+          <label class="form-label">Response</label>
+          <input class="workspace-input" id="responseValue-${escapeHtml(qId)}" type="${type}" value="${escapeHtml(value)}" ${disabledAttr}>
+        </div>
+      `;
+    }
+
+    if (question.question_type === 'select' || question.question_type === 'dropdown') {
+      if (!value) return '<div class="no-response">No response submitted yet</div>';
+      const items = options.map((option) => {
+        const label = option.label ?? option.value ?? option;
+        const optionValue = option.value ?? option.label ?? option;
+        const selected = String(optionValue) === String(value) ? 'selected' : '';
+        return `<option value="${escapeHtml(optionValue)}" ${selected}>${escapeHtml(label)}</option>`;
+      });
+      return `
+        <div class="form-group">
+          <label class="form-label">Response</label>
+          <select class="workspace-select" id="responseValue-${escapeHtml(qId)}" ${disabledAttr}>${items.join('')}</select>
+        </div>
+      `;
+    }
+
+    if (question.question_type === 'radio' || question.question_type === 'yes_no') {
+      if (!value) return '<div class="no-response">No response submitted yet</div>';
+      return `
+        <div class="form-group">
+          <label class="form-label">Response</label>
+          <div class="choice-stack">
+            ${options.map((option) => {
+              const label = option.label ?? option.value ?? option;
+              const optionValue = option.value ?? option.label ?? option;
+              const checked = String(optionValue) === String(value) ? 'checked' : '';
+              return `
+                <label class="choice-item">
+                  <input type="radio" name="responseValue-${escapeHtml(qId)}" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr}>
+                  <span>${escapeHtml(label)}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    if (question.question_type === 'checkbox' || question.question_type === 'multi_select') {
+      if (!value) return '<div class="no-response">No response submitted yet</div>';
+      const selected = String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
+      return `
+        <div class="form-group">
+          <label class="form-label">Chosen options</label>
+          <div class="choice-stack">
+            ${options.map((option) => {
+              const label = option.label ?? option.value ?? option;
+              const optionValue = option.value ?? option.label ?? option;
+              const checked = selected.includes(String(optionValue)) ? 'checked' : '';
+              return `
+                <label class="choice-item">
+                  <input type="checkbox" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr}>
+                  <span>${escapeHtml(label)}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    if (['table', 'nested_table', 'matrix', 'repeating_section'].includes(question.question_type)) {
+      const columns = defaultTableColumns(question);
+      const rows = initTableRows(question);
+      if (!rows.length) return '<div class="no-response">No response submitted yet</div>';
+      const headerRows = Array.isArray(schema.header_rows) ? schema.header_rows : [];
+      const renderHeader = headerRows.length
+        ? headerRows.map((headerRow) => `
+            <tr>
+              ${headerRow.map((cell) => `<th>${escapeHtml(cell)}</th>`).join('')}
+              ${headerRow.length < columns.length ? `<th colspan="${columns.length - headerRow.length}"></th>` : ''}
+            </tr>
+          `).join('')
+        : `
+            <tr>
+              ${columns.map((column) => `<th>${escapeHtml(column.label || column.key)}</th>`).join('')}
+            </tr>
+          `;
+      return `
+        <div class="form-group">
+          <label class="form-label">Table Response</label>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                ${renderHeader}
+              </thead>
+              <tbody>
+                ${rows.map((row) => `
+                  <tr>
+                    ${columns.map((column) => {
+                      const key = column.key || column.name;
+                      const cell = row?.[key] ?? '';
+                      const inputType = column.type || 'text';
+                      if (inputType === 'textarea') {
+                        return `<td><textarea ${disabledAttr}>${escapeHtml(cell)}</textarea></td>`;
+                      }
+                      if (inputType === 'select') {
+                        const choices = Array.isArray(column.options) ? column.options : [];
+                        return `<td><select ${disabledAttr}>${choices.map((choice) => `<option value="${escapeHtml(choice)}" ${String(choice) === String(cell) ? 'selected' : ''}>${escapeHtml(choice)}</option>`).join('')}</select></td>`;
+                      }
+                      return `<td><input type="text" value="${escapeHtml(cell)}" ${disabledAttr}></td>`;
+                    }).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    if (!value) return '<div class="no-response">No response submitted yet</div>';
+    return `
+      <div class="form-group">
+        <label class="form-label">Response</label>
+        <textarea class="workspace-textarea form-textarea" id="responseValue-${escapeHtml(qId)}" ${disabledAttr}>${escapeHtml(value)}</textarea>
+      </div>
+    `;
+  }
+
+  function renderQuestionResponses() {
+    const dataEl = document.getElementById('review-questions-data');
+    if (!dataEl) return;
+
+    let questions = [];
+    try {
+      questions = JSON.parse(dataEl.textContent);
+    } catch (error) {
+      console.error('Unable to parse question data:', error);
+      return;
+    }
+
+    questions.forEach((question) => {
+      const qId = getQuestionId(question);
+      const target = document.getElementById(`response-render-${qId}`);
+      if (!target) return;
+      try {
+        target.innerHTML = renderQuestionInput(question);
+      } catch (error) {
+        console.error('Unable to render question', qId, error);
+        target.innerHTML = '<div class="no-response">Unable to render this response.</div>';
+      }
+    });
+  }
+
+  renderQuestionResponses();
 </script>
 {% endblock %}

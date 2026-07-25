@@ -20,6 +20,8 @@
     --danger:#dc2626;
     --danger-soft:#fdecec;
     --shadow:0 20px 45px rgba(15,23,42,.08);
+    --review-bg:#f8faff;
+    --comment-border:#e8edf8;
   }
 
   .assignment-dashboard-page{
@@ -134,7 +136,7 @@
   }
 
   .assignment-card.expanded .assignment-grid {
-    max-height: 2000px;
+    max-height: 5000px;
     opacity: 1;
     margin-top: 16px;
     padding-top: 16px;
@@ -164,7 +166,7 @@
   }
 
   .assignment-card-head:hover {
-    opacity: 0.8;
+    opacity: 0.85;
   }
 
   .assignment-card-head .expand-icon {
@@ -222,10 +224,11 @@
   .pill.warn{background:var(--warn-soft);color:var(--warn);}
   .pill.danger{background:var(--danger-soft);color:var(--danger);}
   .pill.muted{background:#eef2f7;color:var(--muted);}
+  .pill.review{background:var(--review-bg);color:var(--brand);}
 
   .assignment-grid{
     display:grid;
-    grid-template-columns:1.25fr .85fr;
+    grid-template-columns:1fr 1fr;
     gap:16px;
     max-height: 0;
     opacity: 0;
@@ -234,7 +237,8 @@
   }
 
   .question-box,
-  .assignment-summary-box{
+  .assignment-summary-box,
+  .review-comments-box{
     border:1px solid var(--border);
     border-radius:16px;
     padding:16px;
@@ -301,6 +305,54 @@
   .status-chip.submitted{background:var(--warn-soft);color:var(--warn);}
   .status-chip.resubmitted{background:var(--warn-soft);color:var(--warn);}
   .status-chip.rejected{background:var(--danger-soft);color:var(--danger);}
+  .status-chip.review{background:var(--review-bg);color:var(--brand);}
+
+  /* Review Comments Styles */
+  .review-comment-item {
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--comment-border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+
+  .review-comment-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .review-comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .review-comment-question {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  .review-comment-meta {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .review-comment-text {
+    color: var(--ink);
+    font-size: 13px;
+    padding: 8px 12px;
+    background: var(--review-bg);
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+
+  .no-comments {
+    color: var(--muted);
+    font-style: italic;
+    padding: 8px 0;
+    font-size: 13px;
+  }
 
   .empty-state{
     background:var(--surface);
@@ -347,7 +399,6 @@
     color:var(--success);
   }
 
-  /* Quick stats badge on collapsed card */
   .assignment-quick-stats {
     display: flex;
     gap: 16px;
@@ -375,6 +426,32 @@
   .assignment-quick-stats .dot.pending { background: var(--muted); }
   .assignment-quick-stats .dot.needs_revision { background: var(--danger); }
 
+  .reviewer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--review-bg);
+    color: var(--brand);
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .comment-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 9px;
+    background: var(--brand);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
   @media (max-width: 1200px){
     .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
     .assignment-grid{grid-template-columns:1fr;}
@@ -386,6 +463,7 @@
     .stats-grid{grid-template-columns:1fr;}
     .assignment-card-head{flex-direction:column;}
     .assignment-quick-stats { flex-wrap: wrap; }
+    .assignment-grid{grid-template-columns:1fr;}
   }
 </style>
 {% endblock %}
@@ -445,6 +523,11 @@
             {% if assignment.is_overdue %}
             <span style="color: var(--danger);">⚠️ Overdue</span>
             {% endif %}
+            {% if assignment.has_review_comments %}
+            <span style="color: var(--brand);">
+              💬 {{ assignment.review_comments_count }} comment{{ assignment.review_comments_count|pluralize }}
+            </span>
+            {% endif %}
           </div>
         </div>
         <div class="pill-row">
@@ -452,6 +535,12 @@
           <span class="pill {% if assignment.overall_status == 'completed' %}success{% elif assignment.overall_status == 'rejected' or assignment.overall_status == 'reassigned' or assignment.overall_status == 'needs_revision' %}danger{% elif assignment.overall_status == 'in_progress' %}warn{% else %}muted{% endif %}">{{ assignment.overall_status|default:"pending" }}</span>
           {% if assignment.is_overdue %}
           <span class="pill danger">Overdue</span>
+          {% endif %}
+          {% if assignment.reviewers %}
+          <span class="pill review">Reviewers: {{ assignment.reviewers|length }}</span>
+          {% endif %}
+          {% if assignment.has_review_comments %}
+          <span class="pill review">💬 {{ assignment.review_comments_count }}</span>
           {% endif %}
           <span class="expand-icon" aria-hidden="true">▼</span>
         </div>
@@ -473,39 +562,79 @@
           </ul>
         </div>
 
-        <div class="assignment-summary-box">
-          <span class="section-label">Assignment Details</span>
-          <div class="mb-3">
-            <div class="fw-semibold text-dark">Assigned To</div>
-            <div class="text-muted">{{ assignment.assignee }}</div>
+        <div>
+          <div class="assignment-summary-box">
+            <span class="section-label">Assignment Details</span>
+            <div class="mb-3">
+              <div class="fw-semibold text-dark">Assigned To</div>
+              <div class="text-muted">{{ assignment.assignee }}</div>
+            </div>
+            <div class="mb-3">
+              <div class="fw-semibold text-dark">Assigned By</div>
+              <div class="text-muted">{{ assignment.assigner }}</div>
+            </div>
+            <div class="mb-3">
+              <div class="fw-semibold text-dark">Financial Year</div>
+              <div class="text-muted">{{ assignment.financial_year }}</div>
+            </div>
+            <div class="mb-3">
+              <div class="fw-semibold text-dark">Workflow Template</div>
+              <div class="text-muted">{{ assignment.workflow_template|default:"-" }}</div>
+            </div>
+            <div class="mb-3">
+              <div class="fw-semibold text-dark">Current Stage</div>
+              <div class="text-muted">{{ assignment.workflow_stage|default:"-" }}</div>
+            </div>
+            <div class="mb-3">
+              <div class="fw-semibold text-dark">Due Date</div>
+              <div class="text-muted">{{ assignment.due_date|default:"-" }}</div>
+            </div>
+            <div class="mb-3">
+              <div class="fw-semibold text-dark">Questions</div>
+              <div class="text-muted">{{ assignment.question_count }}</div>
+            </div>
+            {% if assignment.workspace_url %}
+            <a class="btn-primary-link w-100 justify-content-center" href="{{ assignment.workspace_url }}">Open Workspace</a>
+            {% endif %}
           </div>
-          <div class="mb-3">
-            <div class="fw-semibold text-dark">Assigned By</div>
-            <div class="text-muted">{{ assignment.assigner }}</div>
+
+          <!-- Review Comments Section -->
+          <div class="review-comments-box" style="margin-top: 16px;">
+            <span class="section-label">
+              Review Comments
+              {% if assignment.review_comments_count %}
+              <span class="comment-count-badge">{{ assignment.review_comments_count }}</span>
+              {% endif %}
+            </span>
+            
+            {% if assignment.review_comments %}
+              {% for comment in assignment.review_comments %}
+              <div class="review-comment-item">
+                <div class="review-comment-header">
+                  <span class="review-comment-question">
+                    Q{{ comment.question_number }}: {{ comment.question_text|truncatechars:50 }}
+                  </span>
+                  <span class="review-comment-meta">
+                    {% if comment.reviewed_by %}
+                      by {{ comment.reviewed_by }}
+                    {% endif %}
+                    {% if comment.reviewed_at %}
+                      · {{ comment.reviewed_at|date:"M d, Y H:i" }}
+                    {% endif %}
+                    <span class="status-chip {{ comment.status|default:'pending' }}" style="font-size: 9px; padding: 2px 6px;">
+                      {{ comment.status|default:"pending" }}
+                    </span>
+                  </span>
+                </div>
+                <div class="review-comment-text">
+                  {{ comment.review_remark }}
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="no-comments">No reviewer comments yet.</div>
+            {% endif %}
           </div>
-          <div class="mb-3">
-            <div class="fw-semibold text-dark">Financial Year</div>
-            <div class="text-muted">{{ assignment.financial_year }}</div>
-          </div>
-          <div class="mb-3">
-            <div class="fw-semibold text-dark">Workflow Template</div>
-            <div class="text-muted">{{ assignment.workflow_template|default:"-" }}</div>
-          </div>
-          <div class="mb-3">
-            <div class="fw-semibold text-dark">Current Stage</div>
-            <div class="text-muted">{{ assignment.workflow_stage|default:"-" }}</div>
-          </div>
-          <div class="mb-3">
-            <div class="fw-semibold text-dark">Due Date</div>
-            <div class="text-muted">{{ assignment.due_date|default:"-" }}</div>
-          </div>
-          <div class="mb-3">
-            <div class="fw-semibold text-dark">Questions</div>
-            <div class="text-muted">{{ assignment.question_count }}</div>
-          </div>
-          {% if assignment.workspace_url %}
-          <a class="btn-primary-link w-100 justify-content-center" href="{{ assignment.workspace_url }}">Open Workspace</a>
-          {% endif %}
         </div>
       </div>
     </article>
@@ -534,7 +663,6 @@
         }
         
         const isExpanded = card.classList.contains('expanded');
-        const ariaExpanded = header.getAttribute('aria-expanded');
         
         // Close all other cards (optional - uncomment for accordion behavior)
         // assignmentCards.forEach(otherCard => {

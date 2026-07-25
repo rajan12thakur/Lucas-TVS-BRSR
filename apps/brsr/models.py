@@ -24,6 +24,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.utils.text import slugify
 from apps.organizations.workflow_configuration_engine import WorkflowConfigurationEngine
+import os
 
 
 # ---------------------------------------------------------------------------
@@ -411,8 +412,6 @@ class QuestionResponse(WorkflowMixin, models.Model):
 
     response_value = models.TextField(blank=True, null=True)
     response_json = models.JSONField(default=dict, blank=True)   # tables / structured answers
-    uploaded_files = models.JSONField(default=list, blank=True)
-
     answered_by_content_type = models.ForeignKey(
         ContentType, null=True, blank=True, on_delete=models.SET_NULL, related_name='+'
     )
@@ -569,3 +568,19 @@ class ResponseRevision(models.Model):
     class Meta:
         ordering = ['-revision_number']
         unique_together = ('response', 'revision_number')
+
+
+def brsr_document_upload_path(instance, filename):
+    assignment_id = instance.response.assignment.assignment_id
+    return os.path.join("brsr", assignment_id, filename)
+
+
+class QuestionResponseDocument(models.Model):
+    response = models.ForeignKey(QuestionResponse, on_delete=models.CASCADE, related_name="documents",)
+    document = models.FileField(upload_to=brsr_document_upload_path)
+    original_name = models.CharField(max_length=255)
+    uploaded_by = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True,)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.original_name

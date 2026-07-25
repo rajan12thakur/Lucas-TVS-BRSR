@@ -1569,6 +1569,36 @@
         <div class="question-content">
           <fieldset class="question-fieldset" ${isLocked ? 'disabled' : ''}>
             ${renderQuestionInput(question, isLocked)}
+            <div class="form-group">
+              <label class="form-label">
+                  Supporting Documents
+                  <small>(Optional)</small>
+              </label>
+
+              <input
+                  type="file"
+                  class="workspace-input js-document-upload"
+                  data-question-id="${escapeHtml(qId)}"
+                  multiple
+                  ${isLocked ? "disabled" : ""}
+              >
+
+              ${
+                  Array.isArray(question.documents) && question.documents.length
+                      ? `
+                      <div class="uploaded-files">
+                          ${question.documents.map(doc => `
+                              <div class="uploaded-file">
+                                  <a href="${doc.url}" target="_blank">
+                                      📄 ${escapeHtml(doc.name)}
+                                  </a>
+                              </div>
+                          `).join("")}
+                      </div>
+                      `
+                      : ""
+              }
+            </div>
             ${actionButtons}
           </fieldset>
           ${reviewerCommentBlock}
@@ -1870,13 +1900,21 @@
     }
 
     try {
+      const formData = new FormData();
+      formData.append("assignment_id", payload.assignment_id);
+      formData.append("response_value", payload.response_value || "");
+      formData.append("response_json", JSON.stringify(payload.response_json || {}));
+      const documentInput = document.querySelector(`.js-document-upload[data-question-id="${CSS.escape(questionId)}"]`);
+      if (documentInput && documentInput.files.length) {
+          Array.from(documentInput.files).forEach(file => {
+              formData.append("documents", file);
+          });
+      }
+
       const response = await fetch(apiUrl(API_SAVE, questionId), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken'),
-        },
-        body: JSON.stringify(payload),
+          method: "PUT",
+          headers: {"X-CSRFToken": getCookie("csrftoken"),},
+          body: formData,
       });
 
       const data = await response.json().catch(() => ({}));
