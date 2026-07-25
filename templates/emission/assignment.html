@@ -148,6 +148,21 @@
             border-radius: 16px;
             box-shadow: var(--shadow);
             overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .assignment-card.highlighted {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2), var(--shadow);
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2), var(--shadow); }
+            50% { box-shadow: 0 0 0 6px rgba(29, 78, 216, 0.4), var(--shadow); }
+        }
+
+        .assignment-card.highlighted {
+            animation: highlightPulse 2s ease-in-out 2;
         }
 
         /* ── card head (clickable toggle) ── */
@@ -429,14 +444,14 @@
         {% if assignments %}
             <div class="assignment-list">
                 {% for assignment in assignments %}
-                    <article class="assignment-card">
+                    <article class="assignment-card {% if assignment.id|stringformat:'s' == highlight_assignment_id|stringformat:'s' %}highlighted{% endif %}">
 
                         <!-- clickable header -->
                         <div class="assignment-card-head"
                              data-bs-toggle="collapse"
-                             data-bs-target="#collapse-{{ forloop.counter }}"
-                             aria-expanded="false"
-                             aria-controls="collapse-{{ forloop.counter }}"
+                             data-bs-target="#collapse-{{ assignment.id }}"
+                             aria-expanded="{% if assignment.id|stringformat:'s' == highlight_assignment_id|stringformat:'s' %}true{% else %}false{% endif %}"
+                             aria-controls="collapse-{{ assignment.id }}"
                              role="button">
                             <div class="assignment-meta">
                                 <h3>{{ assignment.assignment_code }}</h3>
@@ -465,12 +480,12 @@
                                 {% if assignment.is_overdue %}
                                     <span class="pill danger">Overdue</span>
                                 {% endif %}
-                                <span class="toggle-icon" id="icon-{{ forloop.counter }}">▼</span>
+                                <span class="toggle-icon {% if assignment.id|stringformat:'s' == highlight_assignment_id|stringformat:'s' %}rotated{% endif %}" id="icon-{{ assignment.id }}">▼</span>
                             </div>
                         </div>
 
                         <!-- collapsible body -->
-                        <div class="collapse assignment-card-body" id="collapse-{{ forloop.counter }}">
+                        <div class="collapse {% if assignment.id|stringformat:'s' == highlight_assignment_id|stringformat:'s' %}show{% endif %} assignment-card-body" id="collapse-{{ assignment.id }}">
                             <div class="assignment-grid">
 
                                 <!-- left: questions -->
@@ -555,7 +570,6 @@
 
     </div>
 
-    <!-- optional: rotate chevron on toggle (if Bootstrap's show.bs.collapse events not used) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // For each collapse element, listen to show/hide events to rotate icon
@@ -570,6 +584,26 @@
                     if (icon) icon.classList.remove('rotated');
                 });
             });
+
+            // Scroll to highlighted assignment if it exists
+            {% if highlight_assignment_id %}
+                setTimeout(function() {
+                    var highlightedCard = document.querySelector('.assignment-card.highlighted');
+                    if (highlightedCard) {
+                        // Smooth scroll to the card
+                        highlightedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Add a temporary background highlight for extra visibility
+                        setTimeout(function() {
+                            highlightedCard.style.transition = 'background 0.3s';
+                            highlightedCard.style.background = '#f0f7ff';
+                            setTimeout(function() {
+                                highlightedCard.style.background = '';
+                            }, 1000);
+                        }, 500);
+                    }
+                }, 500);
+            {% endif %}
         });
     </script>
 {% endblock %}

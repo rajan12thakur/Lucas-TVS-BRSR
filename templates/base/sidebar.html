@@ -156,22 +156,12 @@
                             </a>
                         </li>
 
-                        <li class="nxl-item">
-                            <a class="nxl-link" href="{% url 'timesheets:timesheet_list' %}">
-                                Time Sheets
-                            </a>
-                        </li>
 
                         <li class="nxl-item">
                             <a class="nxl-link" href="{% url 'email_master:email_list' %}">
                                 Email
                             </a>
                         </li>
-                        {% comment %} <li class="nxl-item">
-                            <a class="nxl-link" href="{% url 'goals:dashboard' %}">
-                                Goals
-                            </a>
-                        </li> {% endcomment %}
                         {% if request.user.is_super_admin or request.user.is_superuser or request.user.role and request.user.role.role_code == 'ADMIN' %}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{% url 'calculator:unit_category_list' %}">

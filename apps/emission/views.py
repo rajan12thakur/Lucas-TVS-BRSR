@@ -10,10 +10,10 @@ import json
 from django.views.generic import (ListView,CreateView,UpdateView,DeleteView,)
 from .models import EmissionTransaction
 from .forms import EmissionTransactionForm
-from .models import EmissionAssignment,EmissionTransaction
+from .models import *
 from django.shortcuts import get_object_or_404
 from apps.notifications.services import NotificationService
-from apps.notifications.models import Notification
+from apps.notifications.models import Notification,Timesheet
 
 
 class EmissionsDashboardView(TemplateView):
@@ -177,53 +177,105 @@ from django.utils import timezone
 from .models import EmissionAssignment
 
 
-class AssignmentDashboardView(TemplateView):
+# views.py
+
+class EmissionAssignmentDashboardView(LoginRequiredMixin, TemplateView):
+    login_url = "accounts:login"
     template_name = "emission/assignment.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        
+        # Get the user from the request
+        user = self.request.user
+        
+        # Get assignment_id from URL parameters
+        assignment_id = self.request.GET.get('assignment')
+        
+        # Get all assignments
         assignments = (
             EmissionAssignment.objects
-            .filter(assignee=request.user)
             .select_related(
                 "company",
                 "plant",
-                "scope",
                 "financial_year",
                 "financial_month",
-                "assigner",
+                "scope",
                 "assignee",
+                "assigner",
             )
             .prefetch_related(
-                "assignment_sources__source__activity"
+                "transactions",
+                "assignment_sources__source__activity",
             )
+            .order_by('-created_at')
         )
-
-        context["assignments"] = assignments
-
-        context["assignment_count"] = assignments.count()
-
-        context["open_count"] = assignments.filter(
-            status__in=["ASSIGNED", "IN_PROGRESS"]
-        ).count()
-
-        context["completed_count"] = assignments.filter(
-            status="APPROVED"
-        ).count()
-
-        context["overdue_count"] = assignments.filter(
-            due_date__lt=timezone.now().date()
-        ).exclude(
-            status="APPROVED"
-        ).count()
-
-        context["assignment_scope"] = "User"
-
-        return context
-
         
-
+        # Validate assignment_id
+        highlight_assignment_id = None
+        if assignment_id:
+            try:
+                assignments.get(id=assignment_id)
+                highlight_assignment_id = assignment_id
+            except EmissionAssignment.DoesNotExist:
+                pass
+        
+        # ====== GET ALL TIMESHEETS (including completed, overdue, rejected) ======
+        timesheets = Timesheet.objects.filter(
+            models.Q(user=user) | 
+            models.Q(assignment__assignee=user)
+        ).select_related('assignment', 'company', 'user').order_by('-created_at')[:10]
+        
+        # ====== COUNT ONLY UNREAD for the badge (assigned and viewed) ======
+        timesheet_count = Timesheet.objects.filter(
+            models.Q(user=user) | 
+            models.Q(assignment__assignee=user)
+        ).filter(
+            models.Q(status='assigned') | models.Q(status='viewed')
+        ).count()
+        
+        # ====== GET NOTIFICATIONS ======
+        # Get ALL notifications (read and unread) for the dropdown
+        navbar_notifications = Notification.objects.filter(
+            recipient=user
+        ).exclude(
+            title__icontains='Timesheet'
+        ).order_by('-created_at')[:10]
+        
+        # Count ONLY unread for the badge
+        navbar_notification_count = Notification.objects.filter(
+            recipient=user,
+            is_read=False
+        ).exclude(
+            title__icontains='Timesheet'
+        ).count()
+        
+        # Get stats
+        today = timezone.now().date()
+        assignment_stats = {
+            "assignment_count": assignments.count(),
+            "open_count": assignments.filter(
+                status__in=["ASSIGNED", "IN_PROGRESS", "SUBMITTED"]
+            ).count(),
+            "completed_count": assignments.filter(status="APPROVED").count(),
+            "overdue_count": assignments.filter(
+                due_date__lt=today
+            ).exclude(status="APPROVED").count(),
+        }
+        
+        # Update context
+        context.update({
+            "assignments": assignments,
+            "assignment_scope": "ALL ASSIGNMENTS",
+            "highlight_assignment_id": highlight_assignment_id,
+            "timesheets": timesheets,  # ALL timesheets
+            "timesheet_count": timesheet_count,  # Only unread count
+            "navbar_notifications": navbar_notifications,
+            "navbar_notification_count": navbar_notification_count,
+            **assignment_stats,
+        })
+        
+        return context
 
 class SaveEmissionAssignmentAPIView(APIView):
 
@@ -231,19 +283,6 @@ class SaveEmissionAssignmentAPIView(APIView):
     def post(self, request):
 
         data = request.data
-
-        print("=" * 50)
-        print("Assignment Request")
-        print(data)
-        print("=" * 50)
-
-        print("=" * 50)
-        print("Scope ID Received :", data.get("scope_id"))
-        print("Company :", data.get("company"))
-        print("Plant :", data.get("plant"))
-        print("FY :", data.get("financial_year"))
-        print("Month :", data.get("financial_month"))
-        print("=" * 50)
 
         try:
 
@@ -995,19 +1034,17 @@ class PlantUsersAPIView(APIView):
             ]
         })
 
-
-
-
-class EmissionAssignmentDashboardView(LoginRequiredMixin, TemplateView):
-
+class EmissionAssignmentDashboardViewCompact(LoginRequiredMixin, TemplateView):
     login_url = "accounts:login"
-
     template_name = "emission/assignment.html"
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
-
+        
+        # Get assignment_id from URL parameters
+        assignment_id = self.request.GET.get('assignment')
+        
+        # Get all assignments
         assignments = (
             EmissionAssignment.objects
             .select_related(
@@ -1019,25 +1056,76 @@ class EmissionAssignmentDashboardView(LoginRequiredMixin, TemplateView):
                 "assignee",
                 "assigner",
             )
-            .prefetch_related("transactions","assignment_sources__source__activity",)
+            .prefetch_related(
+                "transactions",
+                "assignment_sources__source__activity",
+            )
+            .order_by('-created_at')
         )
-
-        context["assignments"] = assignments
-
-        context["total_assignments"] = assignments.count()
-
-        context["draft_count"] = assignments.filter(status="DRAFT").count()
-
-        context["submitted_count"] = assignments.filter(status="SUBMITTED").count()
-
-        context["approved_count"] = assignments.filter(status="APPROVED").count()
-
+        
+        # Validate assignment_id
+        highlight_assignment_id = None
+        if assignment_id:
+            try:
+                assignments.get(id=assignment_id)
+                highlight_assignment_id = assignment_id
+            except EmissionAssignment.DoesNotExist:
+                pass
+        
+        # ====== GET TIMESHEETS ======
+        # Get timesheets for the current user
+        timesheets = Timesheet.objects.filter(
+            models.Q(user=self.request.user) | 
+            models.Q(assignment__assignee=self.request.user)
+        ).filter(
+            models.Q(status='assigned') | models.Q(status='viewed')
+        ).select_related('assignment', 'company', 'user').order_by('-created_at')[:10]
+        
+        timesheet_count = timesheets.count()
+        
+        # ====== GET NOTIFICATIONS ======
+        # Get ALL notifications (read and unread) for the dropdown
+        navbar_notifications = Notification.objects.filter(
+            recipient=self.request.user
+        ).exclude(
+            title__icontains='Timesheet'
+        ).order_by('-created_at')[:10]
+        
+        # ✅ Count ONLY unread notifications for the badge
+        navbar_notification_count = Notification.objects.filter(
+            recipient=self.request.user,
+            is_read=False  # ✅ Only count unread
+        ).exclude(
+            title__icontains='Timesheet'
+        ).count()
+        
+        # Get stats
+        today = timezone.now().date()
+        assignment_stats = {
+            "assignment_count": assignments.count(),
+            "open_count": assignments.filter(
+                status__in=["ASSIGNED", "IN_PROGRESS", "SUBMITTED"]
+            ).count(),
+            "completed_count": assignments.filter(status="APPROVED").count(),
+            "overdue_count": assignments.filter(
+                due_date__lt=today
+            ).exclude(status="APPROVED").count(),
+        }
+        
+        
+        # Update context
+        context.update({
+            "assignments": assignments,
+            "assignment_scope": "ALL ASSIGNMENTS",
+            "highlight_assignment_id": highlight_assignment_id,
+            "timesheets": timesheets,
+            "timesheet_count": timesheet_count,
+            "navbar_notifications": navbar_notifications,  # All notifications (read + unread)
+            "navbar_notification_count": navbar_notification_count,  # Only unread count
+            **assignment_stats,
+        })
+        
         return context
-    
-
-
-
-
 class EmissionAssignmentDetailView(LoginRequiredMixin, TemplateView):
 
     template_name = "emission/assignment_detail.html"
