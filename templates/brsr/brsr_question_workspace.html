@@ -2393,9 +2393,9 @@ function calculateFormulas() {
         if (result !== "") {
             const format = output.dataset.format || "number";
             if (format === "percentage") {
-                output.value = `${Number(result).toFixed(2)} %`;
+                output.value = `${Number(result)} %`;
             } else {
-                output.value = Number(result).toFixed(2);
+                output.value = Number(result);
             }
         } else {
             output.value = "";

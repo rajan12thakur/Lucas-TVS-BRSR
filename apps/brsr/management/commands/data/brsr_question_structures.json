@@ -372,6 +372,17 @@
                 ]
               },
               {
+                "label": "Total Differently Abled Employees [Permanent + Other (Executives)]",
+                "fields": [
+                    {
+                    "column": "Total (A)", "name": "diffEmpGrandTotal", "type": "calculated", "formula": "diffEmpPermanentTotal+diffEmpOtherTotal", "readonly": true, "format": "number"},
+                    {"column": "Male No. (B)", "name": "diffEmpGrandMale", "type": "calculated", "formula": "diffEmpPermanentMale+diffEmpOtherMale", "readonly": true, "format": "number"},
+                    {"column": "Male % (B/A)", "name": "diffEmpGrandMalePct", "type": "calculated", "formula": "diffEmpGrandMale/diffEmpGrandTotal*100", "readonly": true, "format": "percentage"},
+                    {"column": "Female No. (C)", "name": "diffEmpGrandFemale", "type": "calculated", "formula": "diffEmpPermanentFemale+diffEmpOtherFemale", "readonly": true, "format": "number"},
+                    {"column": "Female % (C/A)", "name": "diffEmpGrandFemalePct", "type": "calculated", "formula": "diffEmpGrandFemale/diffEmpGrandTotal*100", "readonly": true, "format": "percentage"}
+                ]
+              },
+              {
                 "label": "Differently Abled Workers (Non-Executives) - Permanent",
                 "fields": [
                   {"column": "Total (A)", "name": "diffWorkerPermanentTotal", "type": "calculated", "formula": "diffWorkerPermanentMale+diffWorkerPermanentFemale", "readonly": true, "format": "number"},
@@ -389,6 +400,17 @@
                   {"column": "Male % (B/A)", "name": "diffWorkerOtherMalePct", "type": "calculated", "formula": "diffWorkerOtherMale/diffWorkerOtherTotal*100", "readonly": true, "format": "percentage"},
                   {"column": "Female No. (C)", "name": "diffWorkerOtherFemale", "type": "number"},
                   {"column": "Female % (C/A)", "name": "diffWorkerOtherFemalePct", "type": "calculated", "formula": "diffWorkerOtherFemale/diffWorkerOtherTotal*100", "readonly": true, "format": "percentage"}
+                ]
+              },
+              {
+                "label": "Total differently abled workers  [Permanent + Other (Executives)]",
+                "fields": [
+                    {
+                    "column": "Total (A)", "name": "diffWorkerGrandTotal", "type": "calculated", "formula": "diffWorkerPermanentTotal+diffWorkerOtherTotal", "readonly": true, "format": "number"},
+                    {"column": "Male No. (B)", "name": "diffWorkerGrandMale", "type": "calculated", "formula": "diffWorkerPermanentMale+diffWorkerOtherMale", "readonly": true, "format": "number"},
+                    {"column": "Male % (B/A)", "name": "diffWorkerGrandMalePct", "type": "calculated", "formula": "diffWorkerGrandMale/diffWorkerGrandTotal*100", "readonly": true, "format": "percentage"},
+                    {"column": "Female No. (C)", "name": "diffWorkerGrandFemale", "type": "calculated", "formula": "diffWorkerPermanentFemale+diffWorkerOtherFemale", "readonly": true, "format": "number"},
+                    {"column": "Female % (C/A)", "name": "diffWorkerGrandFemalePct", "type": "calculated", "formula": "diffWorkerGrandFemale/diffWorkerGrandTotal*100", "readonly": true, "format": "percentage"}
                 ]
               }
             ]
@@ -412,7 +434,7 @@
                 "fields": [
                   {"column": "Total (A)", "name": "kmpTotal", "type": "number"},
                   {"column": "No. of Females (B)", "name": "kmpFemale", "type": "number"},
-                  {"column": "% of Females (B/A)", "name": "kmpFemalePct", "type": "text"}
+                  {"column": "% of Females (B/A)", "name": "kmpFemalePct",  "type": "calculated", "formula": "kmpFemale/kmpTotal*100", "readonly": true, "format": "percentage"}
                 ]
               }
             ]
