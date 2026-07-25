@@ -701,8 +701,16 @@ class QuestionApproveAPIView(APIView):
     def post(self, request, question_id):
         assignment_id = request.data.get("assignment_id")
         if not assignment_id:
-            return Response({"detail": "Create an assignment before approving this response."}, status=status.HTTP_400_BAD_REQUEST)
-        assignment = get_object_or_404(_assignment_queryset_for_user(request.user), pk=assignment_id)
+            return Response(
+                {"detail": "Create an assignment before approving this response."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        assignment = get_object_or_404(
+            _assignment_queryset_for_user(request.user),
+            pk=assignment_id,
+        )
+
         result, error_response = _approve_assignment_stage(assignment, request.user)
         if error_response:
             return error_response
@@ -711,6 +719,7 @@ class QuestionApproveAPIView(APIView):
                 "status": "approved",
                 "workflow_task": result["workflow_task"],
                 "message": result["message"],
+                "redirect_url": reverse("brsr:approval_dashboard"),
             }
         )
 
@@ -845,15 +854,21 @@ class QuestionReviewCommentAPIView(APIView):
 
 class AssignmentApproveAPIView(APIView):
     def post(self, request, assignment_id):
-        assignment = get_object_or_404(_assignment_queryset_for_user(request.user), pk=assignment_id)
+        assignment = get_object_or_404(
+            _assignment_queryset_for_user(request.user),
+            pk=assignment_id,
+        )
+
         result, error_response = _approve_assignment_stage(assignment, request.user)
         if error_response:
             return error_response
+
         return Response(
             {
                 "status": "approved",
                 "workflow_task": result["workflow_task"],
                 "message": result["message"],
+                "redirect_url": reverse("brsr:approval_dashboard"),
             }
         )
 

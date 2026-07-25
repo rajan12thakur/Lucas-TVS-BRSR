@@ -20,9 +20,11 @@
     --danger:#dc2626;
     --danger-soft:#fdecec;
     --shadow:0 20px 45px rgba(15,23,42,.08);
+    --review-bg:#f8faff;
+    --comment-border:#e8edf8;
   }
 
-  .approval-dashboard-page{
+  .assignment-dashboard-page{
     min-height:100vh;
     padding:24px 30px 36px;
     background:
@@ -119,145 +121,338 @@
     color:var(--muted);
   }
 
-  .company-block{
+  /* Company / plant grouping */
+  .company-group{
     margin-bottom:28px;
   }
 
-  .company-title{
+  .company-group-header{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:12px;
+    gap:10px;
     margin-bottom:14px;
   }
 
-  .company-title h2{
+  .company-group-header h2{
     margin:0;
-    font-size:20px;
+    font-size:18px;
     font-weight:800;
     color:var(--ink);
   }
 
-  .company-title .count{
-    padding:6px 10px;
-    border-radius:999px;
+  .company-group-header .pill{
     background:var(--brand-soft);
     color:var(--brand);
-    font-size:12px;
-    font-weight:700;
   }
 
-  .plant-grid{
+  .plant-group{
+    margin-bottom:20px;
+    padding-left:2px;
+  }
+
+  .plant-group-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+    padding-bottom:8px;
+    border-bottom:1px dashed var(--border);
+  }
+
+  .plant-group-header h3{
+    margin:0;
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+  }
+
+  .plant-group-header .pill{
+    background:#eef2f7;
+    color:var(--muted);
+  }
+
+  .assignment-list{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));
     gap:16px;
   }
 
   .assignment-card{
     background:var(--surface);
     border:1px solid var(--border);
-    border-radius:18px;
+    border-radius:20px;
+    padding:20px;
     box-shadow:var(--shadow);
-    overflow:hidden;
     transition: all 0.3s ease;
   }
 
-  .assignment-card.expanded .assignment-body {
-    display: grid;
-    animation: slideDown 0.3s ease forwards;
+  .assignment-card.expanded .assignment-grid {
+    max-height: 5000px;
+    opacity: 1;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    transition: all 0.4s ease;
   }
 
-  .assignment-card:not(.expanded) .assignment-body {
-    display: none;
+  .assignment-card:not(.expanded) .assignment-grid {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    transition: all 0.3s ease;
   }
 
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .assignment-card header{
-    padding:18px 18px 14px;
-    border-bottom:1px solid var(--border);
-    background:linear-gradient(180deg,#fff 0%, #fbfcff 100%);
-    cursor:pointer;
-    transition:background .2s ease;
+  .assignment-card-head{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:0;
+    cursor: pointer;
     user-select: none;
+    position: relative;
   }
 
-  .assignment-card header:hover{
-    background:linear-gradient(180deg,#f8faff 0%, #fbfcff 100%);
+  .assignment-card-head:hover {
+    opacity: 0.85;
   }
 
-  .assignment-card header h3{
-    margin:0 0 6px;
-    font-size:17px;
+  .assignment-card-head .expand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand);
+    transition: transform 0.3s ease;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .assignment-card.expanded .expand-icon {
+    transform: rotate(180deg);
+  }
+
+  .assignment-meta h3{
+    margin:0;
+    font-size:20px;
     font-weight:800;
     color:var(--ink);
   }
 
-  .assignment-meta{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
+  .assignment-meta p{
+    margin:6px 0 0;
     color:var(--muted);
-    font-size:12px;
+    font-size:13px;
+  }
+
+  .pill-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:flex-start;
   }
 
   .pill{
     display:inline-flex;
     align-items:center;
-    padding:4px 8px;
     border-radius:999px;
-    background:#f1f5f9;
+    padding:6px 10px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+  }
+
+  .pill.brand{background:var(--brand-soft);color:var(--brand);}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.warn{background:var(--warn-soft);color:var(--warn);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+  .pill.muted{background:#eef2f7;color:var(--muted);}
+  .pill.review{background:var(--review-bg);color:var(--brand);}
+
+  .assignment-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .question-box,
+  .assignment-summary-box,
+  .review-comments-box{
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:16px;
+    background:#fbfdff;
+  }
+
+  .section-label{
+    display:block;
+    margin-bottom:10px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  .question-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:grid;
+    gap:10px;
+  }
+
+  .question-item{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    padding:12px 14px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:12px;
+  }
+
+  .question-item strong{
+    display:block;
+    color:var(--ink);
+    font-size:13px;
+    margin-bottom:4px;
+  }
+
+  .question-item small{
+    color:var(--muted);
+    font-size:12px;
+  }
+
+  .status-chip{
+    flex-shrink:0;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+
+  .status-chip.completed{background:var(--success-soft);color:var(--success);}
+  .status-chip.in_progress{background:var(--warn-soft);color:var(--warn);}
+  .status-chip.needs_revision{background:var(--danger-soft);color:var(--danger);}
+  .status-chip.pending{background:#eef2f7;color:var(--muted);}
+  .status-chip.draft{background:#eef2f7;color:var(--muted);}
+  .status-chip.approved{background:var(--success-soft);color:var(--success);}
+  .status-chip.submitted{background:var(--warn-soft);color:var(--warn);}
+  .status-chip.resubmitted{background:var(--warn-soft);color:var(--warn);}
+  .status-chip.rejected{background:var(--danger-soft);color:var(--danger);}
+  .status-chip.review{background:var(--review-bg);color:var(--brand);}
+
+  /* Review Comments Styles */
+  .review-comment-item {
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--comment-border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+
+  .review-comment-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .review-comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .review-comment-question {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  .review-comment-meta {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .review-comment-text {
+    color: var(--ink);
+    font-size: 13px;
+    padding: 8px 12px;
+    background: var(--review-bg);
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+
+  .no-comments {
+    color: var(--muted);
+    font-style: italic;
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  .empty-state{
+    background:var(--surface);
+    border:1px dashed var(--border);
+    border-radius:18px;
+    padding:40px 24px;
+    text-align:center;
+    color:var(--muted);
+    box-shadow:var(--shadow);
+  }
+
+  .empty-state h3{
+    margin:0 0 8px;
+    font-size:20px;
     color:var(--ink);
   }
 
-  .pill.success{background:var(--success-soft);color:var(--success);}
-  .pill.brand{background:var(--brand-soft);color:var(--brand);}
-  .pill.warn{background:#fff4df;color:#b45309;}
-  .pill.danger{background:var(--danger-soft);color:var(--danger);}
-
-  .header-content {
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:12px;
-  }
-
-  .header-left {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .header-right {
-    display:flex;
-    align-items:center;
-    gap:12px;
-    flex-shrink: 0;
-  }
-
-  .assignment-body{
-    padding:16px 18px 18px;
+  .dashboard-toast-stack{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:1100;
     display:grid;
-    gap:14px;
-    display:none;
+    gap:10px;
+    width:min(360px, calc(100vw - 36px));
+    pointer-events:none;
   }
 
-  .assignment-body.expanded{
-    display:grid;
+  .dashboard-toast{
+    pointer-events:auto;
+    padding:12px 14px;
+    border-radius:14px;
+    box-shadow:0 18px 38px rgba(15,23,42,.16);
+    border:1px solid var(--border);
+    background:#fff;
+    color:var(--ink);
+    font-size:13px;
+    line-height:1.5;
+  }
+
+  .dashboard-toast.success{
+    border-color:rgba(22,163,74,.22);
+    background:linear-gradient(180deg,#f2fbf6 0%, #ffffff 100%);
+    color:var(--success);
   }
 
   .assignment-quick-stats {
     display: flex;
-    gap: 12px;
-    margin-top: 6px;
+    gap: 16px;
+    margin-top: 8px;
     font-size: 12px;
     color: var(--muted);
     flex-wrap: wrap;
@@ -277,575 +472,337 @@
     margin-right: 4px;
   }
 
+  .assignment-quick-stats .dot.completed,
   .assignment-quick-stats .dot.approved { background: var(--success); }
+  .assignment-quick-stats .dot.in_progress,
+  .assignment-quick-stats .dot.submitted,
+  .assignment-quick-stats .dot.resubmitted { background: var(--warn); }
+  .assignment-quick-stats .dot.pending,
+  .assignment-quick-stats .dot.draft { background: var(--muted); }
+  .assignment-quick-stats .dot.needs_revision,
   .assignment-quick-stats .dot.rejected { background: var(--danger); }
-  .assignment-quick-stats .dot.pending { background: var(--warn); }
-  .assignment-quick-stats .dot.submitted { background: var(--brand); }
+  .assignment-quick-stats .dot.review { background: var(--brand); }
 
-  .assignment-summary{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 18px;
-    background:#f8faff;
-    border-radius:12px;
-    margin-bottom:8px;
-  }
-
-  .assignment-summary .question-count{
-    font-size:13px;
-    color:var(--muted);
-  }
-
-  .assignment-summary .view-btn{
-    padding:8px 16px;
-    border-radius:8px;
-    border:1px solid var(--brand);
-    background:var(--brand-soft);
-    color:var(--brand);
-    font-weight:700;
-    cursor:pointer;
-    transition:all .15s ease;
-    text-decoration: none;
-    font-size: 13px;
-  }
-
-  .assignment-summary .view-btn:hover{
-    background:var(--brand);
-    color:#fff;
-  }
-
-  .assignment-summary .view-btn.expanded{
-    background:var(--brand);
-    color:#fff;
-  }
-
-  .question-row{
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:14px;
-    background:#fcfdff;
-  }
-
-  .question-row-top{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:10px;
-  }
-
-  .question-row-top h4{
-    margin:0;
-    font-size:14px;
-    font-weight:800;
-    color:var(--ink);
-    line-height:1.4;
-  }
-
-  .response-box{
-    border:1px solid var(--border);
-    border-radius:12px;
-    background:#fff;
-    padding:12px;
-    margin-bottom:10px;
-  }
-
-  .response-label{
-    display:block;
-    margin-bottom:6px;
-    font-size:12px;
-    color:var(--muted);
-    text-transform:uppercase;
-    letter-spacing:.05em;
-    font-weight:700;
-  }
-
-  .response-value{
-    margin:0;
-    white-space:pre-wrap;
-    word-break:break-word;
-    color:var(--ink);
-    font-size:13px;
-  }
-
-  .response-json{
-    margin:0;
-    white-space:pre-wrap;
-    word-break:break-word;
-    color:var(--ink);
-    font-size:13px;
-    font-family:monospace;
-    background:#f8faff;
-    padding:8px 12px;
-    border-radius:8px;
-  }
-
-  .approval-comment{
-    width:100%;
-    min-height:92px;
-    resize:vertical;
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:12px;
-    font-family:inherit;
-    font-size:13px;
-    color:var(--ink);
-    outline:none;
-    background:#fff;
-  }
-
-  .approval-comment:focus{
-    border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(29,78,216,.12);
-  }
-
-  .question-actions{
-    display:flex;
-    gap:10px;
-    justify-content:flex-end;
-    margin-top:12px;
-  }
-
-  .btn-action{
-    border:0;
-    border-radius:10px;
-    padding:10px 14px;
-    font-weight:700;
-    cursor:pointer;
-    transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
-  }
-
-  .btn-action:hover{
-    transform:translateY(-1px);
-  }
-
-  .btn-action:disabled{
-    cursor:not-allowed;
-    opacity:.6;
-    transform:none;
-  }
-
-  .btn-approve{
-    background:linear-gradient(135deg,#16a34a,#15803d);
-    color:#fff;
-    box-shadow:0 10px 24px rgba(21,128,61,.20);
-  }
-
-  .btn-reject{
-    background:linear-gradient(135deg,#dc2626,#b91c1c);
-    color:#fff;
-    box-shadow:0 10px 24px rgba(185,28,28,.16);
-  }
-
-  .empty-state{
-    background:var(--surface);
-    border:1px dashed var(--border);
-    border-radius:18px;
-    padding:40px 24px;
-    text-align:center;
-    color:var(--muted);
-    box-shadow:var(--shadow);
-  }
-
-  .empty-state h3{
-    margin:0 0 8px;
-    font-size:20px;
-    color:var(--ink);
-  }
-
-  .approval-toast-stack{
-    position:fixed;
-    top:18px;
-    right:18px;
-    z-index:1100;
-    display:grid;
-    gap:10px;
-    width:min(360px, calc(100vw - 36px));
-    pointer-events:none;
-  }
-
-  .approval-toast{
-    pointer-events:auto;
-    padding:12px 14px;
-    border-radius:14px;
-    box-shadow:0 18px 38px rgba(15,23,42,.16);
-    border:1px solid var(--border);
-    background:#fff;
-    color:var(--ink);
-    font-size:13px;
-    line-height:1.5;
-  }
-
-  .approval-toast.success{
-    border-color:rgba(22,163,74,.22);
-    background:linear-gradient(180deg,#f2fbf6 0%, #ffffff 100%);
-    color:var(--success);
-  }
-
-  .approval-toast.error{
-    border-color:rgba(220,38,38,.22);
-    background:linear-gradient(180deg,#fff5f5 0%, #ffffff 100%);
-    color:var(--danger);
-  }
-
-  /* Toggle icon */
-  .toggle-icon{
-    font-size:18px;
-    transition:transform .3s ease;
-    display:inline-block;
-    color:var(--muted);
-  }
-
-  .toggle-icon.expanded{
-    transform:rotate(180deg);
-    color:var(--brand);
-  }
-
-  /* Question visibility toggle */
-  .questions-toggle-btn {
-    background: none;
-    border: none;
+  .reviewer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--review-bg);
     color: var(--brand);
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: background 0.2s ease;
+    font-size: 10px;
+    font-weight: 600;
   }
 
-  .questions-toggle-btn:hover {
-    background: var(--brand-soft);
+  .comment-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 9px;
+    background: var(--brand);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .card-action-row{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+
+  .card-action-row .btn-soft,
+  .card-action-row .btn-primary-link{
+    padding:9px 14px;
+    font-size:12px;
   }
 
   @media (max-width: 1200px){
     .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-    .plant-grid{grid-template-columns:1fr;}
+    .assignment-grid{grid-template-columns:1fr;}
   }
 
   @media (max-width: 768px){
-    .approval-dashboard-page{padding:16px;}
+    .assignment-dashboard-page{padding:16px;}
     .dashboard-header{flex-direction:column;}
     .stats-grid{grid-template-columns:1fr;}
-    .assignment-card header,
-    .assignment-body{padding-left:14px;padding-right:14px;}
-    .question-actions{flex-direction:column;}
-    .btn-action{width:100%;}
-    .assignment-summary{flex-direction:column;gap:8px;align-items:stretch;}
-    .header-content{flex-direction:column;}
-    .header-right{align-self:flex-end;}
+    .assignment-card-head{flex-direction:column;}
+    .assignment-quick-stats { flex-wrap: wrap; }
+    .assignment-grid{grid-template-columns:1fr;}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="approval-dashboard-page">
-  <div class="approval-toast-stack" id="approvalToastStack" aria-live="polite" aria-atomic="true"></div>
+<div class="assignment-dashboard-page">
+  <div class="dashboard-toast-stack" id="dashboardToastStack" aria-live="polite" aria-atomic="true"></div>
   <div class="dashboard-header">
     <div class="dashboard-title">
-      <h1>BRSR Approval Dashboard</h1>
-      <p>Company and plant-wise queue for submitted BRSR responses.</p>
+      <h1>Approval Dashboard</h1>
+      <p>Assignments currently sitting in a review or approval stage, grouped by company and plant.</p>
     </div>
     <div class="header-actions">
-      <a class="btn-soft" href="{% url 'brsr:assignment_dashboard' %}">Assignment Dashboard</a>
-      <a class="btn-primary-link" href="{% url 'brsr:question_workspace' %}">Open Workspace</a>
+      <a class="btn-soft" href="{% url 'brsr:brsr_list' %}">BRSR Home</a>
+      <a class="btn-primary-link" href="{% url 'brsr:assignment_dashboard' %}">Assignment Dashboard</a>
     </div>
   </div>
 
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-label">Assignments</div>
+      <div class="stat-label">Total Assignments</div>
       <div class="stat-value">{{ assignment_count }}</div>
-      <div class="stat-note">Currently in approval-capable stages</div>
+      <div class="stat-note">Currently awaiting action</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Questions</div>
+      <div class="stat-label">Total Questions</div>
       <div class="stat-value">{{ question_count }}</div>
-      <div class="stat-note">Visible across company and plant queues</div>
+      <div class="stat-note">Across all pending assignments</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Review Stage</div>
-      <div class="stat-value">{{ stage_counts.review|default:0 }}</div>
-      <div class="stat-note">Comment-only reviewer rows</div>
+      <div class="stat-label">Awaiting Review</div>
+      <div class="stat-value">{{ stage_counts.review }}</div>
+      <div class="stat-note">Assignments at the review stage</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Approval Stages</div>
-      <div class="stat-value">{{ approval_stage_count|default:0 }}</div>
-      <div class="stat-note">Approve or reject remains available here</div>
+      <div class="stat-label">In Approval</div>
+      <div class="stat-value">{{ approval_stage_count }}</div>
+      <div class="stat-note">
+        Approval {{ stage_counts.approval }} · Pre-final {{ stage_counts.pre_final_approval }} · Final {{ stage_counts.final_approval }}
+      </div>
     </div>
   </div>
 
   {% if grouped_assignments %}
     {% for company_name, plants in grouped_assignments.items %}
-      <section class="company-block">
-        <div class="company-title">
-          <h2>{{ company_name }}</h2>
-          <span class="count">{{ plants|length }} plant{{ plants|length|pluralize }}</span>
+    <div class="company-group">
+      <div class="company-group-header">
+        <h2>{{ company_name }}</h2>
+        <span class="pill brand">{{ plants|length }} plant{{ plants|length|pluralize }}</span>
+      </div>
+
+      {% for plant_name, entries in plants.items %}
+      <div class="plant-group">
+        <div class="plant-group-header">
+          <h3>{{ plant_name }}</h3>
+          <span class="pill muted">{{ entries|length }} assignment{{ entries|length|pluralize }}</span>
         </div>
-        <div class="plant-grid">
-          {% for plant_name, assignment_items in plants.items %}
-            {% for item in assignment_items %}
-              <article class="assignment-card {% if forloop.parentloop.first and forloop.first %}expanded{% endif %}" data-assignment-id="{{ item.assignment.id }}">
-                <header onclick="toggleAssignment(this)">
-                  <div class="header-content">
-                    <div class="header-left">
-                      <h3>{{ plant_name }}</h3>
-                      {% with assignment=item.assignment %}
-                        <div class="assignment-meta">
-                          <span class="pill brand">{{ assignment.assignment_id }}</span>
-                          <span class="pill">{{ assignment.workflow_template }}</span>
-                          <span class="pill success">{{ assignment.workflow_status_label|default:assignment.workflow_stage }}</span>
-                          <span class="pill">{{ assignment.assignee|default:"-" }}</span>
-                        </div>
-                        <div class="assignment-quick-stats">
-                          <span>📋 {{ item.questions|length }} question{{ item.questions|length|pluralize }}</span>
-                          <span>
-                            <span class="dot {{ assignment.workflow_status_label|lower|default:'pending' }}"></span>
-                            {{ assignment.workflow_status_label|default:assignment.workflow_stage }}
+
+        <div class="assignment-list">
+          {% for entry in entries %}
+          {% with assignment=entry.assignment questions=entry.questions %}
+          <article class="assignment-card {% if forloop.parentloop.first and forloop.first %}expanded{% endif %}" data-assignment-id="{{ assignment.id }}">
+            <div class="assignment-card-head" role="button" tabindex="0" aria-expanded="{% if forloop.parentloop.first and forloop.first %}true{% else %}false{% endif %}">
+              <div class="assignment-meta">
+                <h3>{{ assignment.assignment_id }}</h3>
+                <p>{{ assignment.plant }} · {{ assignment.section }}{% if assignment.principle %} · {{ assignment.principle }}{% endif %}</p>
+                <div class="assignment-quick-stats">
+                  <span>📋 {{ assignment.question_count }} questions</span>
+                  <span>📅 {{ assignment.due_date|default:"No due date" }}</span>
+                  <span>
+                    <span class="dot review"></span>
+                    {{ assignment.workflow_status_label|default:"Pending" }}
+                  </span>
+                  {% if assignment.is_overdue %}
+                  <span style="color: var(--danger);">⚠️ Overdue</span>
+                  {% endif %}
+                  {% if assignment.is_assigned_reviewer %}
+                  <span class="reviewer-badge">👤 You are a reviewer</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="pill-row">
+                <span class="pill brand">{{ assignment.assignee_type|default:"user" }}</span>
+                <span class="pill {% if assignment.workflow_stage_type == 'review' %}review{% elif assignment.workflow_stage_type == 'final_approval' %}success{% elif assignment.workflow_stage_type == 'pre_final_approval' or assignment.workflow_stage_type == 'approval' %}warn{% else %}muted{% endif %}">
+                  {{ assignment.workflow_stage|default:"Pending" }}
+                </span>
+                {% if assignment.is_overdue %}
+                <span class="pill danger">Overdue</span>
+                {% endif %}
+                {% if assignment.priority %}
+                <span class="pill muted">{{ assignment.priority }}</span>
+                {% endif %}
+                <span class="expand-icon" aria-hidden="true">▼</span>
+              </div>
+            </div>
+
+            <div class="assignment-grid">
+              <div class="question-box">
+                <span class="section-label">Questions</span>
+                <ul class="question-list">
+                  {% for question in questions %}
+                  <li class="question-item">
+                    <div>
+                      <strong>{{ question.number }}. {{ question.title }}</strong>
+                      <small>{{ question.question_id }}{% if question.workflow_stage %} · {{ question.workflow_stage }}{% endif %}</small>
+                    </div>
+                    <span class="status-chip {{ question.status|default:'pending' }}">{{ question.status_display|default:question.status|default:"pending" }}</span>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <div>
+                <div class="assignment-summary-box">
+                  <span class="section-label">Assignment Details</span>
+                  <div class="mb-3">
+                    <div class="fw-semibold text-dark">Assigned To</div>
+                    <div class="text-muted">{{ assignment.assignee|default:"-" }}</div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="fw-semibold text-dark">Assigned By</div>
+                    <div class="text-muted">{{ assignment.assigner|default:"-" }}</div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="fw-semibold text-dark">Financial Year</div>
+                    <div class="text-muted">{{ assignment.financial_year }}</div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="fw-semibold text-dark">Workflow Template</div>
+                    <div class="text-muted">{{ assignment.workflow_template|default:"-" }}</div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="fw-semibold text-dark">Current Stage</div>
+                    <div class="text-muted">{{ assignment.workflow_stage|default:"-" }}</div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="fw-semibold text-dark">Due Date</div>
+                    <div class="text-muted">{{ assignment.due_date|default:"-" }}</div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="fw-semibold text-dark">Questions</div>
+                    <div class="text-muted">{{ assignment.question_count }}</div>
+                  </div>
+                  <div class="card-action-row">
+                    {% if assignment.current_user_role == "review" %}
+                        <a class="btn-primary-link"
+                          href="{% url 'brsr:assignment_review_comments' assignment_id=assignment.id %}">
+                            Review &amp; Take Action
+                        </a>
+                    {% elif assignment.current_user_role == "approval" %}
+                        <a class="btn-primary-link"
+                          href="{% url 'brsr:assignment_detail' assignment_id=assignment.id %}">
+                            Approve or Reject
+                        </a>
+                    {% endif %}
+                </div>
+                </div>
+                <!-- Review Comments Section -->
+                <div class="review-comments-box" style="margin-top: 16px;">
+                  <span class="section-label">Review Comments</span>
+
+                  <div class="review-comment-list">
+                  {% for question in questions %}
+                    {% if question.review_remark %}
+                    <div class="review-comment-item">
+                      <div class="review-comment-header">
+                        <span class="review-comment-question">
+                          Q{{ question.number }}: {{ question.title|truncatechars:50 }}
+                        </span>
+                        <span class="review-comment-meta">
+                          <span class="status-chip {{ question.status|default:'pending' }}" style="font-size: 9px; padding: 2px 6px;">
+                            {{ question.status_display|default:question.status|default:"pending" }}
                           </span>
-                          {% if assignment.is_overdue %}
-                          <span style="color: var(--danger);">⚠️ Overdue</span>
-                          {% endif %}
-                        </div>
-                      {% endwith %}
-                    </div>
-                    <div class="header-right">
-                      <span class="pill {% if item.assignment.workflow_status_label == 'approved' %}success{% elif item.assignment.workflow_status_label == 'rejected' %}danger{% elif item.assignment.workflow_status_label == 'review' %}warn{% else %}brand{% endif %}">
-                        {{ item.assignment.workflow_status_label|default:item.assignment.workflow_stage }}
-                      </span>
-                      <span class="toggle-icon {% if forloop.parentloop.first and forloop.first %}expanded{% endif %}" aria-hidden="true">▼</span>
-                    </div>
-                  </div>
-                </header>
-                <div class="assignment-body" id="body-{{ item.assignment.id }}">
-                  <div class="assignment-summary">
-                    <span class="question-count">{{ item.questions|length }} question{{ item.questions|length|pluralize }} submitted</span>
-                    <div style="display:flex;gap:8px;align-items:center;">
-                      <button class="questions-toggle-btn" onclick="toggleQuestions(event, this)" data-target="questions-{{ item.assignment.id }}">
-                        View Questions
-                      </button>
-                      <a href="{% url 'brsr:assignment_detail' item.assignment.id %}" class="view-btn">
-                        View All →
-                      </a>
-                    </div>
-                  </div>
-                  <div id="questions-{{ item.assignment.id }}" style="display:none;">
-                    {% for question in item.questions %}
-                      <div class="question-row" data-assignment-id="{{ question.assignment_id }}" data-question-id="{{ question.question_id }}" data-stage-type="{{ question.workflow_stage_type }}">
-                        <div class="question-row-top">
-                          <h4>{{ question.number }}. {{ question.title }}</h4>
-                          <span class="pill {% if question.status == 'approved' %}success{% elif question.status == 'rejected' %}danger{% elif question.status == 'review' %}warn{% else %}brand{% endif %}">{{ question.status_display|default:question.status }}</span>
-                        </div>
-
-                        <!-- Show response value if available -->
-                        {% if question.response_value %}
-                          <div class="response-box">
-                            <span class="response-label">Submitted response</span>
-                            <p class="response-value">{{ question.response_value }}</p>
-                          </div>
-                        {% endif %}
-
-                        <!-- Show response_json if available (and no response_value) -->
-                        {% if question.response_json and not question.response_value %}
-                          <div class="response-box">
-                            <span class="response-label">Submitted response</span>
-                            <pre class="response-json">{{ question.response_json|json_script:"response-json"|safe }}</pre>
-                          </div>
-                        {% endif %}
-
-                        <!-- Show both if both exist -->
-                        {% if question.response_value and question.response_json %}
-                          <div class="response-box">
-                            <span class="response-label">Submitted response (structured)</span>
-                            <pre class="response-json">{{ question.response_json|json_script:"response-json"|safe }}</pre>
-                          </div>
-                        {% endif %}
-
-                        <!-- Show empty state if no response -->
-                        {% if not question.response_value and not question.response_json %}
-                          <div class="response-box">
-                            <span class="response-label">Submitted response</span>
-                            <p class="response-value" style="color:var(--muted);font-style:italic;">No response submitted</p>
-                          </div>
-                        {% endif %}
-
-                        {% if question.review_remark %}
-                          <div class="response-box">
-                            <span class="response-label">Reviewer comment</span>
-                            <p class="response-value">{{ question.review_remark }}</p>
-                          </div>
-                        {% endif %}
+                        </span>
                       </div>
-                    {% endfor %}
-                    <div class="question-actions" style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border); flex-wrap:wrap;">
-                      {% if item.assignment.workflow_stage_type == 'review' and item.assignment.is_assigned_reviewer %}
-                        <a href="{% url 'brsr:assignment_review_comments' item.assignment.id %}" class="btn-action btn-approve">Open Review Comments</a>
-                      {% elif item.assignment.workflow_stage_type %}
-                        <div style="flex:1 1 100%;">
-                          <label class="response-label" for="assignment-reject-remark-{{ item.assignment.id }}">Rejection remark</label>
-                          <textarea class="approval-comment js-assignment-reject-remark"
-                                    id="assignment-reject-remark-{{ item.assignment.id }}"
-                                    data-assignment-id="{{ item.assignment.id }}"
-                                    placeholder="Add a note explaining what needs to be corrected before rejecting this assignment"></textarea>
-                        </div>
-                        <button type="button" class="btn-action btn-reject js-assignment-reject" data-assignment-id="{{ item.assignment.id }}" data-reject-url="{% url 'brsr:assignment_reject_api' item.assignment.id %}">Reject Assignment</button>
-                        <button type="button" class="btn-action btn-approve js-assignment-approve" data-assignment-id="{{ item.assignment.id }}" data-approve-url="{% url 'brsr:assignment_approve_api' item.assignment.id %}">Approve Assignment</button>
-                      {% endif %}
+                      <div class="review-comment-text">
+                        {{ question.review_remark }}
+                      </div>
                     </div>
+                    {% endif %}
+                  {% empty %}
+                    <div class="no-comments">No questions on this assignment yet.</div>
+                  {% endfor %}
                   </div>
                 </div>
-              </article>
-            {% endfor %}
+              </div>
+            </div>
+          </article>
+          {% endwith %}
           {% endfor %}
         </div>
-      </section>
+      </div>
+      {% endfor %}
+    </div>
     {% endfor %}
   {% else %}
-    <div class="empty-state">
-      <h3>No submitted responses</h3>
-      <p>No BRSR assignments are waiting in the approval workflow right now.</p>
-    </div>
+  <div class="empty-state">
+    <h3>Nothing waiting on you</h3>
+    <p>There are no assignments currently in a review or approval stage for your scope.</p>
+  </div>
   {% endif %}
 </div>
 
 <script>
-  // Toggle assignment body expansion
-  function toggleAssignment(header) {
-    const card = header.closest('.assignment-card');
-    const body = card.querySelector('.assignment-body');
-    const icon = card.querySelector('.toggle-icon');
-    
-    if (card.classList.contains('expanded')) {
-      card.classList.remove('expanded');
-      if (icon) icon.classList.remove('expanded');
-    } else {
-      card.classList.add('expanded');
-      if (icon) icon.classList.add('expanded');
-    }
-  }
-
-  // Toggle individual question visibility within an assignment
-  function toggleQuestions(event, button) {
-    event.stopPropagation();
-    const targetId = button.dataset.target;
-    const container = document.getElementById(targetId);
-    if (!container) return;
-
-    if (container.style.display === 'none') {
-      container.style.display = 'block';
-      button.textContent = 'Hide Questions';
-      button.classList.add('expanded');
-    } else {
-      container.style.display = 'none';
-      button.textContent = 'View Questions';
-      button.classList.remove('expanded');
-    }
-  }
-
-  // Keyboard accessibility for headers
   document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.assignment-card header').forEach(header => {
-      header.setAttribute('role', 'button');
-      header.setAttribute('tabindex', '0');
-      
+    // Toggle functionality for assignment cards
+    const assignmentCards = document.querySelectorAll('.assignment-card');
+
+    assignmentCards.forEach(card => {
+      const header = card.querySelector('.assignment-card-head');
+
+      header.addEventListener('click', function(e) {
+        // Don't toggle if clicking on a link or button inside the header
+        if (e.target.closest('a') || e.target.closest('button')) {
+          return;
+        }
+
+        const isExpanded = card.classList.contains('expanded');
+
+        if (isExpanded) {
+          card.classList.remove('expanded');
+          header.setAttribute('aria-expanded', 'false');
+        } else {
+          card.classList.add('expanded');
+          header.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      // Keyboard accessibility
       header.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          this.click();
+          header.click();
         }
       });
     });
 
-    // Initialize: hide all question containers by default
-    document.querySelectorAll('[id^="questions-"]').forEach(container => {
-      container.style.display = 'none';
+    // Fill in a placeholder for assignments with no review comments
+    document.querySelectorAll('.review-comment-list').forEach(list => {
+      if (!list.querySelector('.review-comment-item') && !list.querySelector('.no-comments')) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'no-comments';
+        placeholder.textContent = 'No reviewer comments yet.';
+        list.appendChild(placeholder);
+      }
     });
 
-    // Update toggle buttons text
-    document.querySelectorAll('.questions-toggle-btn').forEach(btn => {
-      btn.textContent = 'View Questions';
-      btn.classList.remove('expanded');
-    });
-  });
-
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return '';
-  }
-
-  function showApprovalMessage(message, type = 'success') {
-    if (!message) return;
-    const stack = document.getElementById('approvalToastStack');
-    if (!stack) {
-      alert(message);
-      return;
+    // Show dashboard messages
+    function showDashboardMessage(message) {
+      if (!message) return;
+      const stack = document.getElementById('dashboardToastStack');
+      if (!stack) return;
+      const toast = document.createElement('div');
+      toast.className = 'dashboard-toast success';
+      toast.textContent = message;
+      stack.appendChild(toast);
+      window.setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-4px)';
+        toast.style.transition = 'opacity .2s ease, transform .2s ease';
+        window.setTimeout(() => toast.remove(), 220);
+      }, 2800);
     }
-    const toast = document.createElement('div');
-    toast.className = `approval-toast ${type === 'error' ? 'error' : 'success'}`;
-    toast.textContent = message;
-    stack.appendChild(toast);
-    window.setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-4px)';
-      toast.style.transition = 'opacity .2s ease, transform .2s ease';
-      window.setTimeout(() => toast.remove(), 220);
-    }, 2800);
-  }
 
-  async function postAction(url, payload) {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken'),
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error(data.detail || 'Unable to complete the workflow action.');
+    const flashMessage = sessionStorage.getItem('brsr_workspace_message');
+    if (flashMessage) {
+      showDashboardMessage(flashMessage);
+      sessionStorage.removeItem('brsr_workspace_message');
     }
-    return response.json().catch(() => ({}));
-  }
-
-  document.querySelectorAll('.js-assignment-approve').forEach((button) => {
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      try {
-        const data = await postAction(button.getAttribute('data-approve-url'), {});
-        showApprovalMessage(data.message || 'Assignment approved successfully.', 'success');
-        window.location.reload();
-      } catch (error) {
-        showApprovalMessage(error.message, 'error');
-      } finally {
-        button.disabled = false;
-      }
-    });
-  });
-
-  document.querySelectorAll('.js-assignment-reject').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const assignmentId = button.getAttribute('data-assignment-id');
-      const remarkField = document.querySelector(`.js-assignment-reject-remark[data-assignment-id="${CSS.escape(assignmentId)}"]`);
-      const remark = ((remarkField && remarkField.value) || '').trim();
-      if (!remark) {
-        alert('Please add a rejection comment before rejecting the assignment.');
-        return;
-      }
-      button.disabled = true;
-      try {
-        const data = await postAction(button.getAttribute('data-reject-url'), { remark });
-        showApprovalMessage(data.message || 'Assignment rejected and sent back for correction.', 'success');
-        window.location.reload();
-      } catch (error) {
-        showApprovalMessage(error.message, 'error');
-      } finally {
-        button.disabled = false;
-      }
-    });
   });
 </script>
 {% endblock %}
