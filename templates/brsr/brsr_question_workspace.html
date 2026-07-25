@@ -914,6 +914,91 @@
             <textarea class="workspace-textarea" rows="3" name="notes" id="assignmentNotes" placeholder="Assignment notes"></textarea>
           </div>
           <div class="full">
+            <label class="tool-label" style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="scheduleRecurringToggle" style="width:auto;">
+              Make this a recurring assignment schedule
+            </label>
+            <small style="color:var(--muted);display:block;margin-top:4px;">
+              Instead of creating one assignment, this saves a reusable schedule.
+              Assignments are then generated automatically according to the
+              frequency below (existing "Submission Frequency" above is ignored
+              when this is checked).
+            </small>
+          </div>
+
+          <div class="full" id="scheduleFieldsWrap" style="display:none;">
+            <div class="assignment-grid" style="padding:14px;border:1px dashed var(--border-strong);border-radius:12px;background:#fbfcff;">
+              <div>
+                <label class="tool-label">Schedule Name</label>
+                <input class="workspace-input" type="text" id="scheduleName" placeholder="e.g. Monthly Energy Data">
+              </div>
+              <div>
+                <label class="tool-label">Frequency</label>
+                <select class="workspace-select" id="scheduleFrequency">
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="annually">Annually</option>
+                </select>
+              </div>
+
+              <!-- Weekly -->
+              <div class="half schedule-freq-fields" data-freq="weekly" style="display:none;">
+                <label class="tool-label">Start Day</label>
+                <select class="workspace-select" id="scheduleWeeklyStart">
+                  <option value="0">Monday</option><option value="1">Tuesday</option>
+                  <option value="2">Wednesday</option><option value="3">Thursday</option>
+                  <option value="4">Friday</option><option value="5">Saturday</option>
+                  <option value="6">Sunday</option>
+                </select>
+              </div>
+              <div class="half schedule-freq-fields" data-freq="weekly" style="display:none;">
+                <label class="tool-label">End Day</label>
+                <select class="workspace-select" id="scheduleWeeklyEnd">
+                  <option value="0">Monday</option><option value="1">Tuesday</option>
+                  <option value="2">Wednesday</option><option value="3">Thursday</option>
+                  <option value="4" selected>Friday</option><option value="5">Saturday</option>
+                  <option value="6">Sunday</option>
+                </select>
+              </div>
+
+              <!-- Monthly -->
+              <div class="full schedule-freq-fields" data-freq="monthly" style="display:none;">
+                <label class="tool-label">Months</label>
+                <div class="choice-stack" style="grid-template-columns:repeat(4,1fr);display:grid;">
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="4"><span>April</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="5"><span>May</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="6"><span>June</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="7"><span>July</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="8"><span>August</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="9"><span>September</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="10"><span>October</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="11"><span>November</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="12"><span>December</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="1"><span>January</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="2"><span>February</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-month" value="3"><span>March</span></label>
+                </div>
+              </div>
+
+              <!-- Quarterly -->
+              <div class="full schedule-freq-fields" data-freq="quarterly" style="display:none;">
+                <label class="tool-label">Quarters</label>
+                <div class="choice-stack" style="grid-template-columns:repeat(4,1fr);display:grid;">
+                  <label class="choice-item"><input type="checkbox" class="schedule-quarter" value="Q1"><span>Q1 (Apr-Jun)</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-quarter" value="Q2"><span>Q2 (Jul-Sep)</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-quarter" value="Q3"><span>Q3 (Oct-Dec)</span></label>
+                  <label class="choice-item"><input type="checkbox" class="schedule-quarter" value="Q4"><span>Q4 (Jan-Mar)</span></label>
+                </div>
+              </div>
+
+              <!-- Annual has no extra fields -->
+              <div class="full schedule-freq-fields" data-freq="annually" style="display:none;">
+                <small style="color:var(--muted);">One assignment will be generated for the selected Financial Year.</small>
+              </div>
+            </div>
+          </div>
+          <div class="full">
             <label class="tool-label">Selected Questions</label>
             <ul class="selected-list" id="selectedQuestionList"></ul>
           </div>
@@ -930,6 +1015,7 @@
 
 {% block extra_js %}
 <script>
+  const API_SCHEDULE_CREATE = "{{ assignment_schedule_create_api_url|escapejs }}";
   const API_WORKSPACE = "{{ workspace_api_url|escapejs }}";
   const API_SAVE = "{{ question_save_api_url|escapejs }}";
   const API_SUBMIT = "{{ question_submit_api_url|escapejs }}";
@@ -2249,6 +2335,47 @@
       return;
     }
 
+    if (document.getElementById('scheduleRecurringToggle').checked) {
+      const frequency = document.getElementById('scheduleFrequency').value;
+      const schedulePayload = {
+        section_code: state.sectionCode,
+        principle_slug: state.principleSlug,
+        question_ids: selected.map((item) => item.id),
+        name: document.getElementById('scheduleName').value,
+        plant: document.getElementById('assignmentPlant').value,
+        financial_year: document.getElementById('assignmentFinancialYear').value,
+        frequency: frequency,
+        weekly_start_day: document.getElementById('scheduleWeeklyStart').value,
+        weekly_end_day: document.getElementById('scheduleWeeklyEnd').value,
+        selected_months: Array.from(document.querySelectorAll('.schedule-month:checked')).map((el) => el.value),
+        selected_quarters: Array.from(document.querySelectorAll('.schedule-quarter:checked')).map((el) => el.value),
+        priority: document.getElementById('assignmentPriority').value,
+        assignee: document.getElementById('assignmentAssignee').value,
+        reviewer: document.getElementById('assignmentReviewer').value,
+        notes: document.getElementById('assignmentNotes').value,
+      };
+
+      try {
+        const response = await fetch(API_SCHEDULE_CREATE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+          body: JSON.stringify(schedulePayload),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (response.ok) {
+          sessionStorage.setItem('brsr_workspace_message', data.message || 'Recurring schedule created.');
+          closeModal();
+          window.location.href = "{{ assignment_dashboard_url|escapejs }}";
+        } else {
+          alert(data.detail || JSON.stringify(data) || 'Unable to create schedule.');
+        }
+      } catch (error) {
+        console.error('Error creating schedule:', error);
+        alert('An error occurred while creating the schedule.');
+      }
+      return;
+    }
+
     const payload = {
       section_code: state.sectionCode,
       principle_slug: state.principleSlug,
@@ -2267,10 +2394,7 @@
     try {
       const response = await fetch(API_ASSIGN, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken'),
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
         body: JSON.stringify(payload),
       });
       
@@ -2338,6 +2462,22 @@
   document.getElementById('assignModal').addEventListener('click', (event) => {
     if (event.target.id === 'assignModal') closeModal();
   });
+  const scheduleToggle = document.getElementById('scheduleRecurringToggle');
+  const scheduleFieldsWrap = document.getElementById('scheduleFieldsWrap');
+  const scheduleFrequencySelect = document.getElementById('scheduleFrequency');
+
+  function updateScheduleFieldVisibility() {
+    const freq = scheduleFrequencySelect.value;
+    document.querySelectorAll('.schedule-freq-fields').forEach((el) => {
+      el.style.display = el.getAttribute('data-freq') === freq ? '' : 'none';
+    });
+  }
+
+  scheduleToggle.addEventListener('change', () => {
+    scheduleFieldsWrap.style.display = scheduleToggle.checked ? '' : 'none';
+    updateScheduleFieldVisibility();
+  });
+  scheduleFrequencySelect.addEventListener('change', updateScheduleFieldVisibility);
   document.getElementById('assignmentForm').addEventListener('submit', submitAssignment);
 
   // Load workspace

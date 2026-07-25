@@ -11,8 +11,8 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 import json
 from apps.organizations.models import FinancialYear, Plant
 from apps.organizations.workflow_configuration_engine import WorkflowConfigurationEngine
-from .forms import BRSRAssignmentForm
-from .models import Assignment, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse, WorkflowStatus, QuestionResponseDocument
+from .forms import BRSRAssignmentForm, AssignmentScheduleForm
+from .models import Assignment, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse, WorkflowStatus, QuestionResponseDocument, AssignmentSchedule
 from .views import (
     _assignment_context,
     _assignment_queryset_for_user,
@@ -938,3 +938,133 @@ class AssignmentCreateAPIView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class AssignmentScheduleCreateAPIView(APIView):
+    """
+    Creates a reusable AssignmentSchedule (the recurring-assignment
+    template). This endpoint does NOT create an Assignment — the daily
+    Celery Beat task (`brsr.generate_scheduled_assignments`) generates real
+    Assignments from this schedule whenever a configured period becomes
+    due, reusing the exact same creation path as a manual assignment.
+    """
+ 
+    def post(self, request):
+        section_code = request.data.get("section_code")
+        principle_slug = request.data.get("principle_slug")
+        question_ids = request.data.get("question_ids", [])
+ 
+        section, principle = _get_section_principle(section_code, principle_slug)
+        if not section:
+            return Response({"detail": "No BRSR section found."}, status=status.HTTP_404_NOT_FOUND)
+ 
+        questions = _pdf_questions_queryset().filter(question_id__in=question_ids, section=section)
+        if principle:
+            questions = questions.filter(principle=principle)
+        else:
+            questions = questions.filter(principle__isnull=True)
+ 
+        form = AssignmentScheduleForm(
+            request.data,
+            plant_queryset=_company_scope_plants(request.user),
+            user_queryset=User.objects.filter(is_active=True).select_related("role", "department").order_by(
+                "full_name", "username"
+            ),
+            question_queryset=questions,
+            financial_year_queryset=FinancialYear.objects.all().order_by("-start_date"),
+        )
+        if not form.is_valid():
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+ 
+        selected_questions = form.cleaned_data["question_ids"]
+        if not selected_questions.exists():
+            return Response({"detail": "Select at least one question for the schedule."}, status=status.HTTP_400_BAD_REQUEST)
+ 
+        plant = form.cleaned_data["plant"]
+        user_ct = ContentType.objects.get_for_model(User)
+ 
+        schedule = AssignmentSchedule.objects.create(
+            name=form.cleaned_data.get("name") or f"{section.name} recurring assignment",
+            plant=plant,
+            section=section,
+            principle=principle,
+            financial_year=form.cleaned_data["financial_year"],
+            workflow_template=_resolve_brsr_workflow_template(user=request.user, plant=plant),
+            frequency=form.cleaned_data["frequency"],
+            weekly_start_day=form.cleaned_data.get("weekly_start_day"),
+            weekly_end_day=form.cleaned_data.get("weekly_end_day"),
+            selected_months=form.cleaned_data.get("selected_months") or [],
+            selected_quarters=form.cleaned_data.get("selected_quarters") or [],
+            priority=form.cleaned_data["priority"],
+            notes=form.cleaned_data.get("notes"),
+            created_by=request.user,
+            assignee_content_type=user_ct,
+            assignee_object_id=form.cleaned_data["assignee"].pk,
+        )
+ 
+        reviewer = form.cleaned_data.get("reviewer")
+        if reviewer is not None:
+            schedule.reviewer_content_type = user_ct
+            schedule.reviewer_object_id = reviewer.pk
+            schedule.save(update_fields=["reviewer_content_type", "reviewer_object_id", "updated_at"])
+ 
+        schedule.questions.set(selected_questions)
+ 
+        return Response(
+            {
+                "id": schedule.id,
+                "schedule_id": schedule.schedule_id,
+                "question_count": selected_questions.count(),
+                "message": (
+                    f"Recurring schedule {schedule.schedule_id} created. Assignments will be "
+                    f"generated automatically according to the configured frequency."
+                ),
+            },
+            status=status.HTTP_201_CREATED,
+        )
+ 
+ 
+class AssignmentScheduleListAPIView(APIView):
+    """Lists schedules in scope for the current user's company/plants, with
+    a running count of how many Assignments each one has generated so far
+    — useful for an admin management screen."""
+ 
+    def get(self, request):
+        plant_id = request.query_params.get("plant_id")
+        queryset = AssignmentSchedule.objects.select_related("plant", "section", "principle").filter(
+            plant__in=_company_scope_plants(request.user)
+        ).order_by("-created_at")
+        if plant_id:
+            queryset = queryset.filter(plant_id=plant_id)
+ 
+        data = [
+            {
+                "id": item.id,
+                "schedule_id": item.schedule_id,
+                "name": item.name,
+                "plant": item.plant.name,
+                "section": item.section.name,
+                "principle": item.principle.principle_name if item.principle_id else "",
+                "frequency": item.get_frequency_display(),
+                "financial_year": item.financial_year,
+                "is_active": item.is_active,
+                "question_count": item.questions.count(),
+                "generated_count": item.generated_assignments.count(),
+            }
+            for item in queryset
+        ]
+        return Response({"schedules": data})
+ 
+ 
+class AssignmentScheduleToggleAPIView(APIView):
+    """Activates/deactivates a schedule. An inactive schedule is simply
+    skipped by the daily generation task — no assignments are ever
+    retroactively removed."""
+ 
+    def post(self, request, schedule_id):
+        schedule = get_object_or_404(
+            AssignmentSchedule, pk=schedule_id, plant__in=_company_scope_plants(request.user)
+        )
+        schedule.is_active = not schedule.is_active
+        schedule.save(update_fields=["is_active", "updated_at"])
+        return Response({"id": schedule.id, "is_active": schedule.is_active})

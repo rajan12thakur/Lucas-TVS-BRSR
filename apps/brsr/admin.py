@@ -427,3 +427,26 @@ class OverdueFilter(admin.SimpleListFilter):
         return queryset
 
 AssignmentAdmin.list_filter = list(AssignmentAdmin.list_filter) + [OverdueFilter]
+
+@admin.action(description="Activate selected schedules")
+def activate_schedules(modeladmin, request, queryset):
+    queryset.update(is_active=True)
+ 
+ 
+@admin.action(description="Deactivate selected schedules")
+def deactivate_schedules(modeladmin, request, queryset):
+    queryset.update(is_active=False)
+ 
+ 
+@admin.register(AssignmentSchedule)
+class AssignmentScheduleAdmin(admin.ModelAdmin):
+    list_display = (
+        "schedule_id", "name", "plant", "section", "principle",
+        "frequency", "financial_year", "is_active", "created_at",
+    )
+    list_filter = ("frequency", "is_active", "plant", "section")
+    search_fields = ("schedule_id", "name", "plant__name")
+    readonly_fields = ("schedule_id", "created_at", "updated_at")
+    filter_horizontal = ("questions",)
+    actions = [activate_schedules, deactivate_schedules]
+ 

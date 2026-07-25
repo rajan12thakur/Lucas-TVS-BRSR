@@ -28,4 +28,7 @@ urlpatterns = [
     path("api/assignments/<int:assignment_id>/approve/", AssignmentApproveAPIView.as_view(), name="assignment_approve_api"),
     path("api/assignments/<int:assignment_id>/reject/", AssignmentRejectAPIView.as_view(), name="assignment_reject_api"),
     path("api/assignments/", AssignmentCreateAPIView.as_view(), name="assignment_create_api"),
+    path("api/assignment-schedules/", AssignmentScheduleCreateAPIView.as_view(), name="assignment_schedule_create_api",),
+    path("api/assignment-schedules/list/", AssignmentScheduleListAPIView.as_view(), name="assignment_schedule_list_api",),
+    path("api/assignment-schedules/<int:schedule_id>/toggle/", AssignmentScheduleToggleAPIView.as_view(), name="assignment_schedule_toggle_api",),
 ]

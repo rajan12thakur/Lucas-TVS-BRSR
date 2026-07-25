@@ -11,8 +11,8 @@ from django.views.generic import TemplateView
 from apps.accounts.models import Department
 from apps.organizations.models import ApprovalConfigurationTemplate, FinancialYear, Plant
 from apps.organizations.workflow_configuration_engine import WorkflowConfigurationEngine
-from .forms import BRSRAssignmentForm
-from .models import Assignment, AssignmentReviewer, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse, QuestionResponseDocument
+from .forms import BRSRAssignmentForm, AssignmentScheduleForm
+from .models import Assignment, AssignmentReviewer, BRSRPrinciple, BRSRQuestion, BRSRSection, QuestionResponse, QuestionResponseDocument, AssignmentSchedule
 from django.db.models import Case, When, Value, IntegerField
 
 
@@ -710,12 +710,18 @@ def _assignment_context(section, principle, questions, assignment=None, user=Non
         "plants": plant_qs,
         "users": user_qs,
         "financial_years": fy_qs,
+        "assignment_schedule_form": AssignmentScheduleForm(
+            plant_queryset=plant_qs,
+            user_queryset=user_qs,
+            question_queryset=questions,
+            financial_year_queryset=fy_qs,
+        ),
     }
 
 
-def _create_brsr_assignment(*, user, section, principle, cleaned_data, question_queryset):
+def _create_brsr_assignment(*, user, section, principle, cleaned_data, question_queryset, workflow_template_override=None):
     plant = cleaned_data["plant"]
-    workflow_template = _resolve_brsr_workflow_template(user=user, plant=plant)
+    workflow_template = workflow_template_override or _resolve_brsr_workflow_template(user=user, plant=plant)
     if not workflow_template:
         raise ValueError("No active BRSR workflow template is configured for this company.")
     if not workflow_template.first_stage:
