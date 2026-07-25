@@ -757,6 +757,21 @@
     .brsr-sidebar{border-right:none;border-bottom:1px solid var(--border);}
     .assignment-grid{grid-template-columns:1fr;}
   }
+
+    .workspace-input[readonly],
+    .workspace-textarea[readonly] {
+        background-color: #f3f4f6;
+        color: #6b7280;
+        border: 1px solid #cbd5e1;
+        cursor: not-allowed;
+        font-weight: 600;
+    }
+
+    .workspace-input[readonly]:focus,
+    .workspace-textarea[readonly]:focus {
+        box-shadow: none;
+        border-color: #cbd5e1;
+    }
 </style>
 {% endblock %}
 
@@ -1139,16 +1154,23 @@
     }
 
     if (field.kind === 'input') {
-      const inputType = field.type || 'text';
-      return `
-        <div class="form-group">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
-          <input class="workspace-input" data-field-name="${escapeHtml(fieldName)}" type="${escapeHtml(inputType)}" value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}" placeholder="${escapeHtml(field.placeholder || '')}" ${disabledAttr}>
-        </div>
-      `;
+        const inputType = field.type === "calculated" ? "text" : (field.type || "text");
+        const readonly = field.readonly ? "readonly" : "";
+        return `
+            <div class="form-group">
+                <label class="form-label">${escapeHtml(fieldLabel)}</label>
+
+                <input class="workspace-input" data-field-name="${escapeHtml(fieldName)}"
+                    data-formula="${field.formula || ''}"
+                    data-format="${field.format || 'number'}"
+                    type="${inputType}"
+                    value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}"
+                    placeholder="${escapeHtml(field.placeholder || '')}" ${readonly} ${disabledAttr}>
+            </div>
+        `;
     }
 
-    if (field.kind === 'table') {
+    /*if (field.kind === 'table') {
       const columns = Array.isArray(field.columns) ? field.columns : [];
       const storedRows = Array.isArray(fieldValue) && fieldValue.length ? fieldValue : [];
       const rows = storedRows.length ? storedRows : (Array.isArray(field.rows) && field.rows.length ? field.rows.map(() => ({})) : [{}]);
@@ -1181,7 +1203,86 @@
           </div>
         </div>
       `;
-    }
+    } */
+
+    if (field.kind === 'table') {
+
+    return `
+    <div class="form-group">
+
+        <label class="form-label">
+            ${escapeHtml(field.label)}
+        </label>
+
+        <div class="table-container">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        ${field.columns.map(col=>`<th>${escapeHtml(col)}</th>`).join("")}
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${field.rows.map(row=>`
+
+                        <tr>
+
+                            <td>${escapeHtml(row.label)}</td>
+
+                            ${row.fields.map(f=>{
+
+                                const value=getStoredFieldValue(question,f.name,"");
+
+                                return `
+
+                                <td>
+
+                                    <input
+
+                                        class="workspace-input"
+
+                                        data-field-name="${f.name}"
+
+                                        data-formula="${f.formula || ""}"
+                                        data-format="${f.format || "number"}"
+
+                                        type="${f.type==="calculated" ? "text" : (f.type || "text")}"
+
+                                        value="${escapeHtml(value)}"
+
+                                        ${f.readonly ? "readonly" : ""}
+
+                                        ${disabled ? "disabled" : ""}
+
+                                    >
+
+                                </td>
+
+                                `;
+
+                            }).join("")}
+
+                        </tr>
+
+                    `).join("")}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    `;
+}
 
     return `
       <div class="form-group">
@@ -1584,6 +1685,8 @@
     });
 
     updateQuestionHeader(workspace, activeQuestion);
+    calculateFormulas();
+    attachCalculationEvents();
   }
 
   function updateQuestionHeader(workspace, question) {
@@ -1643,6 +1746,7 @@
     });
     row.innerHTML = `${cells}<td><button type="button" class="btn-brsr secondary js-remove-row">-</button></td>`;
     tbody.appendChild(row);
+    attachCalculationEvents(row);
     row.querySelector('.js-remove-row').addEventListener('click', () => row.remove());
   }
 
@@ -2057,6 +2161,52 @@
     }
   }
 
+
+    function calculateFormulas() {
+
+        document.querySelectorAll("input[data-formula]").forEach(function(field){
+
+            let formula = field.dataset.formula;
+
+            document.querySelectorAll("input[data-field-name]").forEach(function(input){
+
+                const fieldName = input.dataset.fieldName;
+
+                const value = parseFloat(input.value) || 0;
+
+                formula = formula.replaceAll(fieldName, value);
+
+            });
+
+            try{
+
+                let result = eval(formula);
+
+                if(isFinite(result)){
+
+                    const format = field.dataset.format || "number";
+
+                    if(format === "percentage"){
+                        field.value = result.toFixed(2) + "%";
+                    }
+                    else{
+                        field.value = result.toFixed(2);
+                    }
+
+                }
+                else{
+                    field.value = "";
+                }
+
+            }
+            catch(e){
+                field.value = "";
+            }
+
+        });
+
+    }
+
   function getSelectedQuestions() {
     return Array.from(document.querySelectorAll('.question-checkbox:checked')).map((checkbox) => {
       const card = checkbox.closest('.question-container');
@@ -2192,5 +2342,73 @@
 
   // Load workspace
   loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
+
+
+  document.addEventListener("input", function(e){
+
+    if(e.target.matches("input[data-field-name]")){
+        calculateFormulas();
+    }
+
+  });
+
+  function attachCalculationEvents(container){
+
+    container.querySelectorAll("input").forEach(function(input){
+
+        input.addEventListener("input", function(){
+
+            calculateTableRow(this.closest("tr"));
+
+        });
+
+    });
+
+}
+
+function calculateFormulas() {
+    document.querySelectorAll("[data-formula]").forEach(output => {
+        const formula = output.dataset.formula;
+        if (!formula) return;
+        let expression = formula;
+        document.querySelectorAll("[data-field-name]").forEach(input => {
+            const name = input.dataset.fieldName;
+            if (!name) return;
+            const value = parseFloat(input.value) || 0;
+            const regex = new RegExp("\\b" + name + "\\b", "g");
+            expression = expression.replace(regex, value);
+        });
+
+        let result = "";
+        try {
+            result = eval(expression);
+            if (!isFinite(result)) {
+                result = 0;
+            }
+        }
+        catch {
+            result = "";
+        }
+
+        if (result !== "") {
+            const format = output.dataset.format || "number";
+            if (format === "percentage") {
+                output.value = `${Number(result)} %`;
+            } else {
+                output.value = Number(result);
+            }
+        } else {
+            output.value = "";
+        }
+    });
+}
+
+
+function attachCalculationEvents(parent = document) {
+    parent.querySelectorAll("[data-field-name]").forEach(input => {
+        if (input.dataset.formula) return;
+        input.addEventListener("input", calculateFormulas);
+    });
+}
 </script>
 {% endblock %}
