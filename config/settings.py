@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +44,6 @@ INSTALLED_APPS = [
     'apps.companies',
     'apps.brsr',
     'apps.notifications',
-    'apps.timesheets',
     'apps.organizations',
     'apps.calculator',
     'apps.emission',
@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.notifications.context_processors.global_notifications',
             ],
         },
     },
@@ -97,6 +98,18 @@ STATICFILES_STORAGE = (
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # #######Local #####
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'Lucas_TVS_BRSR_db',
+#         'USER': 'postgres',
+#         'PASSWORD': 'admin',
+#         'HOST': 'localhost',
+#         'PORT': '5432',  # use your PostgreSQL port
+#     }
+# }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -107,18 +120,6 @@ DATABASES = {
         'PORT': '5432',  # use your PostgreSQL port
     }
 }
-
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "lucas_db",
-#         "USER": "lucas_user",
-#         "PASSWORD": "Lucas_db_@99",
-#         "HOST": "localhost",
-#         "PORT": "5432",
-#     }
-# }
 
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -192,3 +193,10 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_BEAT_SCHEDULE = {
+    "brsr-generate-scheduled-assignments": {
+        "task": "brsr.generate_scheduled_assignments",
+        "schedule": crontab(hour=1, minute=0),
+    },
+}

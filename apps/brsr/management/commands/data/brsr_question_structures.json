@@ -14,21 +14,25 @@
             "kind": "input",
             "label": "Corporate Identity Number (CIN) of the Listed Entity",
             "name": "cin",
+            "field_type": "cin",  
             "type": "text",
             "placeholder": "Enter CIN number"
           },
           {
-            "kind": "input",
-            "label": "Name of the Listed Entity",
-            "name": "entityName",
-            "type": "text",
-            "placeholder": "Enter company name"
+              "kind": "input",
+              "label": "Name of the Listed Entity",
+              "name": "entityName",
+              "field_type": "alphabetic",
+              "type": "text",
+              "placeholder": "Enter company name",
+              "required": true
           },
           {
             "kind": "input",
             "label": "Year of incorporation",
             "name": "yearIncorporation",
             "type": "number",
+            "field_type": "email",
             "placeholder": "Enter year"
           },
           {
@@ -51,17 +55,20 @@
             "placeholder": "Enter email address"
           },
           {
-            "kind": "input",
-            "label": "Telephone",
-            "name": "telephone",
-            "type": "tel",
-            "placeholder": "Enter telephone number"
+              "kind": "input",
+              "label": "Telephone",
+              "name": "telephone",
+              "field_type": "telephone",
+              "type": "text",
+              "placeholder": "Enter telephone number",
+              "required": true
           },
           {
             "kind": "input",
             "label": "Website",
             "name": "website",
             "type": "url",
+            "field_type": "url",
             "placeholder": "Enter website URL"
           },
           {
@@ -89,31 +96,38 @@
             "placeholder": "If other, please specify"
           },
           {
-            "kind": "input",
-            "label": "Paid-up Capital (INR)",
-            "name": "paidUpCapital",
-            "type": "number",
-            "placeholder": "Enter amount in INR"
+              "kind": "input",
+              "label": "Paid-up Capital (INR)",
+              "name": "paidUpCapital",
+              "field_type": "number_with_unit",
+              "type": "text",  
+              "placeholder": "Enter amount (e.g., 34.567 cr, 34,567cr, 100 lakh)",
+              "required": true
           },
           {
-            "kind": "input",
-            "label": "Contact Person Name",
-            "name": "contactPersonName",
-            "type": "text",
-            "placeholder": "Name"
+              "kind": "input",
+              "label": "Contact Person Name",
+              "name": "contactPersonName",
+              "field_type": "alphabetic",
+              "type": "text",
+              "placeholder": "Name",
+              "required": true
           },
           {
-            "kind": "input",
-            "label": "Contact Person Designation",
-            "name": "contactPersonDesignation",
-            "type": "text",
-            "placeholder": "Designation"
+              "kind": "input",
+              "label": "Contact Person Designation",
+              "name": "contactPersonDesignation",
+              "field_type": "alphabetic",
+              "type": "text",
+              "placeholder": "Designation",
+              "required": true
           },
           {
             "kind": "input",
             "label": "Contact Person Phone",
             "name": "contactPersonPhone",
-            "type": "tel",
+            "type": "phone",
+            "field_type": "phone",
             "placeholder": "Phone Number"
           },
           {
@@ -121,6 +135,7 @@
             "label": "Contact Person Email",
             "name": "contactPersonEmail",
             "type": "email",
+            "field_type": "email", 
             "placeholder": "Email Address"
           },
           {

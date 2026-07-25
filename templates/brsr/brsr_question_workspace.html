@@ -758,20 +758,92 @@
     .assignment-grid{grid-template-columns:1fr;}
   }
 
-    .workspace-input[readonly],
-    .workspace-textarea[readonly] {
-        background-color: #f3f4f6;
-        color: #6b7280;
-        border: 1px solid #cbd5e1;
-        cursor: not-allowed;
-        font-weight: 600;
-    }
+  .workspace-input[readonly],
+  .workspace-textarea[readonly] {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #cbd5e1;
+    cursor: not-allowed;
+    font-weight: 600;
+  }
 
-    .workspace-input[readonly]:focus,
-    .workspace-textarea[readonly]:focus {
-        box-shadow: none;
-        border-color: #cbd5e1;
-    }
+  .workspace-input[readonly]:focus,
+  .workspace-textarea[readonly]:focus {
+    box-shadow: none;
+    border-color: #cbd5e1;
+  }
+
+  /* Supporting Documents Styles */
+  .uploaded-files {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .uploaded-file {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .uploaded-file:hover {
+    background: #f1f5f9;
+  }
+
+  .uploaded-file .file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .uploaded-file .file-info a {
+    color: var(--brand);
+    text-decoration: none;
+    font-size: 13px;
+    word-break: break-all;
+  }
+
+  .uploaded-file .file-info a:hover {
+    text-decoration: underline;
+  }
+
+  .uploaded-file .file-size {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .uploaded-file .btn-delete-doc {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .uploaded-file .btn-delete-doc:hover {
+    background: var(--danger-bg);
+    transform: scale(1.1);
+  }
+
+  .uploaded-file .btn-delete-doc:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
 </style>
 {% endblock %}
 
@@ -1074,7 +1146,6 @@
       .replaceAll("'", '&#39;');
   }
 
-  // Helper function to get the question ID from either question_id or local_id
   function getQuestionId(question) {
     return question.question_id || question.local_id || null;
   }
@@ -1179,17 +1250,357 @@
     return fallback;
   }
 
+  // ============================================
+  // COMPLETE VALIDATION SYSTEM
+  // ============================================
+
+  const VALIDATION_RULES = {
+    cin: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'CIN number is required' };
+        }
+        const clean = value.replace(/\s/g, '').toUpperCase();
+        if (clean.length !== 21) {
+          return { valid: false, message: `CIN must be exactly 21 characters (currently ${clean.length})` };
+        }
+        if (!/^[A-Z0-9]{21}$/.test(clean)) {
+          return { valid: false, message: 'CIN must contain only uppercase letters (A-Z) and numbers (0-9)' };
+        }
+        return { valid: true, message: '✓ Valid CIN number' };
+      },
+      format: function(value) {
+        return value ? value.replace(/\s/g, '').toUpperCase() : '';
+      },
+      maxLength: 21,
+      pattern: '[A-Z0-9]{21}',
+      placeholder: 'Enter 21-character CIN (e.g., L12345XX2020PLC123456)',
+      helpText: '21 alphanumeric characters (A-Z, 0-9)'
+    },
+    // Only alphabetic characters (letters) - no numbers, no special characters
+    alphabetic: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'This field is required' };
+        }
+        // Allow only letters (A-Z, a-z) and spaces
+        if (!/^[A-Za-z\s]+$/.test(value.trim())) {
+          return { valid: false, message: 'Must contain only letters (A-Z) and spaces' };
+        }
+        return { valid: true, message: '✓ Valid' };
+      },
+      format: function(value) {
+        return value ? value.trim() : '';
+      },
+      maxLength: 100,
+      pattern: '[A-Za-z\\s]*',
+      placeholder: 'Enter text',
+      helpText: 'Letters only (A-Z, a-z) and spaces'
+    },
+    // Phone Number - Exactly 10 digits (for Contact Person Phone)
+    phone: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'Phone number is required' };
+        }
+        // Remove spaces, hyphens, brackets, plus signs
+        const clean = value.replace(/[\s\-\(\)\+]/g, '');
+        // Check if only digits (0-9)
+        if (!/^[0-9]+$/.test(clean)) {
+          return { valid: false, message: 'Phone number must contain only digits (0-9)' };
+        }
+        if (clean.length !== 10) {
+          return { valid: false, message: `Phone number must be exactly 10 digits (currently ${clean.length})` };
+        }
+        return { valid: true, message: '✓ Valid phone number' };
+      },
+      format: function(value) {
+        return value ? value.replace(/[\s\-\(\)\+]/g, '') : '';
+      },
+      maxLength: 10,
+      pattern: '[0-9]{10}',
+      placeholder: 'Enter 10-digit phone number',
+      helpText: '10 digits only (e.g., 9876543210)'
+    },
+
+    // Telephone - Numbers only (no characters allowed)
+    telephone: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'Telephone number is required' };
+        }
+        // Remove spaces, hyphens, brackets, plus signs
+        const clean = value.replace(/[\s\-\(\)\+]/g, '');
+        // Check if only digits (0-9)
+        if (!/^[0-9]+$/.test(clean)) {
+          return { valid: false, message: 'Telephone must contain only digits (0-9)' };
+        }
+        // NO LENGTH VALIDATION - accept any number of digits
+        return { valid: true, message: '✓ Valid telephone number' };
+      },
+      format: function(value) {
+        return value ? value.replace(/[\s\-\(\)\+]/g, '') : '';
+      },
+      maxLength: 50,
+      pattern: '[0-9]*',
+      placeholder: 'Enter telephone number',
+      helpText: 'Numbers only (any length allowed)'
+    },
+    // Email Validation - Must contain @ symbol
+    email: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'Email is required' };
+        }
+        // Check if email contains @ symbol
+        if (!value.includes('@')) {
+          return { valid: false, message: 'Email must contain @ symbol' };
+        }
+        // Basic format check - must have something before and after @
+        const parts = value.split('@');
+        if (parts.length !== 2 || parts[0].trim() === '' || parts[1].trim() === '') {
+          return { valid: false, message: 'Please enter a valid email address (e.g., name@domain.com)' };
+        }
+        return { valid: true, message: '✓ Valid email address' };
+      },
+      format: function(value) {
+        return value ? value.trim().toLowerCase() : '';
+      },
+      maxLength: 100,
+      placeholder: 'Enter email address',
+      helpText: 'Must contain @ symbol (e.g., name@company.com)'
+    },
+    
+    url: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'URL is required' };
+        }
+        try {
+          const url = new URL(value.trim());
+          if (!['http:', 'https:'].includes(url.protocol)) {
+            return { valid: false, message: 'URL must start with http:// or https://' };
+          }
+          return { valid: true, message: '✓ Valid URL' };
+        } catch(e) {
+          return { valid: false, message: 'Please enter a valid URL' };
+        }
+      },
+      format: function(value) {
+        return value ? value.trim() : '';
+      },
+      maxLength: 255,
+      placeholder: 'Enter website URL',
+      helpText: 'e.g., https://www.company.com'
+    },
+    
+    number_with_unit: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'Value is required' };
+        }
+        // Remove commas for validation
+        const cleanValue = value.replace(/,/g, '');
+        // Allow numbers with decimals and optional unit (cr, lakh, million, billion, k, thousand)
+        const pattern = /^[\d]+(\.\d+)?\s*(cr|lakh|million|billion|k|thousand)?$/i;
+        if (!pattern.test(cleanValue.trim())) {
+          return { valid: false, message: 'Invalid format. Use number with optional unit (cr, lakh, million, etc.)' };
+        }
+        return { valid: true, message: '✓ Valid value' };
+      },
+      format: function(value) {
+        return value ? value.trim() : '';
+      },
+      placeholder: 'Enter amount (e.g., 34.567 cr, 34,567cr, 100 lakh)',
+      helpText: 'Example: 34.567 cr, 34,567cr, 100 lakh, 1.5 million'
+    },
+    pincode: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'PIN code is required' };
+        }
+        const clean = value.replace(/\s/g, '');
+        if (!/^[0-9]{6}$/.test(clean)) {
+          return { valid: false, message: 'PIN code must be exactly 6 digits' };
+        }
+        return { valid: true, message: '✓ Valid PIN code' };
+      },
+      format: function(value) {
+        return value ? value.replace(/\s/g, '') : '';
+      },
+      maxLength: 6,
+      pattern: '[0-9]{6}',
+      placeholder: 'Enter 6-digit PIN code',
+      helpText: '6 digits only'
+    },
+    
+    gst: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'GST number is required' };
+        }
+        const clean = value.replace(/\s/g, '').toUpperCase();
+        if (clean.length !== 15) {
+          return { valid: false, message: 'GST must be exactly 15 characters' };
+        }
+        if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(clean)) {
+          return { valid: false, message: 'Invalid GST format' };
+        }
+        return { valid: true, message: '✓ Valid GST number' };
+      },
+      format: function(value) {
+        return value ? value.replace(/\s/g, '').toUpperCase() : '';
+      },
+      maxLength: 15,
+      pattern: '[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}',
+      placeholder: 'Enter 15-character GST number',
+      helpText: 'e.g., 22AAAAA0000A1Z5'
+    },
+    
+    pan: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'PAN number is required' };
+        }
+        const clean = value.replace(/\s/g, '').toUpperCase();
+        if (clean.length !== 10) {
+          return { valid: false, message: 'PAN must be exactly 10 characters' };
+        }
+        if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(clean)) {
+          return { valid: false, message: 'Invalid PAN format' };
+        }
+        return { valid: true, message: '✓ Valid PAN number' };
+      },
+      format: function(value) {
+        return value ? value.replace(/\s/g, '').toUpperCase() : '';
+      },
+      maxLength: 10,
+      pattern: '[A-Z]{5}[0-9]{4}[A-Z]{1}',
+      placeholder: 'Enter 10-character PAN number',
+      helpText: 'e.g., ABCDE1234F'
+    },
+    
+    year: {
+      validate: function(value) {
+        if (!value || value.trim() === '') {
+          return { valid: false, message: 'Year is required' };
+        }
+        const clean = value.trim();
+        if (!/^[0-9]{4}$/.test(clean)) {
+          return { valid: false, message: 'Year must be 4 digits' };
+        }
+        const year = parseInt(clean);
+        const currentYear = new Date().getFullYear();
+        if (year < 1900 || year > currentYear + 10) {
+          return { valid: false, message: `Year must be between 1900 and ${currentYear + 10}` };
+        }
+        return { valid: true, message: '✓ Valid year' };
+      },
+      format: function(value) {
+        return value ? value.trim() : '';
+      },
+      maxLength: 4,
+      pattern: '[0-9]{4}',
+      placeholder: 'Enter year (e.g., 2024)',
+    }
+  };
+
+  function validateField(value, fieldName, fieldType, isRequired = true) {
+    if (isRequired && (!value || value.trim() === '')) {
+      return { valid: false, message: 'This field is required' };
+    }
+    
+    if (!isRequired && (!value || value.trim() === '')) {
+      return { valid: true, message: '' };
+    }
+    
+    const rule = VALIDATION_RULES[fieldType];
+    if (!rule) {
+      return { valid: true, message: '' };
+    }
+    
+    return rule.validate(value);
+  }
+
+  function handleValidationInput(inputElement) {
+    if (!inputElement) return;
+    
+    const fieldName = inputElement.dataset.fieldName;
+    const fieldType = inputElement.dataset.fieldType || '';
+    const isRequired = inputElement.dataset.validationRequired !== 'false';
+    const value = inputElement.value;
+    
+    const formGroup = inputElement.closest('.form-group');
+    if (!formGroup) return;
+    
+    const messageElement = formGroup.querySelector('.validation-message');
+    if (!messageElement) return;
+    
+    const validation = validateField(value, fieldName, fieldType, isRequired);
+    
+    if (!validation.valid) {
+      messageElement.style.display = 'block';
+      messageElement.style.color = '#dc2626';
+      messageElement.textContent = '✗ ' + validation.message;
+      inputElement.style.borderColor = '#dc2626';
+      inputElement.style.backgroundColor = '#fef2f2';
+    } else if (value && value.trim() !== '') {
+      messageElement.style.display = 'block';
+      messageElement.style.color = '#16a34a';
+      messageElement.textContent = validation.message || '✓ Valid';
+      inputElement.style.borderColor = '#16a34a';
+      inputElement.style.backgroundColor = '#f0fdf4';
+    } else {
+      messageElement.style.display = 'none';
+      inputElement.style.borderColor = '';
+      inputElement.style.backgroundColor = '';
+    }
+  }
+
+  // ============================================
+  // RENDER FIELD CONTROL WITH VALIDATION
+  // ============================================
+
   function renderFieldControl(question, field, index, disabled = false) {
     const fieldName = field.name || `field_${index + 1}`;
     const fieldLabel = field.label || field.name || `Field ${index + 1}`;
     const fieldValue = getStoredFieldValue(question, fieldName, '');
     const disabledAttr = disabled ? 'disabled aria-disabled="true"' : '';
+    const isRequired = field.required !== false;
+
+    let fieldType = field.field_type || field.type || '';
+    let validationRule = null;
+    
+    // In renderFieldControl - Correct mapping
+    if (fieldType === 'cin' || fieldName === 'cin' || fieldName === 'cin_number') {
+      validationRule = VALIDATION_RULES.cin;
+    } else if (fieldType === 'telephone' || fieldName === 'telephone') {
+      validationRule = VALIDATION_RULES.telephone;
+    } else if (fieldType === 'phone' || fieldType === 'tel' || fieldName === 'contactPersonPhone') {
+      validationRule = VALIDATION_RULES.phone;
+    } else if (fieldType === 'email' || fieldName === 'email' || fieldName === 'contactPersonEmail') {
+      validationRule = VALIDATION_RULES.email;
+    } else if (fieldType === 'url' || fieldName === 'website') {
+      validationRule = VALIDATION_RULES.url;
+    } else if (fieldType === 'number_with_unit' || fieldName === 'paidUpCapital') {
+      validationRule = VALIDATION_RULES.number_with_unit;
+    } else if (fieldType === 'year' || fieldName === 'yearIncorporation') {
+      validationRule = VALIDATION_RULES.year;
+    } else if (fieldType === 'alphabetic' || 
+              fieldName === 'entityName' || 
+              fieldName === 'contactPersonName' || 
+              fieldName === 'contactPersonDesignation') {
+      validationRule = VALIDATION_RULES.alphabetic;
+    }
 
     if (field.kind === 'radio') {
       const options = Array.isArray(field.options) ? field.options : [];
       return `
         <div class="form-group">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <label class="form-label">
+            ${escapeHtml(fieldLabel)}
+            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
+          </label>
           <div class="choice-stack">
             ${options.map((option) => {
               const label = option.label ?? option.value ?? option;
@@ -1212,7 +1623,10 @@
       const items = Array.isArray(field.items) ? field.items : [];
       return `
         <div class="form-group">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <label class="form-label">
+            ${escapeHtml(fieldLabel)}
+            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
+          </label>
           <div class="choice-stack">
             ${items.map((item) => {
               const label = item.label ?? item.value ?? item.name ?? '';
@@ -1233,142 +1647,134 @@
     if (field.kind === 'textarea') {
       return `
         <div class="form-group">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <label class="form-label">
+            ${escapeHtml(fieldLabel)}
+            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
+          </label>
           <textarea class="workspace-textarea form-textarea" data-field-name="${escapeHtml(fieldName)}" placeholder="${escapeHtml(field.placeholder || 'Type your response here')}" ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
         </div>
       `;
     }
 
     if (field.kind === 'input') {
-        const inputType = field.type === "calculated" ? "text" : (field.type || "text");
-        const readonly = field.readonly ? "readonly" : "";
-        return `
-            <div class="form-group">
-                <label class="form-label">${escapeHtml(fieldLabel)}</label>
-
-                <input class="workspace-input" data-field-name="${escapeHtml(fieldName)}"
-                    data-formula="${field.formula || ''}"
-                    data-format="${field.format || 'number'}"
-                    type="${inputType}"
-                    value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}"
-                    placeholder="${escapeHtml(field.placeholder || '')}" ${readonly} ${disabledAttr}>
-            </div>
-        `;
-    }
-
-    /*if (field.kind === 'table') {
-      const columns = Array.isArray(field.columns) ? field.columns : [];
-      const storedRows = Array.isArray(fieldValue) && fieldValue.length ? fieldValue : [];
-      const rows = storedRows.length ? storedRows : (Array.isArray(field.rows) && field.rows.length ? field.rows.map(() => ({})) : [{}]);
+      // FORCE text type for phone/telephone fields so pattern works
+      let inputType = field.type === "calculated" ? "text" : (field.type || "text");
+      
+      // Override type for phone/telephone to use "text" with pattern validation
+      const isPhoneField = fieldType === 'phone' || fieldType === 'telephone' || 
+                          fieldName === 'contactPersonPhone' || fieldName === 'telephone';
+      
+      // Override type for number_with_unit to allow units (cr, lakh, etc.)
+      const isNumberWithUnit = fieldType === 'number_with_unit' || fieldName === 'paidUpCapital';
+      
+      // Check for alphabetic fields
+      const isAlphabetic = fieldType === 'alphabetic' || 
+                          fieldName === 'entityName' || 
+                          fieldName === 'contactPersonName' || 
+                          fieldName === 'contactPersonDesignation';
+      
+      // Force text type for all special fields
+      if (isPhoneField || isNumberWithUnit || isAlphabetic) {
+        inputType = 'text';
+      }
+      
+      const readonly = field.readonly ? "readonly" : "";
+      
+      let maxLength = validationRule?.maxLength || field.max_length || '';
+      let pattern = validationRule?.pattern || field.pattern || '';
+      let placeholder = validationRule?.placeholder || field.placeholder || '';
+      let helpText = validationRule?.helpText || field.help_text || '';
+      const needsValidation = validationRule !== null;
+      
+      let inputMode = '';
+      let onInputFilter = '';
+      
+      if (isPhoneField) {
+        inputMode = 'inputmode="numeric"';
+        onInputFilter = 'oninput="this.value=this.value.replace(/[^0-9]/g,\'\')"';
+      }
+      
+      // Add oninput filter for alphabetic fields
+      if (isAlphabetic) {
+        onInputFilter = 'oninput="this.value=this.value.replace(/[^A-Za-z\\s]/g,\'\')"';
+      }
+      
       return `
         <div class="form-group">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <label class="form-label">
+            ${escapeHtml(fieldLabel)}
+            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
+          </label>
+          <input 
+            class="workspace-input" 
+            data-field-name="${escapeHtml(fieldName)}"
+            data-field-type="${escapeHtml(fieldType)}"
+            data-validation-required="${isRequired}"
+            data-formula="${field.formula || ''}"
+            data-format="${field.format || 'number'}"
+            type="${inputType}"
+            value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}"
+            placeholder="${escapeHtml(placeholder)}" 
+            ${readonly} 
+            ${disabledAttr}
+            ${maxLength ? `maxlength="${maxLength}"` : ''}
+            ${pattern ? `pattern="${pattern}"` : ''}
+            ${inputMode}
+            ${onInputFilter}
+            ${needsValidation ? 'oninput="handleValidationInput(this)" onblur="handleValidationInput(this)"' : ''}
+            autocomplete="off"
+          >
+          ${needsValidation ? `
+            <div class="validation-message" style="display:none;margin-top:6px;font-size:12px;"></div>
+            ${helpText ? `<div style="margin-top:4px;font-size:11px;color:#6f7b91;">${escapeHtml(helpText)}</div>` : ''}
+          ` : ''}
+        </div>
+      `;
+    }
+
+    if (field.kind === 'table') {
+      return `
+        <div class="form-group">
+          <label class="form-label">
+            ${escapeHtml(field.label)}
+            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
+          </label>
           <div class="table-container">
-            <table class="data-table" data-field-name="${escapeHtml(fieldName)}">
+            <table class="data-table">
               <thead>
                 <tr>
-                  ${columns.map((column) => `<th>${escapeHtml(column)}</th>`).join('')}
-                  <th style="width:48px;"></th>
+                  ${field.columns.map(col => `<th>${escapeHtml(col)}</th>`).join("")}
                 </tr>
               </thead>
               <tbody>
-                ${rows.map((row, rowIndex) => `
+                ${field.rows.map(row => `
                   <tr>
-                    ${columns.map((column) => {
-                      const cellValue = row?.[column] ?? row?.[column.toLowerCase()] ?? '';
-                      return `<td><input type="text" data-field-name="${escapeHtml(fieldName)}" data-row-index="${rowIndex}" data-column-name="${escapeHtml(column)}" value="${escapeHtml(cellValue)}" placeholder="${escapeHtml(column)}" ${disabledAttr}></td>`;
-                    }).join('')}
-                    <td><button type="button" class="btn-brsr secondary js-remove-row" ${disabledAttr}>-</button></td>
+                    <td>${escapeHtml(row.label)}</td>
+                    ${row.fields.map(f => {
+                      const value = getStoredFieldValue(question, f.name, "");
+                      return `
+                        <td>
+                          <input
+                            class="workspace-input"
+                            data-field-name="${f.name}"
+                            data-formula="${f.formula || ""}"
+                            data-format="${f.format || "number"}"
+                            type="${f.type === "calculated" ? "text" : (f.type || "text")}"
+                            value="${escapeHtml(value)}"
+                            ${f.readonly ? "readonly" : ""}
+                            ${disabled ? "disabled" : ""}
+                          >
+                        </td>
+                      `;
+                    }).join("")}
                   </tr>
-                `).join('')}
+                `).join("")}
               </tbody>
             </table>
           </div>
-          <div class="table-actions">
-            <button type="button" class="btn-brsr secondary js-add-row" ${disabledAttr}>Add Row</button>
-          </div>
         </div>
       `;
-    } */
-
-    if (field.kind === 'table') {
-
-    return `
-    <div class="form-group">
-
-        <label class="form-label">
-            ${escapeHtml(field.label)}
-        </label>
-
-        <div class="table-container">
-
-            <table class="data-table">
-
-                <thead>
-
-                    <tr>
-
-                        ${field.columns.map(col=>`<th>${escapeHtml(col)}</th>`).join("")}
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    ${field.rows.map(row=>`
-
-                        <tr>
-
-                            <td>${escapeHtml(row.label)}</td>
-
-                            ${row.fields.map(f=>{
-
-                                const value=getStoredFieldValue(question,f.name,"");
-
-                                return `
-
-                                <td>
-
-                                    <input
-
-                                        class="workspace-input"
-
-                                        data-field-name="${f.name}"
-
-                                        data-formula="${f.formula || ""}"
-                                        data-format="${f.format || "number"}"
-
-                                        type="${f.type==="calculated" ? "text" : (f.type || "text")}"
-
-                                        value="${escapeHtml(value)}"
-
-                                        ${f.readonly ? "readonly" : ""}
-
-                                        ${disabled ? "disabled" : ""}
-
-                                    >
-
-                                </td>
-
-                                `;
-
-                            }).join("")}
-
-                        </tr>
-
-                    `).join("")}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-    `;
-}
+    }
 
     return `
       <div class="form-group">
@@ -1377,6 +1783,199 @@
       </div>
     `;
   }
+
+  // ============================================
+  // COLLECT PAYLOAD WITH VALIDATION
+  // ============================================
+
+  function collectQuestionPayload(questionId) {
+    const question = state.workspace.topics.find((item) => {
+      const qId = getQuestionId(item);
+      return qId === questionId;
+    });
+    if (!question) return null;
+
+    const container = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
+    if (!container) return null;
+
+    let assignmentId = getNumericAssignmentId();
+    if (!assignmentId && question.assignment_id && !isNaN(parseInt(question.assignment_id))) {
+      assignmentId = question.assignment_id.toString();
+    }
+    if (!assignmentId) {
+      assignmentId = question.assignment_id || '';
+    }
+    if (!assignmentId) {
+      console.error('No assignment ID found for question:', questionId);
+      return null;
+    }
+
+    const payload = { assignment_id: assignmentId };
+    const fields = Array.isArray(question.validation_rules && question.validation_rules.fields) 
+      ? question.validation_rules.fields 
+      : [];
+
+    if (fields.length) {
+      const responseJson = {};
+      let hasValidationError = false;
+      let errorField = null;
+      
+      for (const field of fields) {
+        const fieldName = field.name;
+        if (!fieldName) continue;
+
+        let fieldType = field.field_type || field.type || '';
+        let validationRule = null;
+        
+        // In collectQuestionPayload - add the same mapping
+        if (fieldType === 'cin' || fieldName === 'cin' || fieldName === 'cin_number') {
+          validationRule = VALIDATION_RULES.cin;
+        } else if (fieldType === 'telephone' || fieldName === 'telephone') {
+          validationRule = VALIDATION_RULES.telephone;
+        } else if (fieldType === 'phone' || fieldType === 'tel' || fieldName === 'contactPersonPhone') {
+          validationRule = VALIDATION_RULES.phone;
+        } else if (fieldType === 'email' || fieldName === 'email' || fieldName === 'contactPersonEmail') {
+          validationRule = VALIDATION_RULES.email;
+        } else if (fieldType === 'url' || fieldName === 'website') {
+          validationRule = VALIDATION_RULES.url;
+        } else if (fieldType === 'number_with_unit' || fieldName === 'paidUpCapital') {
+          validationRule = VALIDATION_RULES.number_with_unit;
+        } else if (fieldType === 'year' || fieldName === 'yearIncorporation') {
+          validationRule = VALIDATION_RULES.year;
+        } else if (fieldType === 'alphabetic' || 
+                  fieldName === 'entityName' || 
+                  fieldName === 'contactPersonName' || 
+                  fieldName === 'contactPersonDesignation') {
+          validationRule = VALIDATION_RULES.alphabetic;
+        }
+        
+        const isRequired = field.required !== false;
+
+        if (field.kind === 'radio') {
+          const checked = container.querySelector(`input[type="radio"][data-field-name="${CSS.escape(fieldName)}"]:checked`);
+          const value = checked ? checked.value : '';
+          
+          if (isRequired && !value) {
+            hasValidationError = true;
+            errorField = fieldName;
+            break;
+          }
+          
+          responseJson[fieldName] = value;
+        } else if (field.kind === 'checkbox_group') {
+          const values = Array.from(container.querySelectorAll(`input[type="checkbox"][data-field-name="${CSS.escape(fieldName)}"]:checked`))
+            .map((el) => el.value);
+          
+          if (isRequired && values.length === 0) {
+            hasValidationError = true;
+            errorField = fieldName;
+            break;
+          }
+          
+          responseJson[fieldName] = values;
+        } else if (field.kind === 'table') {
+          const table = container.querySelector(`table[data-field-name="${CSS.escape(fieldName)}"]`);
+          const rows = [];
+          if (table) {
+            table.querySelectorAll('tbody tr').forEach((tr) => {
+              const row = {};
+              tr.querySelectorAll('input, textarea, select').forEach((control) => {
+                const key = control.getAttribute('data-column-name') || control.getAttribute('data-key') || '';
+                if (key) row[key] = control.value;
+              });
+              if (Object.keys(row).length) rows.push(row);
+            });
+          }
+          responseJson[fieldName] = rows;
+        } else {
+          const control = container.querySelector(`${field.kind === 'textarea' ? 'textarea' : 'input'}[data-field-name="${CSS.escape(fieldName)}"]`);
+          let value = control ? control.value : '';
+          
+          if (validationRule && value && value.trim() !== '') {
+            const validation = validationRule.validate(value);
+            if (!validation.valid) {
+              hasValidationError = true;
+              errorField = fieldName;
+              
+              if (control) {
+                control.style.borderColor = '#dc2626';
+                control.style.backgroundColor = '#fef2f2';
+                control.focus();
+                control.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+              
+              const messageElement = control?.closest('.form-group')?.querySelector('.validation-message');
+              if (messageElement) {
+                messageElement.style.display = 'block';
+                messageElement.style.color = '#dc2626';
+                messageElement.textContent = '✗ ' + validation.message;
+              }
+              
+              break;
+            }
+          }
+          
+          if (isRequired && (!value || value.trim() === '')) {
+            hasValidationError = true;
+            errorField = fieldName;
+            
+            if (control) {
+              control.style.borderColor = '#dc2626';
+              control.style.backgroundColor = '#fef2f2';
+              control.focus();
+              control.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            break;
+          }
+          
+          responseJson[fieldName] = value;
+        }
+      }
+      
+      if (hasValidationError) {
+        const field = fields.find(f => f.name === errorField);
+        const label = field ? field.label : errorField;
+        alert(`Please fill in "${label}" correctly.`);
+        return null;
+      }
+      
+      payload.response_json = responseJson;
+      return payload;
+    }
+
+    if (question.question_type === 'table' || question.question_type === 'nested_table') {
+      const table = container.querySelector('.data-table');
+      const rows = [];
+      if (table) {
+        table.querySelectorAll('tbody tr').forEach((tr) => {
+          const row = {};
+          tr.querySelectorAll('td').forEach((td, index) => {
+            if (index === tr.children.length - 1) return;
+            const field = td.querySelector('input, textarea, select');
+            if (!field) return;
+            const key = field.getAttribute('data-key') || `column_${index + 1}`;
+            row[key] = field.value;
+          });
+          rows.push(row);
+        });
+      }
+      payload.response_json = { rows };
+    } else if (question.question_type === 'checkbox' || question.question_type === 'multi_select') {
+      payload.response_value = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map((el) => el.value).join(',');
+    } else if (question.question_type === 'radio' || question.question_type === 'yes_no') {
+      const checked = container.querySelector('input[type="radio"]:checked');
+      payload.response_value = checked ? checked.value : '';
+    } else {
+      const control = container.querySelector(`#responseValue-${CSS.escape(questionId)}`);
+      payload.response_value = control ? control.value : '';
+    }
+    
+    return payload;
+  }
+
+  // ============================================
+  // RENDER FUNCTIONS
+  // ============================================
 
   function renderQuestionInput(question, disabled = false) {
     const value = question.response_value || '';
@@ -1516,16 +2115,16 @@
                 ${rows.map((row, index) => `
                   <tr>
                     ${columns.map((column) => {
-              const key = column.key || column.name;
-              const cell = row?.[key] ?? '';
-              const inputType = column.type || 'text';
-              if (inputType === 'textarea') {
+                      const key = column.key || column.name;
+                      const cell = row?.[key] ?? '';
+                      const inputType = column.type || 'text';
+                      if (inputType === 'textarea') {
                         return `<td><textarea data-key="${escapeHtml(key)}" placeholder="${escapeHtml(column.placeholder || '')}" ${disabledAttr}>${escapeHtml(cell)}</textarea></td>`;
-              }
-              if (inputType === 'select') {
-                const choices = Array.isArray(column.options) ? column.options : [];
+                      }
+                      if (inputType === 'select') {
+                        const choices = Array.isArray(column.options) ? column.options : [];
                         return `<td><select data-key="${escapeHtml(key)}" ${disabledAttr}>${choices.map((choice) => `<option value="${escapeHtml(choice)}" ${String(choice) === String(cell) ? 'selected' : ''}>${escapeHtml(choice)}</option>`).join('')}</select></td>`;
-              }
+                      }
                       return `<td><input data-key="${escapeHtml(key)}" type="text" value="${escapeHtml(cell)}" placeholder="${escapeHtml(column.placeholder || '')}" ${disabledAttr}></td>`;
                     }).join('')}
                     <td><button type="button" class="btn-brsr secondary js-remove-row" ${disabledAttr}>-</button></td>
@@ -1606,6 +2205,10 @@
     });
   }
 
+  // ============================================
+  // RENDER QUESTION CARD WITH DOCUMENT DELETE
+  // ============================================
+
   function renderQuestionCard(question, isActive) {
     const selected = isActive ? 'active' : '';
     const qId = getQuestionId(question);
@@ -1619,79 +2222,102 @@
     
     let actionButtons = '';
     if (canSave && !isReviewerView) {
-      actionButtons = `
-        <div class="table-actions">
-          <button type="button" class="btn-brsr secondary js-save-question">Save Draft</button>
-        </div>
-      `;
+        actionButtons = `
+            <div class="table-actions">
+                <button type="button" class="btn-brsr secondary js-save-question">Save Draft</button>
+            </div>
+        `;
     }
 
     const reviewerCommentBlock = isReviewerView ? `
-      <div class="review-comment-box">
-        <span class="review-label">Reviewer Comment</span>
-        <textarea
-          class="workspace-textarea review-comment-input js-review-comment-input"
-          data-question-id="${escapeHtml(qId)}"
-          placeholder="Add a comment for this question"
-        >${escapeHtml(question.review_remark || '')}</textarea>
-        <div class="review-comment-meta">Only the reviewer selected in workflow configuration can add or edit this comment.</div>
-        <div class="table-actions">
-          <button type="button" class="btn-brsr secondary js-save-review-comment" data-question-id="${escapeHtml(qId)}">Save Comment</button>
+        <div class="review-comment-box">
+            <span class="review-label">Reviewer Comment</span>
+            <textarea
+                class="workspace-textarea review-comment-input js-review-comment-input"
+                data-question-id="${escapeHtml(qId)}"
+                placeholder="Add a comment for this question"
+            >${escapeHtml(question.review_remark || '')}</textarea>
+            <div class="review-comment-meta">Only the reviewer selected in workflow configuration can add or edit this comment.</div>
+            <div class="table-actions">
+                <button type="button" class="btn-brsr secondary js-save-review-comment" data-question-id="${escapeHtml(qId)}">Save Comment</button>
+            </div>
         </div>
-      </div>
     ` : '';
+
+    // Build uploaded documents HTML with delete buttons
+    let documentsHtml = '';
+    // Get documents from multiple possible locations
+    const docs = question.documents || (question.response_json && question.response_json.documents) || [];
+    
+    if (Array.isArray(docs) && docs.length > 0) {
+        documentsHtml = `
+            <div class="uploaded-files" style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+                ${docs.map((doc, docIndex) => {
+                    // Try multiple possible field names for document properties
+                    const docId = doc.id || doc.doc_id || doc.document_id || docIndex;
+                    const docName = doc.name || doc.filename || doc.file_name || 'Document';
+                    const docUrl = doc.url || doc.file_url || doc.download_url || '#';
+                    
+                    return `
+                        <div class="uploaded-file" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                                <span>📄</span>
+                                <a href="${escapeHtml(docUrl)}" target="_blank" style="color: var(--brand); text-decoration: none; font-size: 13px; word-break: break-all;">${escapeHtml(docName)}</a>
+                                ${doc.size ? `<span style="font-size: 11px; color: var(--muted); white-space: nowrap;">(${escapeHtml(doc.size)})</span>` : ''}
+                            </div>
+                            <button type="button" class="btn-delete-doc js-delete-doc" 
+                                    data-question-id="${escapeHtml(qId)}" 
+                                    data-doc-id="${escapeHtml(docId)}"
+                                    ${isLocked ? 'disabled' : ''}
+                                    style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 20px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s ease; line-height: 1; flex-shrink: 0; font-weight: 700;"
+                                    title="Remove document">
+                                ✕
+                            </button>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
     
     return `
-      <div class="question-container ${selected}" id="question-${escapeHtml(qId)}" data-question-id="${escapeHtml(qId)}">
-        <div class="question-header">
-          <div class="question-header-left">
-            ${isReviewerView ? '' : `<input type="checkbox" class="question-checkbox js-question-select" data-question-id="${escapeHtml(qId)}">`}
-            <div>
-              <h3 class="question-title"><span class="question-number">${escapeHtml(question.question_number)}.</span>${escapeHtml(question.title)}</h3>
+        <div class="question-container ${selected}" id="question-${escapeHtml(qId)}" data-question-id="${escapeHtml(qId)}">
+            <div class="question-header">
+                <div class="question-header-left">
+                    ${isReviewerView ? '' : `<input type="checkbox" class="question-checkbox js-question-select" data-question-id="${escapeHtml(qId)}">`}
+                    <div>
+                        <h3 class="question-title"><span class="question-number">${escapeHtml(question.question_number)}.</span>${escapeHtml(question.title)}</h3>
+                    </div>
+                </div>
+                <span class="status-badge ${statusClass(question.status)}">${escapeHtml(badgeText)}</span>
             </div>
-          </div>
-          <span class="status-badge ${statusClass(question.status)}">${escapeHtml(badgeText)}</span>
-        </div>
-        <div class="question-content">
-          <fieldset class="question-fieldset" ${isLocked ? 'disabled' : ''}>
-            ${renderQuestionInput(question, isLocked)}
-            <div class="form-group">
-              <label class="form-label">
-                  Supporting Documents
-                  <small>(Optional)</small>
-              </label>
+            <div class="question-content">
+                <fieldset class="question-fieldset" ${isLocked ? 'disabled' : ''}>
+                    ${renderQuestionInput(question, isLocked)}
+                    <div class="form-group">
+                        <label class="form-label">
+                            Supporting Documents
+                            <small>(Optional)</small>
+                        </label>
 
-              <input
-                  type="file"
-                  class="workspace-input js-document-upload"
-                  data-question-id="${escapeHtml(qId)}"
-                  multiple
-                  ${isLocked ? "disabled" : ""}
-              >
+                        <input
+                            type="file"
+                            class="workspace-input js-document-upload"
+                            data-question-id="${escapeHtml(qId)}"
+                            multiple
+                            ${isLocked ? "disabled" : ""}
+                            style="margin-bottom: 8px;"
+                        >
 
-              ${
-                  Array.isArray(question.documents) && question.documents.length
-                      ? `
-                      <div class="uploaded-files">
-                          ${question.documents.map(doc => `
-                              <div class="uploaded-file">
-                                  <a href="${doc.url}" target="_blank">
-                                      📄 ${escapeHtml(doc.name)}
-                                  </a>
-                              </div>
-                          `).join("")}
-                      </div>
-                      `
-                      : ""
-              }
+                        ${documentsHtml}
+                    </div>
+                    ${actionButtons}
+                </fieldset>
+                ${reviewerCommentBlock}
             </div>
-            ${actionButtons}
-          </fieldset>
-          ${reviewerCommentBlock}
         </div>
-      </div>
     `;
-  }
+}
 
   function renderQuestionDeck(workspace, focusQuestionId) {
     const deck = document.getElementById('questionDeck');
@@ -1756,6 +2382,27 @@
       const saveCommentBtn = card.querySelector('.js-save-review-comment');
       if (saveBtn) saveBtn.addEventListener('click', () => saveQuestion(questionId));
       if (saveCommentBtn) saveCommentBtn.addEventListener('click', () => saveReviewComment(questionId));
+
+      // Document delete event listeners - make sure this is inside the card loop
+        card.querySelectorAll('.js-delete-doc').forEach((btn) => {
+            btn.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const qId = this.dataset.questionId;
+                const docId = this.dataset.docId;
+                console.log('Delete button clicked for question:', qId, 'docId:', docId);
+                deleteDocument(qId, docId);
+            });
+        });
+
+      // Document upload change event
+      const uploadInput = card.querySelector('.js-document-upload');
+      if (uploadInput) {
+        uploadInput.addEventListener('change', function() {
+          if (this.files && this.files.length > 0) {
+            showWorkspaceMessage(`${this.files.length} file(s) selected. Save the question to upload.`, 'success');
+          }
+        });
+      }
 
       const table = card.querySelector('.data-table');
       if (table) {
@@ -1844,7 +2491,6 @@
   }
 
   function getNumericAssignmentId() {
-    // Try multiple sources to get the numeric assignment ID
     if (state.workspace?.current_assignment?.id) {
       return state.workspace.current_assignment.id.toString();
     }
@@ -1854,7 +2500,6 @@
     if (state.assignmentId && !isNaN(parseInt(state.assignmentId))) {
       return state.assignmentId.toString();
     }
-    // Check if any question has a numeric assignment_id
     if (state.workspace?.topics) {
       for (const topic of state.workspace.topics) {
         if (topic.assignment_id && !isNaN(parseInt(topic.assignment_id))) {
@@ -1863,100 +2508,6 @@
       }
     }
     return null;
-  }
-
-  function collectQuestionPayload(questionId) {
-    const question = state.workspace.topics.find((item) => {
-      const qId = getQuestionId(item);
-      return qId === questionId;
-    });
-    if (!question) return null;
-
-    const container = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
-    if (!container) return null;
-
-    // Get the numeric assignment ID
-    let assignmentId = getNumericAssignmentId();
-    
-    // If no numeric ID found, try the question's assignment_id if it's numeric
-    if (!assignmentId && question.assignment_id && !isNaN(parseInt(question.assignment_id))) {
-      assignmentId = question.assignment_id.toString();
-    }
-    
-    // If still no ID, use the question's assignment_id as a fallback (might be the string code)
-    if (!assignmentId) {
-      assignmentId = question.assignment_id || '';
-    }
-
-    if (!assignmentId) {
-      console.error('No assignment ID found for question:', questionId);
-      return null;
-    }
-
-    const payload = { assignment_id: assignmentId };
-    const fields = Array.isArray(question.validation_rules && question.validation_rules.fields) ? question.validation_rules.fields : [];
-
-    if (fields.length) {
-      const responseJson = {};
-      fields.forEach((field) => {
-        const fieldName = field.name;
-        if (!fieldName) return;
-
-        if (field.kind === 'radio') {
-          const checked = container.querySelector(`input[type="radio"][data-field-name="${CSS.escape(fieldName)}"]:checked`);
-          responseJson[fieldName] = checked ? checked.value : '';
-        } else if (field.kind === 'checkbox_group') {
-          responseJson[fieldName] = Array.from(container.querySelectorAll(`input[type="checkbox"][data-field-name="${CSS.escape(fieldName)}"]:checked`)).map((el) => el.value);
-        } else if (field.kind === 'table') {
-          const table = container.querySelector(`table[data-field-name="${CSS.escape(fieldName)}"]`);
-          const rows = [];
-          if (table) {
-            table.querySelectorAll('tbody tr').forEach((tr) => {
-              const row = {};
-              tr.querySelectorAll('input, textarea, select').forEach((control) => {
-                const key = control.getAttribute('data-column-name') || control.getAttribute('data-key') || '';
-                if (key) row[key] = control.value;
-              });
-              if (Object.keys(row).length) rows.push(row);
-            });
-          }
-          responseJson[fieldName] = rows;
-        } else {
-          const control = container.querySelector(`${field.kind === 'textarea' ? 'textarea' : 'input'}[data-field-name="${CSS.escape(fieldName)}"]`);
-          responseJson[fieldName] = control ? control.value : '';
-        }
-      });
-      payload.response_json = responseJson;
-      return payload;
-    }
-
-    if (question.question_type === 'table' || question.question_type === 'nested_table' || question.question_type === 'matrix' || question.question_type === 'repeating_section') {
-      const table = container.querySelector('.data-table');
-      const rows = [];
-      if (table) {
-        table.querySelectorAll('tbody tr').forEach((tr) => {
-          const row = {};
-          tr.querySelectorAll('td').forEach((td, index) => {
-            if (index === tr.children.length - 1) return;
-            const field = td.querySelector('input, textarea, select');
-            if (!field) return;
-            const key = field.getAttribute('data-key') || `column_${index + 1}`;
-            row[key] = field.value;
-          });
-          rows.push(row);
-        });
-      }
-      payload.response_json = { rows };
-    } else if (question.question_type === 'checkbox' || question.question_type === 'multi_select') {
-      payload.response_value = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map((el) => el.value).join(',');
-    } else if (question.question_type === 'radio' || question.question_type === 'yes_no') {
-      const checked = container.querySelector('input[type="radio"]:checked');
-      payload.response_value = checked ? checked.value : '';
-    } else {
-      const control = container.querySelector(`#responseValue-${CSS.escape(questionId)}`);
-      payload.response_value = control ? control.value : '';
-    }
-    return payload;
   }
 
   function isBlankResponseValue(value) {
@@ -1972,6 +2523,57 @@
   function questionHasResponseData(payload) {
     return !isBlankResponseValue(payload?.response_value) || !isBlankResponseValue(payload?.response_json);
   }
+
+  // ============================================
+  // DOCUMENT DELETE FUNCTION
+  // ============================================
+
+  async function deleteDocument(questionId, docId) {
+    if (!questionId || docId === undefined || docId === null) {
+      showWorkspaceMessage('Invalid document reference.', 'error');
+      return;
+    }
+
+    // Confirm deletion
+    if (!confirm('Are you sure you want to remove this document?')) {
+      return;
+    }
+
+    try {
+      // Use the save API with a delete flag
+      const formData = new FormData();
+      formData.append("assignment_id", getNumericAssignmentId());
+      formData.append("delete_document_id", docId.toString());
+
+      const response = await fetch(apiUrl(API_SAVE, questionId), {
+        method: "PUT",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: formData,
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        showWorkspaceMessage(data.detail || 'Unable to delete the document.', 'error');
+        return;
+      }
+
+      showWorkspaceMessage(data.message || 'Document removed successfully.', 'success');
+
+      // Reload the workspace to refresh the document list
+      await loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
+
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      showWorkspaceMessage('An error occurred while deleting the document.', 'error');
+    }
+  }
+
+  // ============================================
+  // PERSIST AND SAVE FUNCTIONS
+  // ============================================
 
   async function persistQuestion(questionId, { reload = false, showMessage = true } = {}) {
     const payload = collectQuestionPayload(questionId);
@@ -2166,6 +2768,10 @@
     }
   }
 
+  // ============================================
+  // ASSIGNMENT FUNCTIONS
+  // ============================================
+
   function fillAssignmentOptions(workspace) {
     const plantSelect = document.getElementById('assignmentPlant');
     const fySelect = document.getElementById('assignmentFinancialYear');
@@ -2192,7 +2798,6 @@
     }
 
     plantSelect.onchange = () => loadAssignmentTargets();
-
     loadAssignmentTargets();
   }
 
@@ -2246,52 +2851,6 @@
       reviewerSelect.innerHTML = '<option value="">Error loading reviewers</option>';
     }
   }
-
-
-    function calculateFormulas() {
-
-        document.querySelectorAll("input[data-formula]").forEach(function(field){
-
-            let formula = field.dataset.formula;
-
-            document.querySelectorAll("input[data-field-name]").forEach(function(input){
-
-                const fieldName = input.dataset.fieldName;
-
-                const value = parseFloat(input.value) || 0;
-
-                formula = formula.replaceAll(fieldName, value);
-
-            });
-
-            try{
-
-                let result = eval(formula);
-
-                if(isFinite(result)){
-
-                    const format = field.dataset.format || "number";
-
-                    if(format === "percentage"){
-                        field.value = result.toFixed(2) + "%";
-                    }
-                    else{
-                        field.value = result.toFixed(2);
-                    }
-
-                }
-                else{
-                    field.value = "";
-                }
-
-            }
-            catch(e){
-                field.value = "";
-            }
-
-        });
-
-    }
 
   function getSelectedQuestions() {
     return Array.from(document.querySelectorAll('.question-checkbox:checked')).map((checkbox) => {
@@ -2413,6 +2972,10 @@
     }
   }
 
+  // ============================================
+  // LOAD WORKSPACE
+  // ============================================
+
   async function loadWorkspace(sectionCode, principleSlug, questionId, assignmentId) {
     const params = new URLSearchParams();
     if (sectionCode) params.set('section_code', sectionCode);
@@ -2425,13 +2988,6 @@
         headers: { 'Accept': 'application/json' },
       });
       const workspace = await response.json();
-      
-      console.log('Workspace loaded:', {
-        assignment_id: workspace.assignment_id,
-        current_assignment_id: workspace.current_assignment?.id,
-        current_assignment_assignment_id: workspace.current_assignment?.assignment_id,
-        first_question_assignment_id: workspace.topics?.[0]?.assignment_id
-      });
       
       state.workspace = workspace;
       state.sectionCode = workspace.section.code;
@@ -2454,7 +3010,63 @@
     }
   }
 
-  // Event Listeners
+  // ============================================
+  // FORMULA CALCULATION FUNCTIONS
+  // ============================================
+
+  function calculateFormulas() {
+    document.querySelectorAll("[data-formula]").forEach(output => {
+      const formula = output.dataset.formula;
+      if (!formula) return;
+      let expression = formula;
+      document.querySelectorAll("[data-field-name]").forEach(input => {
+        const name = input.dataset.fieldName;
+        if (!name) return;
+        const value = parseFloat(input.value) || 0;
+        const regex = new RegExp("\\b" + name + "\\b", "g");
+        expression = expression.replace(regex, value);
+      });
+
+      let result = "";
+      try {
+        result = eval(expression);
+        if (!isFinite(result)) {
+          result = 0;
+        }
+      } catch {
+        result = "";
+      }
+
+      if (result !== "") {
+        const format = output.dataset.format || "number";
+        if (format === "percentage") {
+          output.value = `${Number(result)} %`;
+        } else {
+          output.value = Number(result);
+        }
+      } else {
+        output.value = "";
+      }
+    });
+  }
+
+  function attachCalculationEvents(parent = document) {
+    parent.querySelectorAll("[data-field-name]").forEach(input => {
+      if (input.dataset.formula) return;
+      input.addEventListener("input", calculateFormulas);
+    });
+  }
+
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+
+  document.addEventListener("input", function(e) {
+    if (e.target.matches("input[data-field-name]")) {
+      calculateFormulas();
+    }
+  });
+
   document.getElementById('openAssignModalBtn').addEventListener('click', openModal);
   document.getElementById('closeAssignModalBtn').addEventListener('click', closeModal);
   document.getElementById('cancelAssignmentBtn').addEventListener('click', closeModal);
@@ -2482,73 +3094,5 @@
 
   // Load workspace
   loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
-
-
-  document.addEventListener("input", function(e){
-
-    if(e.target.matches("input[data-field-name]")){
-        calculateFormulas();
-    }
-
-  });
-
-  function attachCalculationEvents(container){
-
-    container.querySelectorAll("input").forEach(function(input){
-
-        input.addEventListener("input", function(){
-
-            calculateTableRow(this.closest("tr"));
-
-        });
-
-    });
-
-}
-
-function calculateFormulas() {
-    document.querySelectorAll("[data-formula]").forEach(output => {
-        const formula = output.dataset.formula;
-        if (!formula) return;
-        let expression = formula;
-        document.querySelectorAll("[data-field-name]").forEach(input => {
-            const name = input.dataset.fieldName;
-            if (!name) return;
-            const value = parseFloat(input.value) || 0;
-            const regex = new RegExp("\\b" + name + "\\b", "g");
-            expression = expression.replace(regex, value);
-        });
-
-        let result = "";
-        try {
-            result = eval(expression);
-            if (!isFinite(result)) {
-                result = 0;
-            }
-        }
-        catch {
-            result = "";
-        }
-
-        if (result !== "") {
-            const format = output.dataset.format || "number";
-            if (format === "percentage") {
-                output.value = `${Number(result)} %`;
-            } else {
-                output.value = Number(result);
-            }
-        } else {
-            output.value = "";
-        }
-    });
-}
-
-
-function attachCalculationEvents(parent = document) {
-    parent.querySelectorAll("[data-field-name]").forEach(input => {
-        if (input.dataset.formula) return;
-        input.addEventListener("input", calculateFormulas);
-    });
-}
 </script>
 {% endblock %}
