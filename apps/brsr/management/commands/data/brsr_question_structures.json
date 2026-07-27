@@ -32,7 +32,7 @@
             "label": "Year of incorporation",
             "name": "yearIncorporation",
             "type": "number",
-            "field_type": "email",
+            "field_type": "year",
             "placeholder": "Enter year"
           },
           {
@@ -52,16 +52,17 @@
             "label": "E-mail",
             "name": "email",
             "type": "email",
+            "field_type": "email",
             "placeholder": "Enter email address"
           },
           {
-              "kind": "input",
-              "label": "Telephone",
-              "name": "telephone",
-              "field_type": "telephone",
-              "type": "text",
-              "placeholder": "Enter telephone number",
-              "required": true
+            "kind": "input",
+            "label": "Telephone",
+            "name": "telephone",
+            "field_type": "telephone",
+            "type": "text",
+            "placeholder": "Enter telephone number",
+            "required": true
           },
           {
             "kind": "input",
@@ -176,24 +177,40 @@
             "kind": "table",
             "label": "Details of business activities (accounting for 90% of the turnover)",
             "name": "businessActivities",
-            "columns": ["S. No.", "Description of Main Activity", "Description of Business Activity", "% of Turnover of the entity"],
+            "allow_add_rows": true,
+            "allow_delete_rows": true,
+            "min_rows": 1,
+            "max_rows": 20,
+            "columns": [
+                "S. No.",
+                "Description of Main Activity",
+                "Description of Business Activity",
+                "% of Turnover of the entity"
+            ],
             "rows": [
-              {
-                "label": "1",
-                "fields": [
-                  {"column": "Description of Main Activity", "name": "mainActivity1", "type": "text", "placeholder": "e.g., Manufacturing"},
-                  {"column": "Description of Business Activity", "name": "businessActivity1", "type": "text", "placeholder": "Detailed description"},
-                  {"column": "% of Turnover of the entity", "name": "turnoverPercent1", "type": "number", "placeholder": "%"}
-                ]
-              },
-              {
-                "label": "2",
-                "fields": [
-                  {"column": "Description of Main Activity", "name": "mainActivity2", "type": "text", "placeholder": "e.g., Manufacturing"},
-                  {"column": "Description of Business Activity", "name": "businessActivity2", "type": "text", "placeholder": "Detailed description"},
-                  {"column": "% of Turnover of the entity", "name": "turnoverPercent2", "type": "number", "placeholder": "%"}
-                ]
-              }
+                {
+                    "label": "1",
+                    "fields": [
+                        {
+                            "column": "Description of Main Activity",
+                            "name": "mainActivity1",
+                            "type": "text",
+                            "placeholder": "e.g., Manufacturing"
+                        },
+                        {
+                            "column": "Description of Business Activity",
+                            "name": "businessActivity1",
+                            "type": "text",
+                            "placeholder": "Detailed description"
+                        },
+                        {
+                            "column": "% of Turnover of the entity",
+                            "name": "turnoverPercent1",
+                            "type": "number",
+                            "placeholder": "%"
+                        }
+                    ]
+                }
             ]
           },
           {
@@ -201,6 +218,10 @@
             "label": "Products/Services sold by the entity (accounting for 90% of the entity's Turnover)",
             "name": "productsServices",
             "columns": ["S. No.", "Product/Service", "NIC Code", "% of total Turnover contributed"],
+            "allow_add_rows": true,
+            "allow_delete_rows": true,
+            "min_rows": 1,
+            "max_rows": 20,
             "rows": [
               {
                 "label": "1",
@@ -240,7 +261,7 @@
                 "fields": [
                   {"column": "Number of plants", "name": "nationalPlants", "type": "number", "placeholder": "0"},
                   {"column": "Number of offices", "name": "nationalOffices", "type": "number", "placeholder": "0"},
-                  {"column": "Total", "name": "nationalTotal", "type": "number", "placeholder": "0"}
+                  {"column": "Total", "name": "nationalTotal", "type": "calculated", "formula": "nationalPlants + nationalOffices", "readonly": true, "format": "number"}
                 ]
               },
               {
@@ -248,7 +269,7 @@
                 "fields": [
                   {"column": "Number of plants", "name": "internationalPlants", "type": "number", "placeholder": "0"},
                   {"column": "Number of offices", "name": "internationalOffices", "type": "number", "placeholder": "0"},
-                  {"column": "Total", "name": "internationalTotal", "type": "number", "placeholder": "0"}
+                  {"column": "Total", "name": "internationalTotal", "type": "calculated", "formula":"internationalPlants + internationalOffices", "readonly":true, "format":"number"}
                 ]
               }
             ]
@@ -274,7 +295,11 @@
             "label": "What is the contribution of exports as a percentage of the total turnover of the entity?",
             "name": "exportPercentage",
             "type": "number",
-            "placeholder": "Enter percentage of exports to total turnover"
+            "field_type": "percentage",
+            "step": "any",
+            "placeholder": "Enter percentage of exports to total turnover",
+            "min": 0,
+            "max": 100
           },
           {
             "kind": "textarea",
@@ -302,7 +327,7 @@
                 "fields": [
                   {"column": "Total (A)", "name": "empPermanentTotal", "type": "calculated", "formula": "empPermanentMale+empPermanentFemale", "readonly": true, "format": "number"},
                   {"column": "Male No. (B)", "name": "empPermanentMale", "type": "number"},
-                  {"column": "Male % (B/A)", "name": "empPermanentMalePct", "type": "calculated", "formula": "empPermanentMale/empPermanentTotal*100", "readonly": true, "format": "number"},
+                  {"column": "Male % (B/A)", "name": "empPermanentMalePct", "type": "calculated", "formula": "empPermanentMale/empPermanentTotal*100", "readonly": true, "format": "percentage"},
                   {"column": "Female No. (C)", "name": "empPermanentFemale", "type": "number"},
                   {"column": "Female % (C/A)", "name": "empPermanentFemalePct", "type": "calculated", "formula": "empPermanentFemale/empPermanentTotal*100", "readonly": true, "format": "percentage"}
                 ]
@@ -458,34 +483,34 @@
             "kind": "table",
             "label": "Turnover rate for permanent employees and workers",
             "name": "turnoverRate",
-            "columns": ["Particulars", "FY 2026-27 Male", "FY 2026-27 Female", "FY 2026-27 Total", "FY 2024-25 Male", "FY 2024-25 Female", "FY 2024-25 Total", "FY 2022-23 Male", "FY 2022-23 Female", "FY 2022-23 Total"],
+            "columns": ["Particulars", "{FY0} Male", "{FY0} Female", "{FY0} Total", "{FY1} Male", "{FY1} Female", "{FY1} Total", "{FY2} Male", "{FY2} Female", "{FY2} Total"],
             "rows": [
               {
                 "label": "Permanent Employees Turnover Rate",
                 "fields": [
-                  {"column": "FY 2026-27 Male", "name": "turnoverEmpMaleCY", "type": "number"},
-                  {"column": "FY 2026-27 Female", "name": "turnoverEmpFemaleCY", "type": "number"},
-                  {"column": "FY 2026-27 Total", "name": "turnoverEmpTotalCY", "type": "number"},
-                  {"column": "FY 2024-25 Male", "name": "turnoverEmpMalePY", "type": "number"},
-                  {"column": "FY 2024-25 Female", "name": "turnoverEmpFemalePY", "type": "number"},
-                  {"column": "FY 2024-25 Total", "name": "turnoverEmpTotalPY", "type": "number"},
-                  {"column": "FY 2022-23 Male", "name": "turnoverEmpMalePY2", "type": "number"},
-                  {"column": "FY 2022-23 Female", "name": "turnoverEmpFemalePY2", "type": "number"},
-                  {"column": "FY 2022-23 Total", "name": "turnoverEmpTotalPY2", "type": "number"}
+                  {"column": "{FY0} Male", "name": "turnoverEmpMaleCY", "type": "number"},
+                  {"column": "{FY0} Female", "name": "turnoverEmpFemaleCY", "type": "number"},
+                  {"column": "{FY0} Total", "name": "turnoverEmpTotalCY", "type": "number"},
+                  {"column": "{FY1} Male", "name": "turnoverEmpMalePY", "type": "number"},
+                  {"column": "{FY1} Female", "name": "turnoverEmpFemalePY", "type": "number"},
+                  {"column": "{FY1} Total", "name": "turnoverEmpTotalPY", "type": "number"},
+                  {"column": "{FY2} Male", "name": "turnoverEmpMalePY2", "type": "number"},
+                  {"column": "{FY2} Female", "name": "turnoverEmpFemalePY2", "type": "number"},
+                  {"column": "{FY2} Total", "name": "turnoverEmpTotalPY2", "type": "number"}
                 ]
               },
               {
                 "label": "Permanent Workers Turnover Rate",
                 "fields": [
-                  {"column": "FY 2026-27 Male", "name": "turnoverWorkerMaleCY", "type": "number"},
-                  {"column": "FY 2026-27 Female", "name": "turnoverWorkerFemaleCY", "type": "number"},
-                  {"column": "FY 2026-27 Total", "name": "turnoverWorkerTotalCY", "type": "number"},
-                  {"column": "FY 2024-25 Male", "name": "turnoverWorkerMalePY", "type": "number"},
-                  {"column": "FY 2024-25 Female", "name": "turnoverWorkerFemalePY", "type": "number"},
-                  {"column": "FY 2024-25 Total", "name": "turnoverWorkerTotalPY", "type": "number"},
-                  {"column": "FY 2022-23 Male", "name": "turnoverWorkerMalePY2", "type": "number"},
-                  {"column": "FY 2022-23 Female", "name": "turnoverWorkerFemalePY2", "type": "number"},
-                  {"column": "FY 2022-23 Total", "name": "turnoverWorkerTotalPY2", "type": "number"}
+                  {"column": "FY {FY0} Male", "name": "turnoverWorkerMaleCY", "type": "number"},
+                  {"column": "FY {FY0} Female", "name": "turnoverWorkerFemaleCY", "type": "number"},
+                  {"column": "FY {FY1} Total", "name": "turnoverWorkerTotalCY", "type": "number"},
+                  {"column": "FY {FY1} Male", "name": "turnoverWorkerMalePY", "type": "number"},
+                  {"column": "FY {FY1} Female", "name": "turnoverWorkerFemalePY", "type": "number"},
+                  {"column": "FY {FY2} Total", "name": "turnoverWorkerTotalPY", "type": "number"},
+                  {"column": "FY {FY2} Male", "name": "turnoverWorkerMalePY2", "type": "number"},
+                  {"column": "FY {FY2} Female", "name": "turnoverWorkerFemalePY2", "type": "number"},
+                  {"column": "FY {FY2} Total", "name": "turnoverWorkerTotalPY2", "type": "number"}
                 ]
               }
             ]
@@ -510,7 +535,7 @@
                 "fields": [
                   {"column": "Name of the holding / subsidiary / associate companies / joint ventures (A)", "name": "companyName1", "type": "text", "placeholder": "Company Name"},
                   {"column": "Indicate whether holding/ Subsidiary/ Associate/ Joint Venture", "name": "companyType1", "type": "select", "options": [{"value": "", "label": "Select Type"}, {"value": "Holding", "label": "Holding Company"}, {"value": "Subsidiary", "label": "Subsidiary"}, {"value": "Associate", "label": "Associate Company"}, {"value": "Joint Venture", "label": "Joint Venture"}]},
-                  {"column": "% of shares held by listed entity", "name": "sharesHeld1", "type": "number", "placeholder": "%"},
+                  {"column": "% of shares held by listed entity", "name": "sharesHeld1", "type": "number", "placeholder": "%", "field_type": "percentage", "step": "any", "min": 0, "max": 100},
                   {"column": "Does the entity indicated at column A, participate in the Business Responsibility initiatives of the listed entity? (Yes/No)", "name": "brParticipation1", "type": "select", "options": [{"value": "", "label": "Select"}, {"value": "Yes", "label": "Yes"}, {"value": "No", "label": "No"}]}
                 ]
               },
@@ -519,7 +544,7 @@
                 "fields": [
                   {"column": "Name of the holding / subsidiary / associate companies / joint ventures (A)", "name": "companyName2", "type": "text", "placeholder": "Company Name"},
                   {"column": "Indicate whether holding/ Subsidiary/ Associate/ Joint Venture", "name": "companyType2", "type": "select", "options": [{"value": "", "label": "Select Type"}, {"value": "Holding", "label": "Holding Company"}, {"value": "Subsidiary", "label": "Subsidiary"}, {"value": "Associate", "label": "Associate Company"}, {"value": "Joint Venture", "label": "Joint Venture"}]},
-                  {"column": "% of shares held by listed entity", "name": "sharesHeld2", "type": "number", "placeholder": "%"},
+                  {"column": "% of shares held by listed entity", "name": "sharesHeld2", "type": "number", "placeholder": "%", "field_type": "percentage", "step": "any", "min": 0, "max": 100},
                   {"column": "Does the entity indicated at column A, participate in the Business Responsibility initiatives of the listed entity? (Yes/No)", "name": "brParticipation2", "type": "select", "options": [{"value": "", "label": "Select"}, {"value": "Yes", "label": "Yes"}, {"value": "No", "label": "No"}]}
                 ]
               }
@@ -545,15 +570,27 @@
             "label": "(ii) Turnover (in Rs.)",
             "name": "csrTurnover",
             "type": "number",
-            "placeholder": "Enter turnover amount in INR Lacs"
+            "field_type": "currency",
+            "currency": "INR",
+            "unit": "Lacs",
+            "placeholder": "Enter turnover in INR Lacs",
+            "step": "0.01",
+            "min": 0,
+            "precision": 2
           },
           {
-            "kind": "input",
-            "label": "(iii) Net worth (in Rs.)",
-            "name": "csrNetWorth",
-            "type": "number",
-            "placeholder": "Enter net worth amount in INR Crores"
-          }
+          "kind": "input",
+          "label": "(iii) Net worth (in Rs.)",
+          "name": "csrNetWorth",
+          "type": "number",
+          "field_type": "currency",
+          "currency": "INR",
+          "unit": "Crores",
+          "placeholder": "Enter net worth in INR Crores",
+          "step": "0.01",
+          "min": 0,
+          "precision": 2
+        }
         ]
       },
       {
@@ -567,14 +604,14 @@
             "kind": "table",
             "label": "Complaints/Grievances on any of the principles (Principles 1 to 9) under the National Guidelines on Responsible Business Conduct",
             "name": "complaintsGrievances",
-            "columns": ["Stakeholder group from whom complaint is received", "FY 2026-27 Complaints filed", "FY 2026-27 Pending", "FY 2024-25 Complaints filed", "FY 2024-25 Pending"],
+            "columns": ["Stakeholder group from whom complaint is received", "FY {FY0} Complaints filed", "FY {FY0} Pending", "FY {FY1} Complaints filed", "FY {FY1} Pending"],
             "rows": [
-              {"label": "Communities", "fields": [{"column": "FY 2026-27 Complaints filed", "name": "complaintsCommunityFiledCY", "type": "number"}, {"column": "FY 2026-27 Pending", "name": "complaintsCommunityPendingCY", "type": "number"}, {"column": "FY 2024-25 Complaints filed", "name": "complaintsCommunityFiledPY", "type": "number"}, {"column": "FY 2024-25 Pending", "name": "complaintsCommunityPendingPY", "type": "number"}]},
-              {"label": "Investors (other than shareholders)", "fields": [{"column": "FY 2026-27 Complaints filed", "name": "complaintsInvestorFiledCY", "type": "number"}, {"column": "FY 2026-27 Pending", "name": "complaintsInvestorPendingCY", "type": "number"}, {"column": "FY 2024-25 Complaints filed", "name": "complaintsInvestorFiledPY", "type": "number"}, {"column": "FY 2024-25 Pending", "name": "complaintsInvestorPendingPY", "type": "number"}]},
-              {"label": "Shareholders", "fields": [{"column": "FY 2026-27 Complaints filed", "name": "complaintsShareholderFiledCY", "type": "number"}, {"column": "FY 2026-27 Pending", "name": "complaintsShareholderPendingCY", "type": "number"}, {"column": "FY 2024-25 Complaints filed", "name": "complaintsShareholderFiledPY", "type": "number"}, {"column": "FY 2024-25 Pending", "name": "complaintsShareholderPendingPY", "type": "number"}]},
-              {"label": "Employees and workers", "fields": [{"column": "FY 2026-27 Complaints filed", "name": "complaintsEmployeeFiledCY", "type": "number"}, {"column": "FY 2026-27 Pending", "name": "complaintsEmployeePendingCY", "type": "number"}, {"column": "FY 2024-25 Complaints filed", "name": "complaintsEmployeeFiledPY", "type": "number"}, {"column": "FY 2024-25 Pending", "name": "complaintsEmployeePendingPY", "type": "number"}]},
-              {"label": "Customers", "fields": [{"column": "FY 2026-27 Complaints filed", "name": "complaintsCustomerFiledCY", "type": "number"}, {"column": "FY 2026-27 Pending", "name": "complaintsCustomerPendingCY", "type": "number"}, {"column": "FY 2024-25 Complaints filed", "name": "complaintsCustomerFiledPY", "type": "number"}, {"column": "FY 2024-25 Pending", "name": "complaintsCustomerPendingPY", "type": "number"}]},
-              {"label": "Value Chain Partners", "fields": [{"column": "FY 2026-27 Complaints filed", "name": "complaintsValueChainFiledCY", "type": "number"}, {"column": "FY 2026-27 Pending", "name": "complaintsValueChainPendingCY", "type": "number"}, {"column": "FY 2024-25 Complaints filed", "name": "complaintsValueChainFiledPY", "type": "number"}, {"column": "FY 2024-25 Pending", "name": "complaintsValueChainPendingPY", "type": "number"}]}
+              {"label": "Communities", "fields": [ { "column": "FY {FY0} Complaints filed", "name": "complaintsCommunityFiledCY", "type": "number" }, { "column": "FY {FY0} Pending", "name": "complaintsCommunityPendingCY", "type": "number" }, { "column": "FY {FY1} Complaints filed", "name": "complaintsCommunityFiledPY", "type": "number" }, { "column": "FY {FY1} Pending", "name": "complaintsCommunityPendingPY", "type": "number" }]},
+              {"label": "Investors (other than shareholders)", "fields": [{"column": "FY {FY0} Complaints filed", "name": "complaintsInvestorFiledCY", "type": "number"}, {"column": "FY {FY0} Pending", "name": "complaintsInvestorPendingCY", "type": "number"}, {"column": "FY {FY1} Complaints filed", "name": "complaintsInvestorFiledPY", "type": "number"}, {"column": "FY {FY1} Pending", "name": "complaintsInvestorPendingPY", "type": "number"}]},
+              {"label": "Shareholders", "fields": [{"column": "FY {FY0} Complaints filed", "name": "complaintsShareholderFiledCY", "type": "number"}, {"column": "FY {FY0} Pending", "name": "complaintsShareholderPendingCY", "type": "number"}, {"column": "FY {FY1} Complaints filed", "name": "complaintsShareholderFiledPY", "type": "number"}, {"column": "FY {FY1} Pending", "name": "complaintsShareholderPendingPY", "type": "number"}]},
+              {"label": "Employees and workers", "fields": [{"column": "FY {FY0} Complaints filed", "name": "complaintsEmployeeFiledCY", "type": "number"}, {"column": "FY {FY0} Pending", "name": "complaintsEmployeePendingCY", "type": "number"}, {"column": "FY {FY1} Complaints filed", "name": "complaintsEmployeeFiledPY", "type": "number"}, {"column": "FY {FY1} Pending", "name": "complaintsEmployeePendingPY", "type": "number"}]},
+              {"label": "Customers", "fields": [{"column": "FY {FY0} Complaints filed", "name": "complaintsCustomerFiledCY", "type": "number"}, {"column": "FY {FY0} Pending", "name": "complaintsCustomerPendingCY", "type": "number"}, {"column": "FY {FY1} Complaints filed", "name": "complaintsCustomerFiledPY", "type": "number"}, {"column": "FY {FY1} Pending", "name": "complaintsCustomerPendingPY", "type": "number"}]},
+              {"label": "Value Chain Partners", "fields": [{"column": "FY {FY0} Complaints filed", "name": "complaintsValueChainFiledCY", "type": "number"}, {"column": "FY {FY0} Pending", "name": "complaintsValueChainPendingCY", "type": "number"}, {"column": "FY {FY1} Complaints filed", "name": "complaintsValueChainFiledPY", "type": "number"}, {"column": "FY {FY1} Pending", "name": "complaintsValueChainPendingPY", "type": "number"}]}
             ]
           },
           {

@@ -626,6 +626,7 @@
     font-size:13px;
     font-weight:700;
     cursor:pointer;
+    transition:all .2s ease;
   }
 
   .btn-brsr.primary{
@@ -651,6 +652,38 @@
   .btn-brsr.warn{
     background:var(--warn);
     color:#fff;
+  }
+
+  .btn-brsr.danger{
+    background:var(--danger);
+    color:#fff;
+  }
+
+  .btn-brsr.danger:hover{
+    background:#b91c1c;
+  }
+
+  .btn-brsr-sm{
+    padding:4px 10px;
+    font-size:12px;
+    border-radius:6px;
+  }
+
+  .btn-brsr-sm.danger{
+    background:var(--danger);
+    color:#fff;
+  }
+
+  .btn-brsr-sm.danger:hover{
+    background:#b91c1c;
+  }
+
+  .text-center{
+    text-align:center;
+  }
+
+  .mt-2{
+    margin-top:8px;
   }
 
   .assignment-launcher{
@@ -759,90 +792,120 @@
   }
 
   .workspace-input[readonly],
-  .workspace-textarea[readonly] {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    border: 1px solid #cbd5e1;
-    cursor: not-allowed;
-    font-weight: 600;
+  .workspace-textarea[readonly]{
+    background-color:#f3f4f6;
+    color:#6b7280;
+    border:1px solid #cbd5e1;
+    cursor:not-allowed;
+    font-weight:600;
   }
 
   .workspace-input[readonly]:focus,
-  .workspace-textarea[readonly]:focus {
-    box-shadow: none;
-    border-color: #cbd5e1;
+  .workspace-textarea[readonly]:focus{
+    box-shadow:none;
+    border-color:#cbd5e1;
   }
 
-  /* Supporting Documents Styles */
-  .uploaded-files {
-    margin-top: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  /* Validation styles - only show errors after blur or submit */
+  .form-group.has-error input,
+  .form-group.has-error textarea,
+  .form-group.has-error select {
+    border-color: #dc2626;
   }
 
-  .uploaded-file {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-  }
-
-  .uploaded-file:hover {
-    background: #f1f5f9;
-  }
-
-  .uploaded-file .file-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .uploaded-file .file-info a {
-    color: var(--brand);
-    text-decoration: none;
+  .form-group.has-error .invalid-feedback {
+    display: block !important;
+    color: #dc2626;
     font-size: 13px;
-    word-break: break-all;
+    margin-top: 4px;
   }
 
-  .uploaded-file .file-info a:hover {
-    text-decoration: underline;
+  .form-group input.is-valid,
+  .form-group textarea.is-valid,
+  .form-group select.is-valid {
+    border-color: #16a34a;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2316a34a' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    padding-right: calc(1.5em + 0.75rem);
   }
 
-  .uploaded-file .file-size {
-    font-size: 11px;
-    color: var(--muted);
+  .form-group input.is-invalid,
+  .form-group textarea.is-invalid,
+  .form-group select.is-invalid {
+    border-color: #dc2626;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc2626'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc2626' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    padding-right: calc(1.5em + 0.75rem);
+  }
+
+  .invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc2626;
+  }
+
+  /* Hide validation states for fields that haven't been blurred */
+  .form-group input[data-blurred="false"].is-invalid,
+  .form-group textarea[data-blurred="false"].is-invalid,
+  .form-group select[data-blurred="false"].is-invalid {
+    border-color: var(--border);
+    background-image: none;
+    padding-right: 12px;
+  }
+
+  .form-group input[data-blurred="false"].is-valid,
+  .form-group textarea[data-blurred="false"].is-valid,
+  .form-group select[data-blurred="false"].is-valid {
+    border-color: var(--border);
+    background-image: none;
+    padding-right: 12px;
+  }
+
+  /* Show validation states only for fields that have been blurred */
+  .form-group input[data-blurred="true"].is-invalid,
+  .form-group textarea[data-blurred="true"].is-invalid,
+  .form-group select[data-blurred="true"].is-invalid {
+    border-color: #dc2626;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc2626'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc2626' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    padding-right: calc(1.5em + 0.75rem);
+  }
+
+  .form-group input[data-blurred="true"].is-valid,
+  .form-group textarea[data-blurred="true"].is-valid,
+  .form-group select[data-blurred="true"].is-valid {
+    border-color: #16a34a;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2316a34a' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    padding-right: calc(1.5em + 0.75rem);
+  }
+
+  /* Error message only shows when field has been blurred and is invalid */
+  .form-group input[data-blurred="false"] ~ .invalid-feedback,
+  .form-group textarea[data-blurred="false"] ~ .invalid-feedback,
+  .form-group select[data-blurred="false"] ~ .invalid-feedback {
+    display: none !important;
+  }
+
+  .table-container > table td:last-child,
+  .data-table td:last-child {
     white-space: nowrap;
+    min-width: 80px;
   }
 
-  .uploaded-file .btn-delete-doc {
-    background: none;
-    border: none;
-    color: var(--danger);
-    cursor: pointer;
-    font-size: 18px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-
-  .uploaded-file .btn-delete-doc:hover {
-    background: var(--danger-bg);
-    transform: scale(1.1);
-  }
-
-  .uploaded-file .btn-delete-doc:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
+  .table-container > table td .btn-brsr,
+  .data-table td .btn-brsr {
+    min-width: 60px;
   }
 </style>
 {% endblock %}
@@ -1086,6 +1149,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/validation.js' %}"></script>
 <script>
   const API_SCHEDULE_CREATE = "{{ assignment_schedule_create_api_url|escapejs }}";
   const API_WORKSPACE = "{{ workspace_api_url|escapejs }}";
@@ -1109,6 +1173,140 @@
     workspace: null,
     activeQuestion: null,
   };
+
+  // ============================================================
+  // FINANCIAL YEAR HELPER FUNCTION
+  // ============================================================
+  function getFinancialYears() {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    // Financial year starts in April
+    const startYear = today.getMonth() >= 3 ? currentYear : currentYear - 1;
+    
+    return {
+      FY0: startYear + '-' + String(startYear + 1).slice(-2),
+      FY1: (startYear - 2) + '-' + String(startYear - 1).slice(-2),
+      FY2: (startYear - 4) + '-' + String(startYear - 3).slice(-2)
+    };
+  }
+
+  // ============================================================
+  // REPLACE FINANCIAL YEAR PLACEHOLDERS IN COLUMNS
+  // ============================================================
+  function replaceFinancialYearPlaceholders(columns) {
+    if (!columns || !Array.isArray(columns)) return columns;
+    const fy = getFinancialYears();
+    return columns.map(col => {
+      return col
+        .replace(/\{FY0\}/g, fy.FY0)
+        .replace(/\{FY1\}/g, fy.FY1)
+        .replace(/\{FY2\}/g, fy.FY2);
+    });
+  }
+
+  // ============================================================
+  // REPLACE FINANCIAL YEAR PLACEHOLDERS IN FIELD LABELS
+  // ============================================================
+  function replaceFinancialYearPlaceholdersInFields(fields) {
+    if (!fields || !Array.isArray(fields)) return fields;
+    const fy = getFinancialYears();
+    
+    return fields.map(field => {
+      if (field.label) {
+        field.label = field.label
+          .replace(/\{FY0\}/g, fy.FY0)
+          .replace(/\{FY1\}/g, fy.FY1)
+          .replace(/\{FY2\}/g, fy.FY2);
+      }
+      if (field.column) {
+        field.column = field.column
+          .replace(/\{FY0\}/g, fy.FY0)
+          .replace(/\{FY1\}/g, fy.FY1)
+          .replace(/\{FY2\}/g, fy.FY2);
+      }
+      if (field.placeholder) {
+        field.placeholder = field.placeholder
+          .replace(/\{FY0\}/g, fy.FY0)
+          .replace(/\{FY1\}/g, fy.FY1)
+          .replace(/\{FY2\}/g, fy.FY2);
+      }
+      if (field.name) {
+        field.name = field.name
+          .replace(/\{FY0\}/g, fy.FY0)
+          .replace(/\{FY1\}/g, fy.FY1)
+          .replace(/\{FY2\}/g, fy.FY2);
+      }
+      if (field.fields && Array.isArray(field.fields)) {
+        field.fields = replaceFinancialYearPlaceholdersInFields(field.fields);
+      }
+      return field;
+    });
+  }
+
+  // ============================================================
+  // REPLACE FINANCIAL YEAR PLACEHOLDERS IN ROWS
+  // ============================================================
+  function replaceFinancialYearPlaceholdersInRows(rows) {
+    if (!rows || !Array.isArray(rows)) return rows;
+    
+    return rows.map(row => {
+      if (row.label) {
+        row.label = row.label
+          .replace(/\{FY0\}/g, getFinancialYears().FY0)
+          .replace(/\{FY1\}/g, getFinancialYears().FY1)
+          .replace(/\{FY2\}/g, getFinancialYears().FY2);
+      }
+      if (row.fields && Array.isArray(row.fields)) {
+        row.fields = replaceFinancialYearPlaceholdersInFields(row.fields);
+      }
+      return row;
+    });
+  }
+
+  // ============================================================
+  // PROCESS QUESTION FIELDS FOR FINANCIAL YEAR PLACEHOLDERS
+  // ============================================================
+  function processQuestionFields(fields) {
+    if (!fields || !Array.isArray(fields)) return fields;
+    
+    return fields.map(field => {
+      // Process table columns
+      if (field.kind === 'table' && field.columns) {
+        field.columns = replaceFinancialYearPlaceholders(field.columns);
+      }
+      
+      // Process table rows
+      if (field.kind === 'table' && field.rows) {
+        field.rows = replaceFinancialYearPlaceholdersInRows(field.rows);
+      }
+      
+      // Process nested fields
+      if (field.fields && Array.isArray(field.fields)) {
+        field.fields = processQuestionFields(field.fields);
+      }
+      
+      return field;
+    });
+  }
+
+  // ============================================================
+  // PROCESS WORKSPACE DATA FOR FINANCIAL YEAR PLACEHOLDERS
+  // ============================================================
+  function processWorkspaceData(workspace) {
+    if (!workspace || !workspace.topics) return workspace;
+    
+    workspace.topics = workspace.topics.map(topic => {
+      if (topic.fields && Array.isArray(topic.fields)) {
+        topic.fields = processQuestionFields(topic.fields);
+      }
+      if (topic.validation_rules && topic.validation_rules.fields) {
+        topic.validation_rules.fields = processQuestionFields(topic.validation_rules.fields);
+      }
+      return topic;
+    });
+    
+    return workspace;
+  }
 
   function getCookie(name) {
     const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
@@ -1250,357 +1448,68 @@
     return fallback;
   }
 
-  // ============================================
-  // COMPLETE VALIDATION SYSTEM
-  // ============================================
-
-  const VALIDATION_RULES = {
-    cin: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'CIN number is required' };
-        }
-        const clean = value.replace(/\s/g, '').toUpperCase();
-        if (clean.length !== 21) {
-          return { valid: false, message: `CIN must be exactly 21 characters (currently ${clean.length})` };
-        }
-        if (!/^[A-Z0-9]{21}$/.test(clean)) {
-          return { valid: false, message: 'CIN must contain only uppercase letters (A-Z) and numbers (0-9)' };
-        }
-        return { valid: true, message: '✓ Valid CIN number' };
-      },
-      format: function(value) {
-        return value ? value.replace(/\s/g, '').toUpperCase() : '';
-      },
-      maxLength: 21,
-      pattern: '[A-Z0-9]{21}',
-      placeholder: 'Enter 21-character CIN (e.g., L12345XX2020PLC123456)',
-      helpText: '21 alphanumeric characters (A-Z, 0-9)'
-    },
-    // Only alphabetic characters (letters) - no numbers, no special characters
-    alphabetic: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'This field is required' };
-        }
-        // Allow only letters (A-Z, a-z) and spaces
-        if (!/^[A-Za-z\s]+$/.test(value.trim())) {
-          return { valid: false, message: 'Must contain only letters (A-Z) and spaces' };
-        }
-        return { valid: true, message: '✓ Valid' };
-      },
-      format: function(value) {
-        return value ? value.trim() : '';
-      },
-      maxLength: 100,
-      pattern: '[A-Za-z\\s]*',
-      placeholder: 'Enter text',
-      helpText: 'Letters only (A-Z, a-z) and spaces'
-    },
-    // Phone Number - Exactly 10 digits (for Contact Person Phone)
-    phone: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'Phone number is required' };
-        }
-        // Remove spaces, hyphens, brackets, plus signs
-        const clean = value.replace(/[\s\-\(\)\+]/g, '');
-        // Check if only digits (0-9)
-        if (!/^[0-9]+$/.test(clean)) {
-          return { valid: false, message: 'Phone number must contain only digits (0-9)' };
-        }
-        if (clean.length !== 10) {
-          return { valid: false, message: `Phone number must be exactly 10 digits (currently ${clean.length})` };
-        }
-        return { valid: true, message: '✓ Valid phone number' };
-      },
-      format: function(value) {
-        return value ? value.replace(/[\s\-\(\)\+]/g, '') : '';
-      },
-      maxLength: 10,
-      pattern: '[0-9]{10}',
-      placeholder: 'Enter 10-digit phone number',
-      helpText: '10 digits only (e.g., 9876543210)'
-    },
-
-    // Telephone - Numbers only (no characters allowed)
-    telephone: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'Telephone number is required' };
-        }
-        // Remove spaces, hyphens, brackets, plus signs
-        const clean = value.replace(/[\s\-\(\)\+]/g, '');
-        // Check if only digits (0-9)
-        if (!/^[0-9]+$/.test(clean)) {
-          return { valid: false, message: 'Telephone must contain only digits (0-9)' };
-        }
-        // NO LENGTH VALIDATION - accept any number of digits
-        return { valid: true, message: '✓ Valid telephone number' };
-      },
-      format: function(value) {
-        return value ? value.replace(/[\s\-\(\)\+]/g, '') : '';
-      },
-      maxLength: 50,
-      pattern: '[0-9]*',
-      placeholder: 'Enter telephone number',
-      helpText: 'Numbers only (any length allowed)'
-    },
-    // Email Validation - Must contain @ symbol
-    email: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'Email is required' };
-        }
-        // Check if email contains @ symbol
-        if (!value.includes('@')) {
-          return { valid: false, message: 'Email must contain @ symbol' };
-        }
-        // Basic format check - must have something before and after @
-        const parts = value.split('@');
-        if (parts.length !== 2 || parts[0].trim() === '' || parts[1].trim() === '') {
-          return { valid: false, message: 'Please enter a valid email address (e.g., name@domain.com)' };
-        }
-        return { valid: true, message: '✓ Valid email address' };
-      },
-      format: function(value) {
-        return value ? value.trim().toLowerCase() : '';
-      },
-      maxLength: 100,
-      placeholder: 'Enter email address',
-      helpText: 'Must contain @ symbol (e.g., name@company.com)'
-    },
-    
-    url: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'URL is required' };
-        }
-        try {
-          const url = new URL(value.trim());
-          if (!['http:', 'https:'].includes(url.protocol)) {
-            return { valid: false, message: 'URL must start with http:// or https://' };
-          }
-          return { valid: true, message: '✓ Valid URL' };
-        } catch(e) {
-          return { valid: false, message: 'Please enter a valid URL' };
-        }
-      },
-      format: function(value) {
-        return value ? value.trim() : '';
-      },
-      maxLength: 255,
-      placeholder: 'Enter website URL',
-      helpText: 'e.g., https://www.company.com'
-    },
-    
-    number_with_unit: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'Value is required' };
-        }
-        // Remove commas for validation
-        const cleanValue = value.replace(/,/g, '');
-        // Allow numbers with decimals and optional unit (cr, lakh, million, billion, k, thousand)
-        const pattern = /^[\d]+(\.\d+)?\s*(cr|lakh|million|billion|k|thousand)?$/i;
-        if (!pattern.test(cleanValue.trim())) {
-          return { valid: false, message: 'Invalid format. Use number with optional unit (cr, lakh, million, etc.)' };
-        }
-        return { valid: true, message: '✓ Valid value' };
-      },
-      format: function(value) {
-        return value ? value.trim() : '';
-      },
-      placeholder: 'Enter amount (e.g., 34.567 cr, 34,567cr, 100 lakh)',
-      helpText: 'Example: 34.567 cr, 34,567cr, 100 lakh, 1.5 million'
-    },
-    pincode: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'PIN code is required' };
-        }
-        const clean = value.replace(/\s/g, '');
-        if (!/^[0-9]{6}$/.test(clean)) {
-          return { valid: false, message: 'PIN code must be exactly 6 digits' };
-        }
-        return { valid: true, message: '✓ Valid PIN code' };
-      },
-      format: function(value) {
-        return value ? value.replace(/\s/g, '') : '';
-      },
-      maxLength: 6,
-      pattern: '[0-9]{6}',
-      placeholder: 'Enter 6-digit PIN code',
-      helpText: '6 digits only'
-    },
-    
-    gst: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'GST number is required' };
-        }
-        const clean = value.replace(/\s/g, '').toUpperCase();
-        if (clean.length !== 15) {
-          return { valid: false, message: 'GST must be exactly 15 characters' };
-        }
-        if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(clean)) {
-          return { valid: false, message: 'Invalid GST format' };
-        }
-        return { valid: true, message: '✓ Valid GST number' };
-      },
-      format: function(value) {
-        return value ? value.replace(/\s/g, '').toUpperCase() : '';
-      },
-      maxLength: 15,
-      pattern: '[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}',
-      placeholder: 'Enter 15-character GST number',
-      helpText: 'e.g., 22AAAAA0000A1Z5'
-    },
-    
-    pan: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'PAN number is required' };
-        }
-        const clean = value.replace(/\s/g, '').toUpperCase();
-        if (clean.length !== 10) {
-          return { valid: false, message: 'PAN must be exactly 10 characters' };
-        }
-        if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(clean)) {
-          return { valid: false, message: 'Invalid PAN format' };
-        }
-        return { valid: true, message: '✓ Valid PAN number' };
-      },
-      format: function(value) {
-        return value ? value.replace(/\s/g, '').toUpperCase() : '';
-      },
-      maxLength: 10,
-      pattern: '[A-Z]{5}[0-9]{4}[A-Z]{1}',
-      placeholder: 'Enter 10-character PAN number',
-      helpText: 'e.g., ABCDE1234F'
-    },
-    
-    year: {
-      validate: function(value) {
-        if (!value || value.trim() === '') {
-          return { valid: false, message: 'Year is required' };
-        }
-        const clean = value.trim();
-        if (!/^[0-9]{4}$/.test(clean)) {
-          return { valid: false, message: 'Year must be 4 digits' };
-        }
-        const year = parseInt(clean);
-        const currentYear = new Date().getFullYear();
-        if (year < 1900 || year > currentYear + 10) {
-          return { valid: false, message: `Year must be between 1900 and ${currentYear + 10}` };
-        }
-        return { valid: true, message: '✓ Valid year' };
-      },
-      format: function(value) {
-        return value ? value.trim() : '';
-      },
-      maxLength: 4,
-      pattern: '[0-9]{4}',
-      placeholder: 'Enter year (e.g., 2024)',
-    }
-  };
-
-  function validateField(value, fieldName, fieldType, isRequired = true) {
-    if (isRequired && (!value || value.trim() === '')) {
-      return { valid: false, message: 'This field is required' };
-    }
-    
-    if (!isRequired && (!value || value.trim() === '')) {
-      return { valid: true, message: '' };
-    }
-    
-    const rule = VALIDATION_RULES[fieldType];
-    if (!rule) {
-      return { valid: true, message: '' };
-    }
-    
-    return rule.validate(value);
+  function getFieldMaxlength(fieldType) {
+    const map = {
+      'alphabetic': 100,
+      'alphanumeric': 100,
+      'phone': 15,
+      'telephone': 15,
+      'email': 254,
+      'url': 2048,
+      'year': 4,
+      'cin': 21,
+      'pan': 10,
+      'gst': 15,
+      'aadhaar': 12,
+      'pin_code': 6,
+      'ifsc': 11,
+      'account_number': 18,
+    };
+    return map[fieldType] || null;
   }
 
-  function handleValidationInput(inputElement) {
-    if (!inputElement) return;
-    
-    const fieldName = inputElement.dataset.fieldName;
-    const fieldType = inputElement.dataset.fieldType || '';
-    const isRequired = inputElement.dataset.validationRequired !== 'false';
-    const value = inputElement.value;
-    
-    const formGroup = inputElement.closest('.form-group');
-    if (!formGroup) return;
-    
-    const messageElement = formGroup.querySelector('.validation-message');
-    if (!messageElement) return;
-    
-    const validation = validateField(value, fieldName, fieldType, isRequired);
-    
-    if (!validation.valid) {
-      messageElement.style.display = 'block';
-      messageElement.style.color = '#dc2626';
-      messageElement.textContent = '✗ ' + validation.message;
-      inputElement.style.borderColor = '#dc2626';
-      inputElement.style.backgroundColor = '#fef2f2';
-    } else if (value && value.trim() !== '') {
-      messageElement.style.display = 'block';
-      messageElement.style.color = '#16a34a';
-      messageElement.textContent = validation.message || '✓ Valid';
-      inputElement.style.borderColor = '#16a34a';
-      inputElement.style.backgroundColor = '#f0fdf4';
-    } else {
-      messageElement.style.display = 'none';
-      inputElement.style.borderColor = '';
-      inputElement.style.backgroundColor = '';
-    }
+  function getFieldInputmode(fieldType) {
+    const map = {
+      'alphabetic': 'text',
+      'alphanumeric': 'text',
+      'phone': 'tel',
+      'telephone': 'tel',
+      'email': 'email',
+      'url': 'url',
+      'number': 'numeric',
+      'decimal': 'decimal',
+      'percentage': 'decimal',
+      'year': 'numeric',
+      'pin_code': 'numeric',
+      'account_number': 'numeric',
+    };
+    return map[fieldType] || null;
   }
 
-  // ============================================
-  // RENDER FIELD CONTROL WITH VALIDATION
-  // ============================================
+  function getFieldPattern(fieldType) {
+    const map = {
+      'phone': '[0-9]{10,15}',
+      'year': '[0-9]{4}',
+      'aadhaar': '[0-9]{12}',
+      'pin_code': '[0-9]{6}',
+    };
+    return map[fieldType] || null;
+  }
 
   function renderFieldControl(question, field, index, disabled = false) {
     const fieldName = field.name || `field_${index + 1}`;
     const fieldLabel = field.label || field.name || `Field ${index + 1}`;
     const fieldValue = getStoredFieldValue(question, fieldName, '');
     const disabledAttr = disabled ? 'disabled aria-disabled="true"' : '';
-    const isRequired = field.required !== false;
-
-    let fieldType = field.field_type || field.type || '';
-    let validationRule = null;
-    
-    // In renderFieldControl - Correct mapping
-    if (fieldType === 'cin' || fieldName === 'cin' || fieldName === 'cin_number') {
-      validationRule = VALIDATION_RULES.cin;
-    } else if (fieldType === 'telephone' || fieldName === 'telephone') {
-      validationRule = VALIDATION_RULES.telephone;
-    } else if (fieldType === 'phone' || fieldType === 'tel' || fieldName === 'contactPersonPhone') {
-      validationRule = VALIDATION_RULES.phone;
-    } else if (fieldType === 'email' || fieldName === 'email' || fieldName === 'contactPersonEmail') {
-      validationRule = VALIDATION_RULES.email;
-    } else if (fieldType === 'url' || fieldName === 'website') {
-      validationRule = VALIDATION_RULES.url;
-    } else if (fieldType === 'number_with_unit' || fieldName === 'paidUpCapital') {
-      validationRule = VALIDATION_RULES.number_with_unit;
-    } else if (fieldType === 'year' || fieldName === 'yearIncorporation') {
-      validationRule = VALIDATION_RULES.year;
-    } else if (fieldType === 'alphabetic' || 
-              fieldName === 'entityName' || 
-              fieldName === 'contactPersonName' || 
-              fieldName === 'contactPersonDesignation') {
-      validationRule = VALIDATION_RULES.alphabetic;
-    }
+    const fieldType = field.field_type || field.type || 'text';
+    const isRequired = field.required === true;
+    const dataValidation = `data-validation="${fieldType}" data-required="${isRequired}" data-field-name="${fieldName}"`;
 
     if (field.kind === 'radio') {
       const options = Array.isArray(field.options) ? field.options : [];
       return `
-        <div class="form-group">
-          <label class="form-label">
-            ${escapeHtml(fieldLabel)}
-            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
-          </label>
+        <div class="form-group" data-field-type="${fieldType}">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
           <div class="choice-stack">
             ${options.map((option) => {
               const label = option.label ?? option.value ?? option;
@@ -1608,12 +1517,13 @@
               const checked = String(optionValue) === String(fieldValue) ? 'checked' : '';
               return `
                 <label class="choice-item">
-                  <input type="radio" name="responseValue-${escapeHtml(fieldName)}" value="${escapeHtml(optionValue)}" data-field-name="${escapeHtml(fieldName)}" ${checked} ${disabledAttr}>
+                  <input type="radio" name="responseValue-${escapeHtml(fieldName)}" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr} ${dataValidation}>
                   <span>${escapeHtml(label)}</span>
                 </label>
               `;
             }).join('')}
           </div>
+          <div class="invalid-feedback"></div>
         </div>
       `;
     }
@@ -1622,11 +1532,8 @@
       const selected = Array.isArray(fieldValue) ? fieldValue : String(fieldValue || '').split(',').map((item) => item.trim()).filter(Boolean);
       const items = Array.isArray(field.items) ? field.items : [];
       return `
-        <div class="form-group">
-          <label class="form-label">
-            ${escapeHtml(fieldLabel)}
-            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
-          </label>
+        <div class="form-group" data-field-type="${fieldType}">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
           <div class="choice-stack">
             ${items.map((item) => {
               const label = item.label ?? item.value ?? item.name ?? '';
@@ -1634,348 +1541,142 @@
               const checked = selected.includes(String(optionValue)) ? 'checked' : '';
               return `
                 <label class="choice-item">
-                  <input type="checkbox" value="${escapeHtml(optionValue)}" data-field-name="${escapeHtml(fieldName)}" ${checked} ${disabledAttr}>
+                  <input type="checkbox" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr} ${dataValidation}>
                   <span>${escapeHtml(label)}</span>
                 </label>
               `;
             }).join('')}
           </div>
+          <div class="invalid-feedback"></div>
         </div>
       `;
     }
 
     if (field.kind === 'textarea') {
+      const maxlength = field.maxlength || getFieldMaxlength(fieldType);
       return `
-        <div class="form-group">
-          <label class="form-label">
-            ${escapeHtml(fieldLabel)}
-            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
-          </label>
-          <textarea class="workspace-textarea form-textarea" data-field-name="${escapeHtml(fieldName)}" placeholder="${escapeHtml(field.placeholder || 'Type your response here')}" ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+        <div class="form-group" data-field-type="${fieldType}">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <textarea class="workspace-textarea form-textarea" 
+                    ${dataValidation}
+                    ${maxlength ? `maxlength="${maxlength}"` : ''}
+                    placeholder="${escapeHtml(field.placeholder || 'Type your response here')}" 
+                    ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+          <div class="invalid-feedback"></div>
         </div>
       `;
     }
 
     if (field.kind === 'input') {
-      // FORCE text type for phone/telephone fields so pattern works
-      let inputType = field.type === "calculated" ? "text" : (field.type || "text");
-      
-      // Override type for phone/telephone to use "text" with pattern validation
-      const isPhoneField = fieldType === 'phone' || fieldType === 'telephone' || 
-                          fieldName === 'contactPersonPhone' || fieldName === 'telephone';
-      
-      // Override type for number_with_unit to allow units (cr, lakh, etc.)
-      const isNumberWithUnit = fieldType === 'number_with_unit' || fieldName === 'paidUpCapital';
-      
-      // Check for alphabetic fields
-      const isAlphabetic = fieldType === 'alphabetic' || 
-                          fieldName === 'entityName' || 
-                          fieldName === 'contactPersonName' || 
-                          fieldName === 'contactPersonDesignation';
-      
-      // Force text type for all special fields
-      if (isPhoneField || isNumberWithUnit || isAlphabetic) {
-        inputType = 'text';
-      }
-      
+      const inputType = field.type === "calculated" ? "text" : (field.type || "text");
       const readonly = field.readonly ? "readonly" : "";
-      
-      let maxLength = validationRule?.maxLength || field.max_length || '';
-      let pattern = validationRule?.pattern || field.pattern || '';
-      let placeholder = validationRule?.placeholder || field.placeholder || '';
-      let helpText = validationRule?.helpText || field.help_text || '';
-      const needsValidation = validationRule !== null;
-      
-      let inputMode = '';
-      let onInputFilter = '';
-      
-      if (isPhoneField) {
-        inputMode = 'inputmode="numeric"';
-        onInputFilter = 'oninput="this.value=this.value.replace(/[^0-9]/g,\'\')"';
-      }
-      
-      // Add oninput filter for alphabetic fields
-      if (isAlphabetic) {
-        onInputFilter = 'oninput="this.value=this.value.replace(/[^A-Za-z\\s]/g,\'\')"';
-      }
-      
+      const maxlength = field.maxlength || getFieldMaxlength(fieldType);
+      const inputmode = getFieldInputmode(fieldType);
+      const pattern = getFieldPattern(fieldType);
+
       return `
-        <div class="form-group">
-          <label class="form-label">
-            ${escapeHtml(fieldLabel)}
-            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
-          </label>
-          <input 
-            class="workspace-input" 
-            data-field-name="${escapeHtml(fieldName)}"
-            data-field-type="${escapeHtml(fieldType)}"
-            data-validation-required="${isRequired}"
-            data-formula="${field.formula || ''}"
-            data-format="${field.format || 'number'}"
-            type="${inputType}"
-            value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}"
-            placeholder="${escapeHtml(placeholder)}" 
-            ${readonly} 
-            ${disabledAttr}
-            ${maxLength ? `maxlength="${maxLength}"` : ''}
-            ${pattern ? `pattern="${pattern}"` : ''}
-            ${inputMode}
-            ${onInputFilter}
-            ${needsValidation ? 'oninput="handleValidationInput(this)" onblur="handleValidationInput(this)"' : ''}
-            autocomplete="off"
-          >
-          ${needsValidation ? `
-            <div class="validation-message" style="display:none;margin-top:6px;font-size:12px;"></div>
-            ${helpText ? `<div style="margin-top:4px;font-size:11px;color:#6f7b91;">${escapeHtml(helpText)}</div>` : ''}
-          ` : ''}
+        <div class="form-group" data-field-type="${fieldType}">
+          <label class="form-label">${escapeHtml(fieldLabel)}</label>
+          <input class="workspace-input" 
+                type="${inputType}"
+                ${dataValidation}
+                data-formula="${field.formula || ''}"
+                data-format="${field.format || 'number'}"
+                ${maxlength ? `maxlength="${maxlength}"` : ''}
+                ${inputmode ? `inputmode="${inputmode}"` : ''}
+                ${pattern ? `pattern="${pattern}"` : ''}
+                value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}"
+                placeholder="${escapeHtml(field.placeholder || '')}" 
+                ${readonly} ${disabledAttr}>
+          <div class="invalid-feedback"></div>
         </div>
       `;
     }
 
     if (field.kind === 'table') {
+      const hasDelete = field.allow_delete_rows === true;
+      const hasAdd = field.allow_add_rows === true;
+      
+      // Process columns for financial year placeholders
+      const processedColumns = replaceFinancialYearPlaceholders(field.columns || []);
+      // Process rows for financial year placeholders
+      const processedRows = replaceFinancialYearPlaceholdersInRows(field.rows || []);
+      
+      let headerRow = '<tr>';
+      processedColumns.forEach(col => {
+        headerRow += `<th>${escapeHtml(col)}</th>`;
+      });
+      if (hasDelete) {
+        headerRow += `<th class="text-center" style="width:90px">Action</th>`;
+      }
+      headerRow += '</tr>';
+
+      let bodyRows = '';
+      processedRows.forEach((row, rowIndex) => {
+        let rowHtml = '<tr>';
+        const rowLabel = row.label !== null && row.label !== undefined ? row.label : '';
+        rowHtml += `<td>${escapeHtml(rowLabel)}</td>`;
+        (row.fields || []).forEach(f => {
+          const value = getStoredFieldValue(question, f.name, '');
+          const fType = f.field_type || f.type || 'text';
+          const fDataValidation = `data-validation="${fType}" data-required="${f.required || false}" data-field-name="${f.name}"`;
+          const fMaxlength = f.maxlength || getFieldMaxlength(fType);
+          const fInputmode = getFieldInputmode(fType);
+          const fPattern = getFieldPattern(fType);
+          rowHtml += `
+            <td>
+              <input class="workspace-input"
+                    type="${f.type === 'calculated' ? 'text' : (f.type || 'text')}"
+                    ${fDataValidation}
+                    data-formula="${f.formula || ''}"
+                    data-format="${f.format || 'number'}"
+                    ${fMaxlength ? `maxlength="${fMaxlength}"` : ''}
+                    ${fInputmode ? `inputmode="${fInputmode}"` : ''}
+                    ${fPattern ? `pattern="${fPattern}"` : ''}
+                    value="${escapeHtml(value)}"
+                    ${f.readonly ? 'readonly' : ''}
+                    ${disabled ? 'disabled' : ''}>
+              <div class="invalid-feedback"></div>
+            </td>
+          `;
+        });
+        if (hasDelete) {
+          rowHtml += `<td class="text-center">
+            <button type="button" class="btn-brsr btn-brsr-sm danger js-delete-row">Delete</button>
+          </td>`;
+        }
+        rowHtml += '</tr>';
+        bodyRows += rowHtml;
+      });
+
       return `
-        <div class="form-group">
-          <label class="form-label">
-            ${escapeHtml(field.label)}
-            ${isRequired ? '<span class="required-star" style="color:red;"> *</span>' : ''}
-          </label>
+        <div class="form-group" data-field-type="${fieldType}">
+          <label class="form-label">${escapeHtml(field.label)}</label>
           <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  ${field.columns.map(col => `<th>${escapeHtml(col)}</th>`).join("")}
-                </tr>
-              </thead>
-              <tbody>
-                ${field.rows.map(row => `
-                  <tr>
-                    <td>${escapeHtml(row.label)}</td>
-                    ${row.fields.map(f => {
-                      const value = getStoredFieldValue(question, f.name, "");
-                      return `
-                        <td>
-                          <input
-                            class="workspace-input"
-                            data-field-name="${f.name}"
-                            data-formula="${f.formula || ""}"
-                            data-format="${f.format || "number"}"
-                            type="${f.type === "calculated" ? "text" : (f.type || "text")}"
-                            value="${escapeHtml(value)}"
-                            ${f.readonly ? "readonly" : ""}
-                            ${disabled ? "disabled" : ""}
-                          >
-                        </td>
-                      `;
-                    }).join("")}
-                  </tr>
-                `).join("")}
-              </tbody>
+            <table class="data-table" data-table-name="${escapeHtml(field.name)}">
+              <thead>${headerRow}</thead>
+              <tbody>${bodyRows}</tbody>
             </table>
           </div>
+          ${hasAdd ? `
+            <div class="table-actions mt-2">
+              <button type="button" class="btn-brsr secondary btn-brsr-sm js-add-row" data-table-name="${escapeHtml(field.name)}">
+                Add Row
+              </button>
+            </div>
+          ` : ''}
         </div>
       `;
     }
 
     return `
-      <div class="form-group">
+      <div class="form-group" data-field-type="${fieldType}">
         <label class="form-label">${escapeHtml(fieldLabel)}</label>
-        <textarea class="workspace-textarea form-textarea" data-field-name="${escapeHtml(fieldName)}" ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+        <textarea class="workspace-textarea form-textarea" ${dataValidation} ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+        <div class="invalid-feedback"></div>
       </div>
     `;
   }
-
-  // ============================================
-  // COLLECT PAYLOAD WITH VALIDATION
-  // ============================================
-
-  function collectQuestionPayload(questionId) {
-    const question = state.workspace.topics.find((item) => {
-      const qId = getQuestionId(item);
-      return qId === questionId;
-    });
-    if (!question) return null;
-
-    const container = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
-    if (!container) return null;
-
-    let assignmentId = getNumericAssignmentId();
-    if (!assignmentId && question.assignment_id && !isNaN(parseInt(question.assignment_id))) {
-      assignmentId = question.assignment_id.toString();
-    }
-    if (!assignmentId) {
-      assignmentId = question.assignment_id || '';
-    }
-    if (!assignmentId) {
-      console.error('No assignment ID found for question:', questionId);
-      return null;
-    }
-
-    const payload = { assignment_id: assignmentId };
-    const fields = Array.isArray(question.validation_rules && question.validation_rules.fields) 
-      ? question.validation_rules.fields 
-      : [];
-
-    if (fields.length) {
-      const responseJson = {};
-      let hasValidationError = false;
-      let errorField = null;
-      
-      for (const field of fields) {
-        const fieldName = field.name;
-        if (!fieldName) continue;
-
-        let fieldType = field.field_type || field.type || '';
-        let validationRule = null;
-        
-        // In collectQuestionPayload - add the same mapping
-        if (fieldType === 'cin' || fieldName === 'cin' || fieldName === 'cin_number') {
-          validationRule = VALIDATION_RULES.cin;
-        } else if (fieldType === 'telephone' || fieldName === 'telephone') {
-          validationRule = VALIDATION_RULES.telephone;
-        } else if (fieldType === 'phone' || fieldType === 'tel' || fieldName === 'contactPersonPhone') {
-          validationRule = VALIDATION_RULES.phone;
-        } else if (fieldType === 'email' || fieldName === 'email' || fieldName === 'contactPersonEmail') {
-          validationRule = VALIDATION_RULES.email;
-        } else if (fieldType === 'url' || fieldName === 'website') {
-          validationRule = VALIDATION_RULES.url;
-        } else if (fieldType === 'number_with_unit' || fieldName === 'paidUpCapital') {
-          validationRule = VALIDATION_RULES.number_with_unit;
-        } else if (fieldType === 'year' || fieldName === 'yearIncorporation') {
-          validationRule = VALIDATION_RULES.year;
-        } else if (fieldType === 'alphabetic' || 
-                  fieldName === 'entityName' || 
-                  fieldName === 'contactPersonName' || 
-                  fieldName === 'contactPersonDesignation') {
-          validationRule = VALIDATION_RULES.alphabetic;
-        }
-        
-        const isRequired = field.required !== false;
-
-        if (field.kind === 'radio') {
-          const checked = container.querySelector(`input[type="radio"][data-field-name="${CSS.escape(fieldName)}"]:checked`);
-          const value = checked ? checked.value : '';
-          
-          if (isRequired && !value) {
-            hasValidationError = true;
-            errorField = fieldName;
-            break;
-          }
-          
-          responseJson[fieldName] = value;
-        } else if (field.kind === 'checkbox_group') {
-          const values = Array.from(container.querySelectorAll(`input[type="checkbox"][data-field-name="${CSS.escape(fieldName)}"]:checked`))
-            .map((el) => el.value);
-          
-          if (isRequired && values.length === 0) {
-            hasValidationError = true;
-            errorField = fieldName;
-            break;
-          }
-          
-          responseJson[fieldName] = values;
-        } else if (field.kind === 'table') {
-          const table = container.querySelector(`table[data-field-name="${CSS.escape(fieldName)}"]`);
-          const rows = [];
-          if (table) {
-            table.querySelectorAll('tbody tr').forEach((tr) => {
-              const row = {};
-              tr.querySelectorAll('input, textarea, select').forEach((control) => {
-                const key = control.getAttribute('data-column-name') || control.getAttribute('data-key') || '';
-                if (key) row[key] = control.value;
-              });
-              if (Object.keys(row).length) rows.push(row);
-            });
-          }
-          responseJson[fieldName] = rows;
-        } else {
-          const control = container.querySelector(`${field.kind === 'textarea' ? 'textarea' : 'input'}[data-field-name="${CSS.escape(fieldName)}"]`);
-          let value = control ? control.value : '';
-          
-          if (validationRule && value && value.trim() !== '') {
-            const validation = validationRule.validate(value);
-            if (!validation.valid) {
-              hasValidationError = true;
-              errorField = fieldName;
-              
-              if (control) {
-                control.style.borderColor = '#dc2626';
-                control.style.backgroundColor = '#fef2f2';
-                control.focus();
-                control.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-              
-              const messageElement = control?.closest('.form-group')?.querySelector('.validation-message');
-              if (messageElement) {
-                messageElement.style.display = 'block';
-                messageElement.style.color = '#dc2626';
-                messageElement.textContent = '✗ ' + validation.message;
-              }
-              
-              break;
-            }
-          }
-          
-          if (isRequired && (!value || value.trim() === '')) {
-            hasValidationError = true;
-            errorField = fieldName;
-            
-            if (control) {
-              control.style.borderColor = '#dc2626';
-              control.style.backgroundColor = '#fef2f2';
-              control.focus();
-              control.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            break;
-          }
-          
-          responseJson[fieldName] = value;
-        }
-      }
-      
-      if (hasValidationError) {
-        const field = fields.find(f => f.name === errorField);
-        const label = field ? field.label : errorField;
-        alert(`Please fill in "${label}" correctly.`);
-        return null;
-      }
-      
-      payload.response_json = responseJson;
-      return payload;
-    }
-
-    if (question.question_type === 'table' || question.question_type === 'nested_table') {
-      const table = container.querySelector('.data-table');
-      const rows = [];
-      if (table) {
-        table.querySelectorAll('tbody tr').forEach((tr) => {
-          const row = {};
-          tr.querySelectorAll('td').forEach((td, index) => {
-            if (index === tr.children.length - 1) return;
-            const field = td.querySelector('input, textarea, select');
-            if (!field) return;
-            const key = field.getAttribute('data-key') || `column_${index + 1}`;
-            row[key] = field.value;
-          });
-          rows.push(row);
-        });
-      }
-      payload.response_json = { rows };
-    } else if (question.question_type === 'checkbox' || question.question_type === 'multi_select') {
-      payload.response_value = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map((el) => el.value).join(',');
-    } else if (question.question_type === 'radio' || question.question_type === 'yes_no') {
-      const checked = container.querySelector('input[type="radio"]:checked');
-      payload.response_value = checked ? checked.value : '';
-    } else {
-      const control = container.querySelector(`#responseValue-${CSS.escape(questionId)}`);
-      payload.response_value = control ? control.value : '';
-    }
-    
-    return payload;
-  }
-
-  // ============================================
-  // RENDER FUNCTIONS
-  // ============================================
 
   function renderQuestionInput(question, disabled = false) {
     const value = question.response_value || '';
@@ -1996,15 +1697,28 @@
     }
 
     if (question.question_type === 'textarea' || question.question_type === 'text') {
+      const fieldType = question.field_type || question.question_type || 'text';
+      const isRequired = question.required === true;
+      const maxlength = getFieldMaxlength(fieldType);
       return `
-        <div class="form-group">
+        <div class="form-group" data-field-type="${fieldType}">
           <label class="form-label">Response</label>
-          <textarea class="workspace-textarea form-textarea" id="responseValue-${escapeHtml(qId)}" placeholder="${escapeHtml(question.placeholder_text || 'Type your response here')}" ${disabledAttr}>${escapeHtml(value)}</textarea>
+          <textarea class="workspace-textarea form-textarea" 
+                    id="responseValue-${escapeHtml(qId)}"
+                    data-validation="${fieldType}"
+                    data-required="${isRequired}"
+                    data-field-name="responseValue"
+                    ${maxlength ? `maxlength="${maxlength}"` : ''}
+                    placeholder="${escapeHtml(question.placeholder_text || 'Type your response here')}" 
+                    ${disabledAttr}>${escapeHtml(value)}</textarea>
+          <div class="invalid-feedback"></div>
         </div>
       `;
     }
 
     if (question.question_type === 'number' || question.question_type === 'decimal' || question.question_type === 'currency' || question.question_type === 'percentage' || question.question_type === 'year' || question.question_type === 'email' || question.question_type === 'url' || question.question_type === 'date' || question.question_type === 'phone') {
+      const fieldType = question.field_type || question.question_type || 'text';
+      const isRequired = question.required === true;
       const typeMap = {
         number: 'number',
         decimal: 'text',
@@ -2017,34 +1731,34 @@
         phone: 'tel',
       };
       const type = typeMap[question.question_type] || 'text';
+      const maxlength = getFieldMaxlength(fieldType);
+      const inputmode = getFieldInputmode(fieldType);
+      const pattern = getFieldPattern(fieldType);
       return `
-        <div class="form-group">
+        <div class="form-group" data-field-type="${fieldType}">
           <label class="form-label">Response</label>
-          <input class="workspace-input" id="responseValue-${escapeHtml(qId)}" type="${type}" value="${escapeHtml(value)}" placeholder="${escapeHtml(question.placeholder_text || '')}" ${disabledAttr}>
-        </div>
-      `;
-    }
-
-    if (question.question_type === 'select' || question.question_type === 'dropdown') {
-      const items = ['<option value="">Select an option</option>'].concat(
-        options.map((option) => {
-          const label = option.label ?? option.value ?? option;
-          const optionValue = option.value ?? option.label ?? option;
-          const selected = String(optionValue) === String(value) ? 'selected' : '';
-          return `<option value="${escapeHtml(optionValue)}" ${selected}>${escapeHtml(label)}</option>`;
-        })
-      );
-      return `
-        <div class="form-group">
-          <label class="form-label">Response</label>
-          <select class="workspace-select" id="responseValue-${escapeHtml(qId)}" ${disabledAttr}>${items.join('')}</select>
+          <input class="workspace-input" 
+                id="responseValue-${escapeHtml(qId)}"
+                type="${type}"
+                data-validation="${fieldType}"
+                data-required="${isRequired}"
+                data-field-name="responseValue"
+                ${maxlength ? `maxlength="${maxlength}"` : ''}
+                ${inputmode ? `inputmode="${inputmode}"` : ''}
+                ${pattern ? `pattern="${pattern}"` : ''}
+                value="${escapeHtml(value)}"
+                placeholder="${escapeHtml(question.placeholder_text || '')}" 
+                ${disabledAttr}>
+          <div class="invalid-feedback"></div>
         </div>
       `;
     }
 
     if (question.question_type === 'radio' || question.question_type === 'yes_no') {
+      const fieldType = question.field_type || question.question_type || 'text';
+      const isRequired = question.required === true;
       return `
-        <div class="form-group">
+        <div class="form-group" data-field-type="${fieldType}">
           <label class="form-label">Response</label>
           <div class="choice-stack">
             ${options.map((option) => {
@@ -2053,12 +1767,19 @@
               const checked = String(optionValue) === String(value) ? 'checked' : '';
               return `
                 <label class="choice-item">
-                  <input type="radio" name="responseValue-${escapeHtml(qId)}" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr}>
+                  <input type="radio" 
+                        name="responseValue-${escapeHtml(qId)}" 
+                        value="${escapeHtml(optionValue)}" 
+                        data-validation="${fieldType}"
+                        data-required="${isRequired}"
+                        data-field-name="responseValue"
+                        ${checked} ${disabledAttr}>
                   <span>${escapeHtml(label)}</span>
                 </label>
               `;
             }).join('')}
           </div>
+          <div class="invalid-feedback"></div>
         </div>
       `;
     }
@@ -2115,16 +1836,16 @@
                 ${rows.map((row, index) => `
                   <tr>
                     ${columns.map((column) => {
-                      const key = column.key || column.name;
-                      const cell = row?.[key] ?? '';
-                      const inputType = column.type || 'text';
-                      if (inputType === 'textarea') {
+              const key = column.key || column.name;
+              const cell = row?.[key] ?? '';
+              const inputType = column.type || 'text';
+              if (inputType === 'textarea') {
                         return `<td><textarea data-key="${escapeHtml(key)}" placeholder="${escapeHtml(column.placeholder || '')}" ${disabledAttr}>${escapeHtml(cell)}</textarea></td>`;
-                      }
-                      if (inputType === 'select') {
-                        const choices = Array.isArray(column.options) ? column.options : [];
+              }
+              if (inputType === 'select') {
+                const choices = Array.isArray(column.options) ? column.options : [];
                         return `<td><select data-key="${escapeHtml(key)}" ${disabledAttr}>${choices.map((choice) => `<option value="${escapeHtml(choice)}" ${String(choice) === String(cell) ? 'selected' : ''}>${escapeHtml(choice)}</option>`).join('')}</select></td>`;
-                      }
+              }
                       return `<td><input data-key="${escapeHtml(key)}" type="text" value="${escapeHtml(cell)}" placeholder="${escapeHtml(column.placeholder || '')}" ${disabledAttr}></td>`;
                     }).join('')}
                     <td><button type="button" class="btn-brsr secondary js-remove-row" ${disabledAttr}>-</button></td>
@@ -2205,10 +1926,6 @@
     });
   }
 
-  // ============================================
-  // RENDER QUESTION CARD WITH DOCUMENT DELETE
-  // ============================================
-
   function renderQuestionCard(question, isActive) {
     const selected = isActive ? 'active' : '';
     const qId = getQuestionId(question);
@@ -2222,102 +1939,252 @@
     
     let actionButtons = '';
     if (canSave && !isReviewerView) {
-        actionButtons = `
-            <div class="table-actions">
-                <button type="button" class="btn-brsr secondary js-save-question">Save Draft</button>
-            </div>
-        `;
+      actionButtons = `
+        <div class="table-actions">
+          <button type="button" class="btn-brsr secondary js-save-question">Save Draft</button>
+        </div>
+      `;
     }
 
     const reviewerCommentBlock = isReviewerView ? `
-        <div class="review-comment-box">
-            <span class="review-label">Reviewer Comment</span>
-            <textarea
-                class="workspace-textarea review-comment-input js-review-comment-input"
-                data-question-id="${escapeHtml(qId)}"
-                placeholder="Add a comment for this question"
-            >${escapeHtml(question.review_remark || '')}</textarea>
-            <div class="review-comment-meta">Only the reviewer selected in workflow configuration can add or edit this comment.</div>
-            <div class="table-actions">
-                <button type="button" class="btn-brsr secondary js-save-review-comment" data-question-id="${escapeHtml(qId)}">Save Comment</button>
-            </div>
+      <div class="review-comment-box">
+        <span class="review-label">Reviewer Comment</span>
+        <textarea
+          class="workspace-textarea review-comment-input js-review-comment-input"
+          data-question-id="${escapeHtml(qId)}"
+          placeholder="Add a comment for this question"
+        >${escapeHtml(question.review_remark || '')}</textarea>
+        <div class="review-comment-meta">Only the reviewer selected in workflow configuration can add or edit this comment.</div>
+        <div class="table-actions">
+          <button type="button" class="btn-brsr secondary js-save-review-comment" data-question-id="${escapeHtml(qId)}">Save Comment</button>
         </div>
+      </div>
     ` : '';
-
-    // Build uploaded documents HTML with delete buttons
-    let documentsHtml = '';
-    // Get documents from multiple possible locations
-    const docs = question.documents || (question.response_json && question.response_json.documents) || [];
-    
-    if (Array.isArray(docs) && docs.length > 0) {
-        documentsHtml = `
-            <div class="uploaded-files" style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-                ${docs.map((doc, docIndex) => {
-                    // Try multiple possible field names for document properties
-                    const docId = doc.id || doc.doc_id || doc.document_id || docIndex;
-                    const docName = doc.name || doc.filename || doc.file_name || 'Document';
-                    const docUrl = doc.url || doc.file_url || doc.download_url || '#';
-                    
-                    return `
-                        <div class="uploaded-file" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;">
-                            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
-                                <span>📄</span>
-                                <a href="${escapeHtml(docUrl)}" target="_blank" style="color: var(--brand); text-decoration: none; font-size: 13px; word-break: break-all;">${escapeHtml(docName)}</a>
-                                ${doc.size ? `<span style="font-size: 11px; color: var(--muted); white-space: nowrap;">(${escapeHtml(doc.size)})</span>` : ''}
-                            </div>
-                            <button type="button" class="btn-delete-doc js-delete-doc" 
-                                    data-question-id="${escapeHtml(qId)}" 
-                                    data-doc-id="${escapeHtml(docId)}"
-                                    ${isLocked ? 'disabled' : ''}
-                                    style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 20px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s ease; line-height: 1; flex-shrink: 0; font-weight: 700;"
-                                    title="Remove document">
-                                ✕
-                            </button>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-        `;
-    }
     
     return `
-        <div class="question-container ${selected}" id="question-${escapeHtml(qId)}" data-question-id="${escapeHtml(qId)}">
-            <div class="question-header">
-                <div class="question-header-left">
-                    ${isReviewerView ? '' : `<input type="checkbox" class="question-checkbox js-question-select" data-question-id="${escapeHtml(qId)}">`}
-                    <div>
-                        <h3 class="question-title"><span class="question-number">${escapeHtml(question.question_number)}.</span>${escapeHtml(question.title)}</h3>
-                    </div>
-                </div>
-                <span class="status-badge ${statusClass(question.status)}">${escapeHtml(badgeText)}</span>
+      <div class="question-container ${selected}" id="question-${escapeHtml(qId)}" data-question-id="${escapeHtml(qId)}">
+        <div class="question-header">
+          <div class="question-header-left">
+            ${isReviewerView ? '' : `<input type="checkbox" class="question-checkbox js-question-select" data-question-id="${escapeHtml(qId)}">`}
+            <div>
+              <h3 class="question-title"><span class="question-number">${escapeHtml(question.question_number)}.</span>${escapeHtml(question.title)}</h3>
             </div>
-            <div class="question-content">
-                <fieldset class="question-fieldset" ${isLocked ? 'disabled' : ''}>
-                    ${renderQuestionInput(question, isLocked)}
-                    <div class="form-group">
-                        <label class="form-label">
-                            Supporting Documents
-                            <small>(Optional)</small>
-                        </label>
-
-                        <input
-                            type="file"
-                            class="workspace-input js-document-upload"
-                            data-question-id="${escapeHtml(qId)}"
-                            multiple
-                            ${isLocked ? "disabled" : ""}
-                            style="margin-bottom: 8px;"
-                        >
-
-                        ${documentsHtml}
-                    </div>
-                    ${actionButtons}
-                </fieldset>
-                ${reviewerCommentBlock}
-            </div>
+          </div>
+          <span class="status-badge ${statusClass(question.status)}">${escapeHtml(badgeText)}</span>
         </div>
+        <div class="question-content">
+          <fieldset class="question-fieldset" ${isLocked ? 'disabled' : ''}>
+            ${renderQuestionInput(question, isLocked)}
+            <div class="form-group">
+              <label class="form-label">
+                  Supporting Documents
+                  <small>(Optional)</small>
+              </label>
+
+              <input
+                  type="file"
+                  class="workspace-input js-document-upload"
+                  data-question-id="${escapeHtml(qId)}"
+                  multiple
+                  ${isLocked ? "disabled" : ""}
+              >
+
+              ${
+                  Array.isArray(question.documents) && question.documents.length
+                      ? `
+                      <div class="uploaded-files">
+                          ${question.documents.map(doc => `
+                              <div class="uploaded-file">
+                                  <a href="${doc.url}" target="_blank">
+                                      📄 ${escapeHtml(doc.name)}
+                                  </a>
+                              </div>
+                          `).join("")}
+                      </div>
+                      `
+                      : ""
+              }
+            </div>
+            ${actionButtons}
+          </fieldset>
+          ${reviewerCommentBlock}
+        </div>
+      </div>
     `;
-}
+  }
+
+  function addTableRow(button) {
+    const formGroup = button.closest('.form-group');
+    if (!formGroup) {
+      console.error('Form group not found for add row button');
+      return;
+    }
+    
+    const table = formGroup.querySelector('.data-table');
+    if (!table) {
+      console.error('Table not found for add row button');
+      return;
+    }
+    
+    const tbody = table.querySelector("tbody");
+    if (!tbody) {
+      console.error('Table body not found');
+      return;
+    }
+    
+    const lastRow = tbody.rows[tbody.rows.length - 1];
+    if (!lastRow) {
+      console.error('No rows found to clone');
+      return;
+    }
+    
+    const newRow = lastRow.cloneNode(true);
+    const serialNo = tbody.rows.length + 1;
+    
+    if (newRow.cells.length > 0) {
+      newRow.cells[0].textContent = serialNo;
+    }
+    
+    newRow.querySelectorAll("input, textarea, select").forEach((input, index) => {
+      input.value = "";
+      input.classList.remove("is-valid", "is-invalid");
+      input.dataset.blurred = "false";
+      input.dataset.touched = "false";
+      
+      if (input.name) {
+        input.name = input.name.replace(/\d+$/, serialNo);
+      }
+      if (input.id) {
+        input.id = input.id.replace(/\d+$/, serialNo);
+      }
+      
+      if (input.dataset.formula) {
+        setTimeout(() => calculateTableRow(newRow), 10);
+      }
+    });
+    
+    tbody.appendChild(newRow);
+    updateSerialNumbers(table);
+    
+    if (typeof BRSRValidation !== 'undefined' && BRSRValidation.attachValidationToContainer) {
+      BRSRValidation.attachValidationToContainer(newRow);
+    }
+    
+    const deleteBtn = newRow.querySelector('.js-delete-row');
+    if (deleteBtn) {
+      deleteBtn.removeEventListener('click', deleteBtn._deleteRowHandler);
+      deleteBtn._deleteRowHandler = function(e) {
+        e.stopPropagation();
+        const row = this.closest('tr');
+        const tbody = row.closest('tbody');
+        if (tbody && tbody.rows.length > 1) {
+          row.remove();
+          updateSerialNumbers(table);
+          calculateTableRow(table);
+        } else {
+          showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
+        }
+      };
+      deleteBtn.addEventListener('click', deleteBtn._deleteRowHandler);
+    }
+    
+    const removeBtn = newRow.querySelector('.js-remove-row');
+    if (removeBtn) {
+      removeBtn.removeEventListener('click', removeBtn._removeRowHandler);
+      removeBtn._removeRowHandler = function(e) {
+        e.stopPropagation();
+        const row = this.closest('tr');
+        const tbody = row.closest('tbody');
+        if (tbody && tbody.rows.length > 1) {
+          row.remove();
+          updateSerialNumbers(table);
+          calculateTableRow(table);
+        } else {
+          showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
+        }
+      };
+      removeBtn.addEventListener('click', removeBtn._removeRowHandler);
+    }
+    
+    if (typeof calculateTableRow === 'function') {
+      calculateTableRow(table);
+    }
+  }
+
+  function updateSerialNumbers(table) {
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach((row, index) => {
+      if (row.cells.length > 0) {
+        row.cells[0].textContent = index + 1;
+      }
+      
+      row.querySelectorAll("input, textarea, select").forEach(input => {
+        if (input.name) {
+          input.name = input.name.replace(/\d+$/, index + 1);
+        }
+        if (input.id) {
+          input.id = input.id.replace(/\d+$/, index + 1);
+        }
+      });
+    });
+  }
+
+  function calculateTableRow(container) {
+    if (!container) return;
+    
+    if (container.tagName === 'TABLE') {
+      container.querySelectorAll('tbody tr').forEach(row => {
+        calculateRowFormulas(row);
+      });
+    } else if (container.tagName === 'TR') {
+      calculateRowFormulas(container);
+    } else if (container.closest) {
+      const row = container.closest('tr');
+      if (row) {
+        calculateRowFormulas(row);
+      }
+    }
+  }
+
+  function calculateRowFormulas(row) {
+    row.querySelectorAll('input[data-formula]').forEach(output => {
+      const formula = output.dataset.formula;
+      if (!formula) return;
+      
+      let expression = formula;
+      const table = row.closest('table');
+      if (table) {
+        table.querySelectorAll('input[data-field-name]').forEach(input => {
+          const name = input.dataset.fieldName;
+          if (!name) return;
+          const value = parseFloat(input.value) || 0;
+          const regex = new RegExp("\\b" + name + "\\b", "g");
+          expression = expression.replace(regex, value);
+        });
+      }
+      
+      let result = "";
+      try {
+        result = eval(expression);
+        if (!isFinite(result)) {
+          result = 0;
+        }
+      } catch {
+        result = "";
+      }
+      
+      if (result !== "") {
+        const format = output.dataset.format || "number";
+        if (format === "percentage") {
+          output.value = `${Number(result)} %`;
+        } else {
+          output.value = Number(result);
+        }
+      } else {
+        output.value = "";
+      }
+    });
+  }
 
   function renderQuestionDeck(workspace, focusQuestionId) {
     const deck = document.getElementById('questionDeck');
@@ -2349,6 +2216,10 @@
         </div>
       </div>
     `).join('');
+
+    if (typeof BRSRValidation !== 'undefined' && BRSRValidation.attachValidationToContainer) {
+      BRSRValidation.attachValidationToContainer(deck);
+    }
 
     deck.querySelectorAll('.question-container').forEach((card) => {
       const questionId = card.getAttribute('data-question-id');
@@ -2383,38 +2254,54 @@
       if (saveBtn) saveBtn.addEventListener('click', () => saveQuestion(questionId));
       if (saveCommentBtn) saveCommentBtn.addEventListener('click', () => saveReviewComment(questionId));
 
-      // Document delete event listeners - make sure this is inside the card loop
-        card.querySelectorAll('.js-delete-doc').forEach((btn) => {
-            btn.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const qId = this.dataset.questionId;
-                const docId = this.dataset.docId;
-                console.log('Delete button clicked for question:', qId, 'docId:', docId);
-                deleteDocument(qId, docId);
-            });
+      const tables = card.querySelectorAll('.data-table');
+      tables.forEach((table) => {
+        const addRowBtns = card.querySelectorAll('.js-add-row');
+        addRowBtns.forEach((addBtn) => {
+          addBtn.removeEventListener('click', addBtn._addRowHandler);
+          addBtn._addRowHandler = function(e) {
+            e.stopPropagation();
+            addTableRow(this);
+          };
+          addBtn.addEventListener('click', addBtn._addRowHandler);
         });
-
-      // Document upload change event
-      const uploadInput = card.querySelector('.js-document-upload');
-      if (uploadInput) {
-        uploadInput.addEventListener('change', function() {
-          if (this.files && this.files.length > 0) {
-            showWorkspaceMessage(`${this.files.length} file(s) selected. Save the question to upload.`, 'success');
-          }
+        
+        const deleteBtns = table.querySelectorAll('.js-delete-row');
+        deleteBtns.forEach((btn) => {
+          btn.removeEventListener('click', btn._deleteRowHandler);
+          btn._deleteRowHandler = function(e) {
+            e.stopPropagation();
+            const row = this.closest('tr');
+            const tbody = row.closest('tbody');
+            if (tbody && tbody.rows.length > 1) {
+              row.remove();
+              updateSerialNumbers(table);
+              calculateTableRow(table);
+            } else {
+              showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
+            }
+          };
+          btn.addEventListener('click', btn._deleteRowHandler);
         });
-      }
-
-      const table = card.querySelector('.data-table');
-      if (table) {
-        const addRowBtn = card.querySelector('.js-add-row');
-        if (addRowBtn) addRowBtn.addEventListener('click', () => addTableRow(table));
-        card.querySelectorAll('.js-remove-row').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const row = btn.closest('tr');
-            if (row) row.remove();
-          });
+        
+        const removeBtns = table.querySelectorAll('.js-remove-row');
+        removeBtns.forEach((btn) => {
+          btn.removeEventListener('click', btn._removeRowHandler);
+          btn._removeRowHandler = function(e) {
+            e.stopPropagation();
+            const row = this.closest('tr');
+            const tbody = row.closest('tbody');
+            if (tbody && tbody.rows.length > 1) {
+              row.remove();
+              updateSerialNumbers(table);
+              calculateTableRow(table);
+            } else {
+              showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
+            }
+          };
+          btn.addEventListener('click', btn._removeRowHandler);
         });
-      }
+      });
     });
 
     updateQuestionHeader(workspace, activeQuestion);
@@ -2466,23 +2353,6 @@
     fillAssignmentOptions(workspace);
   }
 
-  function addTableRow(table) {
-    const tbody = table.querySelector('tbody');
-    const headerCells = Array.from(table.querySelectorAll('thead th')).slice(0, -1).map((cell) => cell.textContent.trim());
-    const columnKeys = (table.getAttribute('data-column-keys') || '').split('|').filter(Boolean);
-    const keys = columnKeys.length ? columnKeys : headerCells;
-    const fieldName = table.getAttribute('data-field-name') || '';
-    const row = document.createElement('tr');
-    let cells = '';
-    keys.forEach((key) => {
-      cells += `<td><input type="text" data-field-name="${escapeHtml(fieldName)}" data-column-name="${escapeHtml(key)}"></td>`;
-    });
-    row.innerHTML = `${cells}<td><button type="button" class="btn-brsr secondary js-remove-row">-</button></td>`;
-    tbody.appendChild(row);
-    attachCalculationEvents(row);
-    row.querySelector('.js-remove-row').addEventListener('click', () => row.remove());
-  }
-
   function syncSelectionState(questionId, checked) {
     const sidebarItem = document.querySelector(`.question-item[data-question-id="${CSS.escape(questionId)}"]`);
     const card = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
@@ -2510,6 +2380,95 @@
     return null;
   }
 
+  function collectQuestionPayload(questionId) {
+    const question = state.workspace.topics.find((item) => {
+      const qId = getQuestionId(item);
+      return qId === questionId;
+    });
+    if (!question) return null;
+
+    const container = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
+    if (!container) return null;
+
+    let assignmentId = getNumericAssignmentId();
+    if (!assignmentId && question.assignment_id && !isNaN(parseInt(question.assignment_id))) {
+      assignmentId = question.assignment_id.toString();
+    }
+    if (!assignmentId) {
+      assignmentId = question.assignment_id || '';
+    }
+
+    if (!assignmentId) {
+      console.error('No assignment ID found for question:', questionId);
+      return null;
+    }
+
+    const payload = { assignment_id: assignmentId };
+    const fields = Array.isArray(question.validation_rules && question.validation_rules.fields) ? question.validation_rules.fields : [];
+
+    if (fields.length) {
+      const responseJson = {};
+      fields.forEach((field) => {
+        const fieldName = field.name;
+        if (!fieldName) return;
+
+        if (field.kind === 'radio') {
+          const checked = container.querySelector(`input[type="radio"][data-field-name="${CSS.escape(fieldName)}"]:checked`);
+          responseJson[fieldName] = checked ? checked.value : '';
+        } else if (field.kind === 'checkbox_group') {
+          responseJson[fieldName] = Array.from(container.querySelectorAll(`input[type="checkbox"][data-field-name="${CSS.escape(fieldName)}"]:checked`)).map((el) => el.value);
+        } else if (field.kind === 'table') {
+          const table = container.querySelector(`table[data-table-name="${CSS.escape(fieldName)}"]`);
+          const rows = [];
+          if (table) {
+            table.querySelectorAll('tbody tr').forEach((tr) => {
+              const row = {};
+              tr.querySelectorAll('input, textarea, select').forEach((control) => {
+                const key = control.getAttribute('data-column-name') || control.getAttribute('data-key') || '';
+                if (key) row[key] = control.value;
+              });
+              if (Object.keys(row).length) rows.push(row);
+            });
+          }
+          responseJson[fieldName] = rows;
+        } else {
+          const control = container.querySelector(`${field.kind === 'textarea' ? 'textarea' : 'input'}[data-field-name="${CSS.escape(fieldName)}"]`);
+          responseJson[fieldName] = control ? control.value : '';
+        }
+      });
+      payload.response_json = responseJson;
+      return payload;
+    }
+
+    if (question.question_type === 'table' || question.question_type === 'nested_table' || question.question_type === 'matrix' || question.question_type === 'repeating_section') {
+      const table = container.querySelector('.data-table');
+      const rows = [];
+      if (table) {
+        table.querySelectorAll('tbody tr').forEach((tr) => {
+          const row = {};
+          tr.querySelectorAll('td').forEach((td, index) => {
+            if (index === tr.children.length - 1) return;
+            const field = td.querySelector('input, textarea, select');
+            if (!field) return;
+            const key = field.getAttribute('data-key') || `column_${index + 1}`;
+            row[key] = field.value;
+          });
+          rows.push(row);
+        });
+      }
+      payload.response_json = { rows };
+    } else if (question.question_type === 'checkbox' || question.question_type === 'multi_select') {
+      payload.response_value = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map((el) => el.value).join(',');
+    } else if (question.question_type === 'radio' || question.question_type === 'yes_no') {
+      const checked = container.querySelector('input[type="radio"]:checked');
+      payload.response_value = checked ? checked.value : '';
+    } else {
+      const control = container.querySelector(`#responseValue-${CSS.escape(questionId)}`);
+      payload.response_value = control ? control.value : '';
+    }
+    return payload;
+  }
+
   function isBlankResponseValue(value) {
     if (value == null) return true;
     if (typeof value === 'string') return value.trim() === '';
@@ -2523,57 +2482,6 @@
   function questionHasResponseData(payload) {
     return !isBlankResponseValue(payload?.response_value) || !isBlankResponseValue(payload?.response_json);
   }
-
-  // ============================================
-  // DOCUMENT DELETE FUNCTION
-  // ============================================
-
-  async function deleteDocument(questionId, docId) {
-    if (!questionId || docId === undefined || docId === null) {
-      showWorkspaceMessage('Invalid document reference.', 'error');
-      return;
-    }
-
-    // Confirm deletion
-    if (!confirm('Are you sure you want to remove this document?')) {
-      return;
-    }
-
-    try {
-      // Use the save API with a delete flag
-      const formData = new FormData();
-      formData.append("assignment_id", getNumericAssignmentId());
-      formData.append("delete_document_id", docId.toString());
-
-      const response = await fetch(apiUrl(API_SAVE, questionId), {
-        method: "PUT",
-        headers: {
-          "X-CSRFToken": getCookie("csrftoken"),
-        },
-        body: formData,
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        showWorkspaceMessage(data.detail || 'Unable to delete the document.', 'error');
-        return;
-      }
-
-      showWorkspaceMessage(data.message || 'Document removed successfully.', 'success');
-
-      // Reload the workspace to refresh the document list
-      await loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
-
-    } catch (error) {
-      console.error('Error deleting document:', error);
-      showWorkspaceMessage('An error occurred while deleting the document.', 'error');
-    }
-  }
-
-  // ============================================
-  // PERSIST AND SAVE FUNCTIONS
-  // ============================================
 
   async function persistQuestion(questionId, { reload = false, showMessage = true } = {}) {
     const payload = collectQuestionPayload(questionId);
@@ -2632,6 +2540,19 @@
   async function submitAssignmentResponses() {
     const currentAssignment = state.workspace?.current_assignment || {};
     const topicIds = (state.workspace?.topics || []).map((item) => getQuestionId(item)).filter(Boolean);
+    
+    if (typeof validateForm === 'function') {
+      if (!validateForm()) {
+        const firstInvalid = document.querySelector('.is-invalid');
+        if (firstInvalid) {
+          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstInvalid.focus();
+        }
+        showWorkspaceMessage('Please correct all highlighted fields before submitting.', 'error');
+        return;
+      }
+    }
+
     if (!topicIds.length) {
       alert('No questions found for this assignment.');
       return;
@@ -2768,10 +2689,6 @@
     }
   }
 
-  // ============================================
-  // ASSIGNMENT FUNCTIONS
-  // ============================================
-
   function fillAssignmentOptions(workspace) {
     const plantSelect = document.getElementById('assignmentPlant');
     const fySelect = document.getElementById('assignmentFinancialYear');
@@ -2798,6 +2715,7 @@
     }
 
     plantSelect.onchange = () => loadAssignmentTargets();
+
     loadAssignmentTargets();
   }
 
@@ -2850,6 +2768,35 @@
       assigneeSelect.innerHTML = '<option value="">Error loading assignees</option>';
       reviewerSelect.innerHTML = '<option value="">Error loading reviewers</option>';
     }
+  }
+
+  function calculateFormulas() {
+    document.querySelectorAll("input[data-formula]").forEach(function(field){
+      let formula = field.dataset.formula;
+      document.querySelectorAll("input[data-field-name]").forEach(function(input){
+        const fieldName = input.dataset.fieldName;
+        const value = parseFloat(input.value) || 0;
+        formula = formula.replaceAll(fieldName, value);
+      });
+      try{
+        let result = eval(formula);
+        if(isFinite(result)){
+          const format = field.dataset.format || "number";
+          if(format === "percentage"){
+            field.value = result.toFixed(2) + "%";
+          }
+          else{
+            field.value = result.toFixed(2);
+          }
+        }
+        else{
+          field.value = "";
+        }
+      }
+      catch(e){
+        field.value = "";
+      }
+    });
   }
 
   function getSelectedQuestions() {
@@ -2972,10 +2919,6 @@
     }
   }
 
-  // ============================================
-  // LOAD WORKSPACE
-  // ============================================
-
   async function loadWorkspace(sectionCode, principleSlug, questionId, assignmentId) {
     const params = new URLSearchParams();
     if (sectionCode) params.set('section_code', sectionCode);
@@ -2987,7 +2930,10 @@
       const response = await fetch(`${API_WORKSPACE}?${params.toString()}`, {
         headers: { 'Accept': 'application/json' },
       });
-      const workspace = await response.json();
+      let workspace = await response.json();
+      
+      // Process financial year placeholders in the workspace data
+      workspace = processWorkspaceData(workspace);
       
       state.workspace = workspace;
       state.sectionCode = workspace.section.code;
@@ -3010,9 +2956,49 @@
     }
   }
 
-  // ============================================
-  // FORMULA CALCULATION FUNCTIONS
-  // ============================================
+  // Event Listeners
+  document.getElementById('openAssignModalBtn').addEventListener('click', openModal);
+  document.getElementById('closeAssignModalBtn').addEventListener('click', closeModal);
+  document.getElementById('cancelAssignmentBtn').addEventListener('click', closeModal);
+  document.getElementById('submitAssignmentBtn').addEventListener('click', submitAssignmentResponses);
+  document.getElementById('assignModal').addEventListener('click', (event) => {
+    if (event.target.id === 'assignModal') closeModal();
+  });
+  
+  const scheduleToggle = document.getElementById('scheduleRecurringToggle');
+  const scheduleFieldsWrap = document.getElementById('scheduleFieldsWrap');
+  const scheduleFrequencySelect = document.getElementById('scheduleFrequency');
+
+  function updateScheduleFieldVisibility() {
+    const freq = scheduleFrequencySelect.value;
+    document.querySelectorAll('.schedule-freq-fields').forEach((el) => {
+      el.style.display = el.getAttribute('data-freq') === freq ? '' : 'none';
+    });
+  }
+
+  scheduleToggle.addEventListener('change', () => {
+    scheduleFieldsWrap.style.display = scheduleToggle.checked ? '' : 'none';
+    updateScheduleFieldVisibility();
+  });
+  scheduleFrequencySelect.addEventListener('change', updateScheduleFieldVisibility);
+  document.getElementById('assignmentForm').addEventListener('submit', submitAssignment);
+
+  // Load workspace
+  loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
+
+  document.addEventListener("input", function(e){
+    if(e.target.matches("input[data-field-name]")){
+      calculateFormulas();
+    }
+  });
+
+  function attachCalculationEvents(container){
+    container.querySelectorAll("input").forEach(function(input){
+      input.addEventListener("input", function(){
+        calculateTableRow(this.closest("tr"));
+      });
+    });
+  }
 
   function calculateFormulas() {
     document.querySelectorAll("[data-formula]").forEach(output => {
@@ -3033,7 +3019,8 @@
         if (!isFinite(result)) {
           result = 0;
         }
-      } catch {
+      }
+      catch {
         result = "";
       }
 
@@ -3056,43 +3043,5 @@
       input.addEventListener("input", calculateFormulas);
     });
   }
-
-  // ============================================
-  // EVENT LISTENERS
-  // ============================================
-
-  document.addEventListener("input", function(e) {
-    if (e.target.matches("input[data-field-name]")) {
-      calculateFormulas();
-    }
-  });
-
-  document.getElementById('openAssignModalBtn').addEventListener('click', openModal);
-  document.getElementById('closeAssignModalBtn').addEventListener('click', closeModal);
-  document.getElementById('cancelAssignmentBtn').addEventListener('click', closeModal);
-  document.getElementById('submitAssignmentBtn').addEventListener('click', submitAssignmentResponses);
-  document.getElementById('assignModal').addEventListener('click', (event) => {
-    if (event.target.id === 'assignModal') closeModal();
-  });
-  const scheduleToggle = document.getElementById('scheduleRecurringToggle');
-  const scheduleFieldsWrap = document.getElementById('scheduleFieldsWrap');
-  const scheduleFrequencySelect = document.getElementById('scheduleFrequency');
-
-  function updateScheduleFieldVisibility() {
-    const freq = scheduleFrequencySelect.value;
-    document.querySelectorAll('.schedule-freq-fields').forEach((el) => {
-      el.style.display = el.getAttribute('data-freq') === freq ? '' : 'none';
-    });
-  }
-
-  scheduleToggle.addEventListener('change', () => {
-    scheduleFieldsWrap.style.display = scheduleToggle.checked ? '' : 'none';
-    updateScheduleFieldVisibility();
-  });
-  scheduleFrequencySelect.addEventListener('change', updateScheduleFieldVisibility);
-  document.getElementById('assignmentForm').addEventListener('submit', submitAssignment);
-
-  // Load workspace
-  loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
 </script>
 {% endblock %}
