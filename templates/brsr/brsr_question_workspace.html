@@ -129,6 +129,8 @@
     font-size:13px;
     padding:10px 12px;
     outline:none;
+    appearance:auto;
+    -webkit-appearance:auto;
   }
 
   .workspace-select:focus,
@@ -142,23 +144,6 @@
     flex:1;
     overflow:auto;
     padding:14px 10px 18px;
-  }
-
-  .question-list{
-    position:relative;
-    list-style:none;
-    margin:0;
-    padding:0 0 0 26px;
-  }
-
-  .question-list::before{
-    content:'';
-    position:absolute;
-    left:9px;
-    top:10px;
-    bottom:10px;
-    width:2px;
-    background:var(--border);
   }
 
   .nav-group{
@@ -444,12 +429,6 @@
     margin-right:6px;
   }
 
-  .question-meta{
-    margin-top:6px;
-    font-size:12px;
-    color:var(--muted);
-  }
-
   .question-content{
     display:none;
     padding:18px 16px 16px;
@@ -603,6 +582,8 @@
     padding:8px 10px;
     font-size:13px;
     background:#fff;
+    appearance:auto;
+    -webkit-appearance:auto;
   }
 
   .table-container > table textarea,
@@ -806,34 +787,17 @@
     border-color:#cbd5e1;
   }
 
-  /* Validation styles - only show errors after blur or submit */
-  .form-group.has-error input,
-  .form-group.has-error textarea,
-  .form-group.has-error select {
-    border-color: #dc2626;
+  .workspace-input[data-blurred="false"].is-invalid,
+  .workspace-textarea[data-blurred="false"].is-invalid,
+  .workspace-select[data-blurred="false"].is-invalid {
+    border-color: var(--border);
+    background-image: none;
+    padding-right: 12px;
   }
 
-  .form-group.has-error .invalid-feedback {
-    display: block !important;
-    color: #dc2626;
-    font-size: 13px;
-    margin-top: 4px;
-  }
-
-  .form-group input.is-valid,
-  .form-group textarea.is-valid,
-  .form-group select.is-valid {
-    border-color: #16a34a;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2316a34a' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right calc(0.375em + 0.1875rem) center;
-    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-    padding-right: calc(1.5em + 0.75rem);
-  }
-
-  .form-group input.is-invalid,
-  .form-group textarea.is-invalid,
-  .form-group select.is-invalid {
+  .workspace-input[data-blurred="true"].is-invalid,
+  .workspace-textarea[data-blurred="true"].is-invalid,
+  .workspace-select[data-blurred="true"].is-invalid {
     border-color: #dc2626;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc2626'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc2626' stroke='none'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
@@ -850,50 +814,9 @@
     color: #dc2626;
   }
 
-  /* Hide validation states for fields that haven't been blurred */
-  .form-group input[data-blurred="false"].is-invalid,
-  .form-group textarea[data-blurred="false"].is-invalid,
-  .form-group select[data-blurred="false"].is-invalid {
-    border-color: var(--border);
-    background-image: none;
-    padding-right: 12px;
-  }
-
-  .form-group input[data-blurred="false"].is-valid,
-  .form-group textarea[data-blurred="false"].is-valid,
-  .form-group select[data-blurred="false"].is-valid {
-    border-color: var(--border);
-    background-image: none;
-    padding-right: 12px;
-  }
-
-  /* Show validation states only for fields that have been blurred */
-  .form-group input[data-blurred="true"].is-invalid,
-  .form-group textarea[data-blurred="true"].is-invalid,
-  .form-group select[data-blurred="true"].is-invalid {
-    border-color: #dc2626;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc2626'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc2626' stroke='none'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right calc(0.375em + 0.1875rem) center;
-    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-    padding-right: calc(1.5em + 0.75rem);
-  }
-
-  .form-group input[data-blurred="true"].is-valid,
-  .form-group textarea[data-blurred="true"].is-valid,
-  .form-group select[data-blurred="true"].is-valid {
-    border-color: #16a34a;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2316a34a' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right calc(0.375em + 0.1875rem) center;
-    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-    padding-right: calc(1.5em + 0.75rem);
-  }
-
-  /* Error message only shows when field has been blurred and is invalid */
-  .form-group input[data-blurred="false"] ~ .invalid-feedback,
-  .form-group textarea[data-blurred="false"] ~ .invalid-feedback,
-  .form-group select[data-blurred="false"] ~ .invalid-feedback {
+  .workspace-input[data-blurred="false"] ~ .invalid-feedback,
+  .workspace-textarea[data-blurred="false"] ~ .invalid-feedback,
+  .workspace-select[data-blurred="false"] ~ .invalid-feedback {
     display: none !important;
   }
 
@@ -906,6 +829,45 @@
   .table-container > table td .btn-brsr,
   .data-table td .btn-brsr {
     min-width: 60px;
+  }
+
+  .table-container > table td,
+  .data-table td {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    vertical-align: top;
+    font-size: 13px;
+    font-family: var(--font-body), 'Segoe UI', sans-serif;
+    white-space: nowrap;
+    color: var(--ink-soft);
+  }
+
+  .table-container > table td.group-cell,
+  .data-table td.group-cell {
+    font-weight: 700;
+    background-color: #f8fafc;
+    vertical-align: middle;
+    font-family: var(--font-body), 'Segoe UI', sans-serif;
+    color: var(--ink);
+  }
+
+  .table-container > table td.metrics-cell,
+  .data-table td.metrics-cell {
+    font-weight: 400;
+    color: var(--ink-soft);
+    font-family: var(--font-body), 'Segoe UI', sans-serif;
+  }
+
+  .table-container > table th,
+  .data-table th {
+    background: #f8fafc;
+    color: var(--ink);
+    font-weight: 700;
+    font-family: var(--font-display), 'Segoe UI', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
   }
 </style>
 {% endblock %}
@@ -1077,7 +1039,6 @@
                 </select>
               </div>
 
-              <!-- Weekly -->
               <div class="half schedule-freq-fields" data-freq="weekly" style="display:none;">
                 <label class="tool-label">Start Day</label>
                 <select class="workspace-select" id="scheduleWeeklyStart">
@@ -1097,7 +1058,6 @@
                 </select>
               </div>
 
-              <!-- Monthly -->
               <div class="full schedule-freq-fields" data-freq="monthly" style="display:none;">
                 <label class="tool-label">Months</label>
                 <div class="choice-stack" style="grid-template-columns:repeat(4,1fr);display:grid;">
@@ -1116,7 +1076,6 @@
                 </div>
               </div>
 
-              <!-- Quarterly -->
               <div class="full schedule-freq-fields" data-freq="quarterly" style="display:none;">
                 <label class="tool-label">Quarters</label>
                 <div class="choice-stack" style="grid-template-columns:repeat(4,1fr);display:grid;">
@@ -1127,7 +1086,6 @@
                 </div>
               </div>
 
-              <!-- Annual has no extra fields -->
               <div class="full schedule-freq-fields" data-freq="annually" style="display:none;">
                 <small style="color:var(--muted);">One assignment will be generated for the selected Financial Year.</small>
               </div>
@@ -1151,12 +1109,13 @@
 {% block extra_js %}
 <script src="{% static 'js/validation.js' %}"></script>
 <script>
+  // ============================================================
+  // API Endpoints and Initial State
+  // ============================================================
   const API_SCHEDULE_CREATE = "{{ assignment_schedule_create_api_url|escapejs }}";
   const API_WORKSPACE = "{{ workspace_api_url|escapejs }}";
   const API_SAVE = "{{ question_save_api_url|escapejs }}";
   const API_SUBMIT = "{{ question_submit_api_url|escapejs }}";
-  const API_APPROVE = "{{ question_approve_api_url|escapejs }}";
-  const API_REJECT = "{{ question_reject_api_url|escapejs }}";
   const API_COMMENT = "{{ question_comment_api_url|escapejs }}";
   const API_ASSIGN = "{{ assignment_create_api_url|escapejs }}";
   const API_ASSIGN_OPTIONS = "{{ assignment_options_api_url|escapejs }}";
@@ -1175,163 +1134,12 @@
   };
 
   // ============================================================
-  // FINANCIAL YEAR HELPER FUNCTION
+  // Utility Functions - For common operations like escaping HTML,
+  // getting cookies, showing messages, and handling API URLs
   // ============================================================
-  function getFinancialYears() {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    // Financial year starts in April
-    const startYear = today.getMonth() >= 3 ? currentYear : currentYear - 1;
-    
-    return {
-      FY0: startYear + '-' + String(startYear + 1).slice(-2),
-      FY1: (startYear - 2) + '-' + String(startYear - 1).slice(-2),
-      FY2: (startYear - 4) + '-' + String(startYear - 3).slice(-2)
-    };
-  }
-
-  // ============================================================
-  // REPLACE FINANCIAL YEAR PLACEHOLDERS IN COLUMNS
-  // ============================================================
-  function replaceFinancialYearPlaceholders(columns) {
-    if (!columns || !Array.isArray(columns)) return columns;
-    const fy = getFinancialYears();
-    return columns.map(col => {
-      return col
-        .replace(/\{FY0\}/g, fy.FY0)
-        .replace(/\{FY1\}/g, fy.FY1)
-        .replace(/\{FY2\}/g, fy.FY2);
-    });
-  }
-
-  // ============================================================
-  // REPLACE FINANCIAL YEAR PLACEHOLDERS IN FIELD LABELS
-  // ============================================================
-  function replaceFinancialYearPlaceholdersInFields(fields) {
-    if (!fields || !Array.isArray(fields)) return fields;
-    const fy = getFinancialYears();
-    
-    return fields.map(field => {
-      if (field.label) {
-        field.label = field.label
-          .replace(/\{FY0\}/g, fy.FY0)
-          .replace(/\{FY1\}/g, fy.FY1)
-          .replace(/\{FY2\}/g, fy.FY2);
-      }
-      if (field.column) {
-        field.column = field.column
-          .replace(/\{FY0\}/g, fy.FY0)
-          .replace(/\{FY1\}/g, fy.FY1)
-          .replace(/\{FY2\}/g, fy.FY2);
-      }
-      if (field.placeholder) {
-        field.placeholder = field.placeholder
-          .replace(/\{FY0\}/g, fy.FY0)
-          .replace(/\{FY1\}/g, fy.FY1)
-          .replace(/\{FY2\}/g, fy.FY2);
-      }
-      if (field.name) {
-        field.name = field.name
-          .replace(/\{FY0\}/g, fy.FY0)
-          .replace(/\{FY1\}/g, fy.FY1)
-          .replace(/\{FY2\}/g, fy.FY2);
-      }
-      if (field.fields && Array.isArray(field.fields)) {
-        field.fields = replaceFinancialYearPlaceholdersInFields(field.fields);
-      }
-      return field;
-    });
-  }
-
-  // ============================================================
-  // REPLACE FINANCIAL YEAR PLACEHOLDERS IN ROWS
-  // ============================================================
-  function replaceFinancialYearPlaceholdersInRows(rows) {
-    if (!rows || !Array.isArray(rows)) return rows;
-    
-    return rows.map(row => {
-      if (row.label) {
-        row.label = row.label
-          .replace(/\{FY0\}/g, getFinancialYears().FY0)
-          .replace(/\{FY1\}/g, getFinancialYears().FY1)
-          .replace(/\{FY2\}/g, getFinancialYears().FY2);
-      }
-      if (row.fields && Array.isArray(row.fields)) {
-        row.fields = replaceFinancialYearPlaceholdersInFields(row.fields);
-      }
-      return row;
-    });
-  }
-
-  // ============================================================
-  // PROCESS QUESTION FIELDS FOR FINANCIAL YEAR PLACEHOLDERS
-  // ============================================================
-  function processQuestionFields(fields) {
-    if (!fields || !Array.isArray(fields)) return fields;
-    
-    return fields.map(field => {
-      // Process table columns
-      if (field.kind === 'table' && field.columns) {
-        field.columns = replaceFinancialYearPlaceholders(field.columns);
-      }
-      
-      // Process table rows
-      if (field.kind === 'table' && field.rows) {
-        field.rows = replaceFinancialYearPlaceholdersInRows(field.rows);
-      }
-      
-      // Process nested fields
-      if (field.fields && Array.isArray(field.fields)) {
-        field.fields = processQuestionFields(field.fields);
-      }
-      
-      return field;
-    });
-  }
-
-  // ============================================================
-  // PROCESS WORKSPACE DATA FOR FINANCIAL YEAR PLACEHOLDERS
-  // ============================================================
-  function processWorkspaceData(workspace) {
-    if (!workspace || !workspace.topics) return workspace;
-    
-    workspace.topics = workspace.topics.map(topic => {
-      if (topic.fields && Array.isArray(topic.fields)) {
-        topic.fields = processQuestionFields(topic.fields);
-      }
-      if (topic.validation_rules && topic.validation_rules.fields) {
-        topic.validation_rules.fields = processQuestionFields(topic.validation_rules.fields);
-      }
-      return topic;
-    });
-    
-    return workspace;
-  }
-
   function getCookie(name) {
     const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
     return match ? match.pop() : '';
-  }
-
-  function showWorkspaceMessage(message, type = 'success') {
-    if (!message) return;
-    const stack = document.getElementById('workspaceToastStack');
-    if (!stack) {
-      alert(message);
-      return;
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `workspace-toast ${type === 'error' ? 'error' : 'success'}`;
-    toast.textContent = message;
-    stack.appendChild(toast);
-
-    window.setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-4px)';
-      toast.style.transition = 'opacity .2s ease, transform .2s ease';
-      window.setTimeout(() => toast.remove(), 220);
-    }, 2800);
   }
 
   function escapeHtml(value) {
@@ -1344,158 +1152,247 @@
       .replaceAll("'", '&#39;');
   }
 
+  function showWorkspaceMessage(message, type = 'success') {
+    if (!message) return;
+    const stack = document.getElementById('workspaceToastStack');
+    if (!stack) { alert(message); return; }
+    const toast = document.createElement('div');
+    toast.className = `workspace-toast ${type === 'error' ? 'error' : 'success'}`;
+    toast.textContent = message;
+    stack.appendChild(toast);
+    window.setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-4px)';
+      toast.style.transition = 'opacity .2s ease, transform .2s ease';
+      window.setTimeout(() => toast.remove(), 220);
+    }, 2800);
+  }
+
   function getQuestionId(question) {
     return question.question_id || question.local_id || null;
-  }
-
-  function statusClass(status) {
-    return {
-      draft: 'todo',
-      submitted: 'in-progress',
-      resubmitted: 'in-progress',
-      approved: 'approved',
-      rejected: 'rejected',
-    }[status] || 'todo';
-  }
-
-  function statusLabel(question) {
-    return question.status_display || (question.status ? question.status.replaceAll('_', ' ') : 'Draft');
   }
 
   function apiUrl(template, questionId) {
     return template.replace('__question__', encodeURIComponent(questionId));
   }
 
-  function groupQuestions(topics) {
-    const groups = [];
-    const map = new Map();
-    topics.forEach((question) => {
-      const key = question.sub_section || (question.section_code === 'section_a' ? 'General Disclosures' : 'Questions');
-      if (!map.has(key)) {
-        const group = { key, items: [] };
-        map.set(key, group);
-        groups.push(group);
-      }
-      map.get(key).items.push(question);
-    });
-    return groups;
+  function statusClass(status) {
+    return { draft: 'todo', submitted: 'in-progress', resubmitted: 'in-progress', approved: 'approved', rejected: 'rejected' }[status] || 'todo';
   }
 
-  function tableSchema(question) {
-    return question.table_schema || (question.validation_rules && question.validation_rules.table_schema) || {};
-  }
-
-  function defaultTableColumns(question) {
-    const schema = tableSchema(question);
-    if (schema && Array.isArray(schema.columns) && schema.columns.length) {
-      return schema.columns;
-    }
-    const fromSchema = question.validation_rules && Array.isArray(question.validation_rules.columns)
-      ? question.validation_rules.columns
-      : [];
-    if (fromSchema.length) return fromSchema;
-    const options = Array.isArray(question.options) ? question.options : [];
-    if (options.length && typeof options[0] === 'object' && options[0] !== null && options[0].label) {
-      return options;
-    }
-    return [
-      { key: 'particulars', label: 'Particulars', type: 'text' },
-      { key: 'current_year', label: 'Current Year', type: 'text' },
-      { key: 'previous_year', label: 'Previous Year', type: 'text' },
-    ];
-  }
-
-  function defaultChoiceOptions(question) {
-    const options = Array.isArray(question.options) ? question.options : [];
-    if (options.length) {
-      return options.map((option, index) => {
-        if (typeof option === 'object' && option !== null) {
-          return {
-            value: option.value ?? option.label ?? String(index),
-            label: option.label ?? option.value ?? String(index),
-            order: option.order ?? index + 1,
-          };
-        }
-        return { value: option, label: option, order: index + 1 };
-      });
-    }
-    if (question.question_type === 'yes_no') {
-      return [
-        { value: 'Yes', label: 'Yes', order: 1 },
-        { value: 'No', label: 'No', order: 2 },
-      ];
-    }
-    return [];
-  }
-
-  function initTableRows(question) {
-    const existing = question.response_json && Array.isArray(question.response_json.rows)
-      ? question.response_json.rows
-      : null;
-    if (existing && existing.length) return existing;
-    return [{
-      particulars: '',
-      current_year: '',
-      previous_year: '',
-    }];
+  function statusLabel(question) {
+    return question.status_display || (question.status ? question.status.replaceAll('_', ' ') : 'Draft');
   }
 
   function getStoredFieldValue(question, fieldName, fallback = '') {
     const responseJson = question.response_json && typeof question.response_json === 'object' ? question.response_json : {};
-    if (Object.prototype.hasOwnProperty.call(responseJson, fieldName)) {
-      return responseJson[fieldName];
-    }
-    return fallback;
+    return Object.prototype.hasOwnProperty.call(responseJson, fieldName) ? responseJson[fieldName] : fallback;
   }
 
-  function getFieldMaxlength(fieldType) {
-    const map = {
-      'alphabetic': 100,
-      'alphanumeric': 100,
-      'phone': 15,
-      'telephone': 15,
-      'email': 254,
-      'url': 2048,
-      'year': 4,
-      'cin': 21,
-      'pan': 10,
-      'gst': 15,
-      'aadhaar': 12,
-      'pin_code': 6,
-      'ifsc': 11,
-      'account_number': 18,
+  // ============================================================
+  // Financial Year Helpers - Replaces {FY0}, {FY1}, {FY2} with
+  // actual financial year values based on current date
+  // ============================================================
+  function getFinancialYears() {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const startYear = today.getMonth() >= 3 ? currentYear : currentYear - 1;
+    return {
+      FY0: `${startYear}-${String(startYear + 1).slice(-2)}`,
+      FY1: `${startYear - 1}-${String(startYear).slice(-2)}`,
+      FY2: `${startYear - 2}-${String(startYear - 1).slice(-2)}`
     };
+  }
+
+  function replaceFinancialYearPlaceholders(text) {
+    if (!text || typeof text !== 'string') return text;
+    const fy = getFinancialYears();
+    return text.replace(/\{FY0\}/g, fy.FY0).replace(/\{FY1\}/g, fy.FY1).replace(/\{FY2\}/g, fy.FY2);
+  }
+
+  function replaceFinancialYearPlaceholdersInFields(fields) {
+    if (!fields || !Array.isArray(fields)) return fields;
+    return fields.map(field => {
+      if (field.label) field.label = replaceFinancialYearPlaceholders(field.label);
+      if (field.column) field.column = replaceFinancialYearPlaceholders(field.column);
+      if (field.placeholder) field.placeholder = replaceFinancialYearPlaceholders(field.placeholder);
+      if (field.name) field.name = replaceFinancialYearPlaceholders(field.name);
+      if (field.columns && Array.isArray(field.columns)) {
+        field.columns = field.columns.map(col => replaceFinancialYearPlaceholders(col));
+      }
+      if (field.fields && Array.isArray(field.fields)) {
+        field.fields = replaceFinancialYearPlaceholdersInFields(field.fields);
+      }
+      if (field.rows && Array.isArray(field.rows)) {
+        field.rows = field.rows.map(row => {
+          if (row.label) row.label = replaceFinancialYearPlaceholders(row.label);
+          if (row.group) row.group = replaceFinancialYearPlaceholders(row.group);
+          if (row.fields && Array.isArray(row.fields)) {
+            row.fields = replaceFinancialYearPlaceholdersInFields(row.fields);
+          }
+          return row;
+        });
+      }
+      return field;
+    });
+  }
+
+  function processWorkspaceData(workspace) {
+    if (!workspace || !workspace.topics) return workspace;
+    workspace.topics = workspace.topics.map(topic => {
+      if (topic.fields && Array.isArray(topic.fields)) {
+        topic.fields = replaceFinancialYearPlaceholdersInFields(topic.fields);
+      }
+      if (topic.validation_rules && topic.validation_rules.fields) {
+        topic.validation_rules.fields = replaceFinancialYearPlaceholdersInFields(topic.validation_rules.fields);
+      }
+      return topic;
+    });
+    return workspace;
+  }
+
+  // ============================================================
+  // Field Validation Helpers - For input validation based on
+  // field type (email, phone, year, etc.)
+  // ============================================================
+  function getFieldMaxlength(fieldType) {
+    const map = { 'alphabetic': 100, 'alphanumeric': 100, 'phone': 15, 'telephone': 15, 'email': 254, 'url': 2048, 'year': 4, 'cin': 21, 'pan': 10, 'gst': 15, 'aadhaar': 12, 'pin_code': 6, 'ifsc': 11, 'account_number': 18 };
     return map[fieldType] || null;
   }
 
   function getFieldInputmode(fieldType) {
-    const map = {
-      'alphabetic': 'text',
-      'alphanumeric': 'text',
-      'phone': 'tel',
-      'telephone': 'tel',
-      'email': 'email',
-      'url': 'url',
-      'number': 'numeric',
-      'decimal': 'decimal',
-      'percentage': 'decimal',
-      'year': 'numeric',
-      'pin_code': 'numeric',
-      'account_number': 'numeric',
-    };
+    const map = { 'alphabetic': 'text', 'alphanumeric': 'text', 'phone': 'tel', 'telephone': 'tel', 'email': 'email', 'url': 'url', 'number': 'numeric', 'decimal': 'decimal', 'percentage': 'decimal', 'year': 'numeric', 'pin_code': 'numeric', 'account_number': 'numeric' };
     return map[fieldType] || null;
   }
 
   function getFieldPattern(fieldType) {
-    const map = {
-      'phone': '[0-9]{10,15}',
-      'year': '[0-9]{4}',
-      'aadhaar': '[0-9]{12}',
-      'pin_code': '[0-9]{6}',
-    };
+    const map = { 'phone': '[0-9]{10,15}', 'year': '[0-9]{4}', 'aadhaar': '[0-9]{12}', 'pin_code': '[0-9]{6}' };
     return map[fieldType] || null;
   }
 
+  // ============================================================
+  // Table Helpers - For managing table rows, serial numbers,
+  // and calculated formula fields
+  // ============================================================
+  function updateSerialNumbers(table) {
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach((row, index) => {
+      if (row.cells.length > 0) row.cells[0].textContent = index + 1;
+      row.querySelectorAll("input, textarea, select").forEach(input => {
+        if (input.name) input.name = input.name.replace(/\d+$/, index + 1);
+        if (input.id) input.id = input.id.replace(/\d+$/, index + 1);
+      });
+    });
+  }
+
+  function calculateRowFormulas(row) {
+    row.querySelectorAll('input[data-formula]').forEach(output => {
+      const formula = output.dataset.formula;
+      if (!formula) return;
+      let expression = formula;
+      const table = row.closest('table');
+      if (table) {
+        table.querySelectorAll('input[data-field-name]').forEach(input => {
+          const name = input.dataset.fieldName;
+          if (!name) return;
+          const value = parseFloat(input.value) || 0;
+          const regex = new RegExp("\\b" + name + "\\b", "g");
+          expression = expression.replace(regex, value);
+        });
+      }
+      let result = "";
+      try {
+        result = eval(expression);
+        if (!isFinite(result)) result = 0;
+      } catch { result = ""; }
+      if (result !== "") {
+        const format = output.dataset.format || "number";
+        output.value = format === "percentage" ? `${Number(result)} %` : Number(result);
+      } else {
+        output.value = "";
+      }
+    });
+  }
+
+  function calculateTableRow(container) {
+    if (!container) return;
+    if (container.tagName === 'TABLE') {
+      container.querySelectorAll('tbody tr').forEach(row => calculateRowFormulas(row));
+    } else if (container.tagName === 'TR') {
+      calculateRowFormulas(container);
+    } else if (container.closest) {
+      const row = container.closest('tr');
+      if (row) calculateRowFormulas(row);
+    }
+  }
+
+  function addTableRow(button) {
+    const formGroup = button.closest('.form-group');
+    if (!formGroup) return;
+    const table = formGroup.querySelector('.data-table');
+    if (!table) return;
+    const tbody = table.querySelector("tbody");
+    if (!tbody) return;
+    const lastRow = tbody.rows[tbody.rows.length - 1];
+    if (!lastRow) return;
+    const newRow = lastRow.cloneNode(true);
+    const serialNo = tbody.rows.length + 1;
+    if (newRow.cells.length > 0) newRow.cells[0].textContent = serialNo;
+    newRow.querySelectorAll("input, textarea, select").forEach((input) => {
+      input.value = "";
+      input.classList.remove("is-valid", "is-invalid");
+      input.dataset.blurred = "false";
+      input.dataset.touched = "false";
+      if (input.name) input.name = input.name.replace(/\d+$/, serialNo);
+      if (input.id) input.id = input.id.replace(/\d+$/, serialNo);
+      if (input.dataset.formula) setTimeout(() => calculateTableRow(newRow), 10);
+    });
+    tbody.appendChild(newRow);
+    updateSerialNumbers(table);
+    if (typeof BRSRValidation !== 'undefined' && BRSRValidation.attachValidationToContainer) {
+      BRSRValidation.attachValidationToContainer(newRow);
+    }
+    const deleteBtn = newRow.querySelector('.js-delete-row');
+    if (deleteBtn) {
+      deleteBtn.removeEventListener('click', deleteBtn._deleteRowHandler);
+      deleteBtn._deleteRowHandler = function(e) {
+        e.stopPropagation();
+        const row = this.closest('tr');
+        const tbody = row.closest('tbody');
+        if (tbody && tbody.rows.length > 1) {
+          row.remove();
+          updateSerialNumbers(table);
+          calculateTableRow(table);
+        } else {
+          showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
+        }
+      };
+      deleteBtn.addEventListener('click', deleteBtn._deleteRowHandler);
+    }
+    const removeBtn = newRow.querySelector('.js-remove-row');
+    if (removeBtn) {
+      removeBtn.removeEventListener('click', removeBtn._removeRowHandler);
+      removeBtn._removeRowHandler = function(e) {
+        e.stopPropagation();
+        const row = this.closest('tr');
+        const tbody = row.closest('tbody');
+        if (tbody && tbody.rows.length > 1) {
+          row.remove();
+          updateSerialNumbers(table);
+          calculateTableRow(table);
+        } else {
+          showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
+        }
+      };
+      removeBtn.addEventListener('click', removeBtn._removeRowHandler);
+    }
+    if (typeof calculateTableRow === 'function') calculateTableRow(table);
+  }
+
+  // ============================================================
+  // Render Field Control - Creates HTML for different field types
+  // (input, textarea, select, radio, checkbox, table with groups)
+  // ============================================================
   function renderFieldControl(question, field, index, disabled = false) {
     const fieldName = field.name || `field_${index + 1}`;
     const fieldLabel = field.label || field.name || `Field ${index + 1}`;
@@ -1505,66 +1402,68 @@
     const isRequired = field.required === true;
     const dataValidation = `data-validation="${fieldType}" data-required="${isRequired}" data-field-name="${fieldName}"`;
 
+    if (field.type === 'select' || field.kind === 'select') {
+      const options = Array.isArray(field.options) ? field.options : [];
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">${escapeHtml(fieldLabel)}</label>
+        <select class="workspace-select" ${dataValidation} ${disabledAttr} data-field-name="${escapeHtml(fieldName)}">
+          ${options.map((option) => {
+            const label = option.label ?? option.value ?? option;
+            const optionValue = option.value ?? option.label ?? option;
+            const selected = String(optionValue) === String(fieldValue) ? 'selected' : '';
+            return `<option value="${escapeHtml(optionValue)}" ${selected}>${escapeHtml(label)}</option>`;
+          }).join('')}
+        </select>
+        <div class="invalid-feedback"></div>
+      </div>`;
+    }
+
     if (field.kind === 'radio') {
       const options = Array.isArray(field.options) ? field.options : [];
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
-          <div class="choice-stack">
-            ${options.map((option) => {
-              const label = option.label ?? option.value ?? option;
-              const optionValue = option.value ?? option.label ?? option;
-              const checked = String(optionValue) === String(fieldValue) ? 'checked' : '';
-              return `
-                <label class="choice-item">
-                  <input type="radio" name="responseValue-${escapeHtml(fieldName)}" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr} ${dataValidation}>
-                  <span>${escapeHtml(label)}</span>
-                </label>
-              `;
-            }).join('')}
-          </div>
-          <div class="invalid-feedback"></div>
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">${escapeHtml(fieldLabel)}</label>
+        <div class="choice-stack">
+          ${options.map((option) => {
+            const label = option.label ?? option.value ?? option;
+            const optionValue = option.value ?? option.label ?? option;
+            const checked = String(optionValue) === String(fieldValue) ? 'checked' : '';
+            return `<label class="choice-item">
+              <input type="radio" name="responseValue-${escapeHtml(fieldName)}" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr} ${dataValidation}>
+              <span>${escapeHtml(label)}</span>
+            </label>`;
+          }).join('')}
         </div>
-      `;
+        <div class="invalid-feedback"></div>
+      </div>`;
     }
 
     if (field.kind === 'checkbox_group') {
       const selected = Array.isArray(fieldValue) ? fieldValue : String(fieldValue || '').split(',').map((item) => item.trim()).filter(Boolean);
       const items = Array.isArray(field.items) ? field.items : [];
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
-          <div class="choice-stack">
-            ${items.map((item) => {
-              const label = item.label ?? item.value ?? item.name ?? '';
-              const optionValue = item.value ?? item.label ?? item.name ?? '';
-              const checked = selected.includes(String(optionValue)) ? 'checked' : '';
-              return `
-                <label class="choice-item">
-                  <input type="checkbox" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr} ${dataValidation}>
-                  <span>${escapeHtml(label)}</span>
-                </label>
-              `;
-            }).join('')}
-          </div>
-          <div class="invalid-feedback"></div>
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">${escapeHtml(fieldLabel)}</label>
+        <div class="choice-stack">
+          ${items.map((item) => {
+            const label = item.label ?? item.value ?? item.name ?? '';
+            const optionValue = item.value ?? item.label ?? item.name ?? '';
+            const checked = selected.includes(String(optionValue)) ? 'checked' : '';
+            return `<label class="choice-item">
+              <input type="checkbox" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr} ${dataValidation}>
+              <span>${escapeHtml(label)}</span>
+            </label>`;
+          }).join('')}
         </div>
-      `;
+        <div class="invalid-feedback"></div>
+      </div>`;
     }
 
     if (field.kind === 'textarea') {
       const maxlength = field.maxlength || getFieldMaxlength(fieldType);
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
-          <textarea class="workspace-textarea form-textarea" 
-                    ${dataValidation}
-                    ${maxlength ? `maxlength="${maxlength}"` : ''}
-                    placeholder="${escapeHtml(field.placeholder || 'Type your response here')}" 
-                    ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
-          <div class="invalid-feedback"></div>
-        </div>
-      `;
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">${escapeHtml(fieldLabel)}</label>
+        <textarea class="workspace-textarea form-textarea" ${dataValidation} ${maxlength ? `maxlength="${maxlength}"` : ''} placeholder="${escapeHtml(field.placeholder || 'Type your response here')}" ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+        <div class="invalid-feedback"></div>
+      </div>`;
     }
 
     if (field.kind === 'input') {
@@ -1573,302 +1472,198 @@
       const maxlength = field.maxlength || getFieldMaxlength(fieldType);
       const inputmode = getFieldInputmode(fieldType);
       const pattern = getFieldPattern(fieldType);
-
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">${escapeHtml(fieldLabel)}</label>
-          <input class="workspace-input" 
-                type="${inputType}"
-                ${dataValidation}
-                data-formula="${field.formula || ''}"
-                data-format="${field.format || 'number'}"
-                ${maxlength ? `maxlength="${maxlength}"` : ''}
-                ${inputmode ? `inputmode="${inputmode}"` : ''}
-                ${pattern ? `pattern="${pattern}"` : ''}
-                value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}"
-                placeholder="${escapeHtml(field.placeholder || '')}" 
-                ${readonly} ${disabledAttr}>
-          <div class="invalid-feedback"></div>
-        </div>
-      `;
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">${escapeHtml(fieldLabel)}</label>
+        <input class="workspace-input" type="${inputType}" ${dataValidation} data-formula="${field.formula || ''}" data-format="${field.format || 'number'}" ${maxlength ? `maxlength="${maxlength}"` : ''} ${inputmode ? `inputmode="${inputmode}"` : ''} ${pattern ? `pattern="${pattern}"` : ''} value="${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}" placeholder="${escapeHtml(field.placeholder || '')}" ${readonly} ${disabledAttr}>
+        <div class="invalid-feedback"></div>
+      </div>`;
     }
 
+    // Table rendering with grouped row support
     if (field.kind === 'table') {
       const hasDelete = field.allow_delete_rows === true;
       const hasAdd = field.allow_add_rows === true;
-      
-      // Process columns for financial year placeholders
       const processedColumns = replaceFinancialYearPlaceholders(field.columns || []);
-      // Process rows for financial year placeholders
-      const processedRows = replaceFinancialYearPlaceholdersInRows(field.rows || []);
-      
-      let headerRow = '<tr>';
-      processedColumns.forEach(col => {
-        headerRow += `<th>${escapeHtml(col)}</th>`;
+      const processedRows = replaceFinancialYearPlaceholdersInFields(field.rows || []);
+      const hasGroups = processedRows.some(row => row.group && row.group.trim() !== '');
+
+      let headerHtml = '<tr>';
+      processedColumns.forEach((col) => { headerHtml += `<th>${escapeHtml(col)}</th>`; });
+      if (hasDelete) headerHtml += `<th class="text-center" style="width:90px">Action</th>`;
+      headerHtml += '</tr>';
+
+      let groupedRows = [], currentGroup = null, currentGroupRows = [];
+      processedRows.forEach((row) => {
+        const groupValue = row.group || null;
+        if (groupValue !== currentGroup) {
+          if (currentGroupRows.length > 0) groupedRows.push({ group: currentGroup, rows: currentGroupRows });
+          currentGroup = groupValue;
+          currentGroupRows = [row];
+        } else {
+          currentGroupRows.push(row);
+        }
       });
-      if (hasDelete) {
-        headerRow += `<th class="text-center" style="width:90px">Action</th>`;
-      }
-      headerRow += '</tr>';
+      if (currentGroupRows.length > 0) groupedRows.push({ group: currentGroup, rows: currentGroupRows });
 
       let bodyRows = '';
-      processedRows.forEach((row, rowIndex) => {
-        let rowHtml = '<tr>';
-        const rowLabel = row.label !== null && row.label !== undefined ? row.label : '';
-        rowHtml += `<td>${escapeHtml(rowLabel)}</td>`;
-        (row.fields || []).forEach(f => {
-          const value = getStoredFieldValue(question, f.name, '');
-          const fType = f.field_type || f.type || 'text';
-          const fDataValidation = `data-validation="${fType}" data-required="${f.required || false}" data-field-name="${f.name}"`;
-          const fMaxlength = f.maxlength || getFieldMaxlength(fType);
-          const fInputmode = getFieldInputmode(fType);
-          const fPattern = getFieldPattern(fType);
-          rowHtml += `
-            <td>
-              <input class="workspace-input"
-                    type="${f.type === 'calculated' ? 'text' : (f.type || 'text')}"
-                    ${fDataValidation}
-                    data-formula="${f.formula || ''}"
-                    data-format="${f.format || 'number'}"
-                    ${fMaxlength ? `maxlength="${fMaxlength}"` : ''}
-                    ${fInputmode ? `inputmode="${fInputmode}"` : ''}
-                    ${fPattern ? `pattern="${fPattern}"` : ''}
-                    value="${escapeHtml(value)}"
-                    ${f.readonly ? 'readonly' : ''}
-                    ${disabled ? 'disabled' : ''}>
-              <div class="invalid-feedback"></div>
-            </td>
-          `;
+      groupedRows.forEach((groupData) => {
+        const groupRows = groupData.rows;
+        const groupName = groupData.group;
+        const rowCount = groupRows.length;
+        groupRows.forEach((row, idx) => {
+          const isFirstInGroup = (idx === 0);
+          const rowLabel = row.label !== null && row.label !== undefined ? row.label : '';
+          let rowHtml = '<tr>';
+          processedColumns.forEach((col, colIdx) => {
+            if (colIdx === 0) {
+              if (hasGroups) {
+                if (isFirstInGroup) {
+                  rowHtml += `<td class="group-cell" rowspan="${rowCount}">${escapeHtml(groupName || '')}</td>`;
+                }
+              } else {
+                rowHtml += `<td>${escapeHtml(rowLabel)}</td>`;
+              }
+            } else if (colIdx === 1 && hasGroups) {
+              rowHtml += `<td class="metrics-cell">${escapeHtml(rowLabel)}</td>`;
+            } else {
+              const fieldData = (row.fields || []).find(f => {
+                const colName = processedColumns[colIdx];
+                return f.column === colName || f.column === col;
+              });
+              if (fieldData) {
+                const value = getStoredFieldValue(question, fieldData.name, '');
+                const fType = fieldData.field_type || fieldData.type || 'text';
+                const fDataValidation = `data-validation="${fType}" data-required="${fieldData.required || false}" data-field-name="${fieldData.name}"`;
+                const fMaxlength = fieldData.maxlength || getFieldMaxlength(fType);
+                const fInputmode = getFieldInputmode(fType);
+                const fPattern = getFieldPattern(fType);
+                if (fieldData.type === 'select') {
+                  const options = Array.isArray(fieldData.options) ? fieldData.options : [];
+                  rowHtml += `<td><select class="workspace-select" ${fDataValidation} data-field-name="${escapeHtml(fieldData.name)}" ${fieldData.readonly ? 'readonly' : ''} ${disabled ? 'disabled' : ''}>
+                    ${options.map((opt) => {
+                      const optValue = opt.value ?? opt;
+                      const optLabel = opt.label ?? opt;
+                      const selected = String(optValue) === String(value) ? 'selected' : '';
+                      return `<option value="${escapeHtml(optValue)}" ${selected}>${escapeHtml(optLabel)}</option>`;
+                    }).join('')}
+                  </select><div class="invalid-feedback"></div></td>`;
+                } else {
+                  rowHtml += `<td><input class="workspace-input" type="${fieldData.type === 'calculated' ? 'text' : (fieldData.type || 'text')}" ${fDataValidation} data-formula="${fieldData.formula || ''}" data-format="${fieldData.format || 'number'}" ${fMaxlength ? `maxlength="${fMaxlength}"` : ''} ${fInputmode ? `inputmode="${fInputmode}"` : ''} ${fPattern ? `pattern="${fPattern}"` : ''} value="${escapeHtml(value)}" placeholder="${escapeHtml(fieldData.placeholder || '')}" ${fieldData.readonly ? 'readonly' : ''} ${disabled ? 'disabled' : ''}><div class="invalid-feedback"></div></td>`;
+                }
+              } else {
+                rowHtml += `<td></td>`;
+              }
+            }
+          });
+          if (hasDelete) rowHtml += `<td class="text-center"><button type="button" class="btn-brsr btn-brsr-sm danger js-delete-row">Delete</button></td>`;
+          rowHtml += '</tr>';
+          bodyRows += rowHtml;
         });
-        if (hasDelete) {
-          rowHtml += `<td class="text-center">
-            <button type="button" class="btn-brsr btn-brsr-sm danger js-delete-row">Delete</button>
-          </td>`;
-        }
-        rowHtml += '</tr>';
-        bodyRows += rowHtml;
       });
 
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">${escapeHtml(field.label)}</label>
-          <div class="table-container">
-            <table class="data-table" data-table-name="${escapeHtml(field.name)}">
-              <thead>${headerRow}</thead>
-              <tbody>${bodyRows}</tbody>
-            </table>
-          </div>
-          ${hasAdd ? `
-            <div class="table-actions mt-2">
-              <button type="button" class="btn-brsr secondary btn-brsr-sm js-add-row" data-table-name="${escapeHtml(field.name)}">
-                Add Row
-              </button>
-            </div>
-          ` : ''}
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">${escapeHtml(field.label)}</label>
+        <div class="table-container">
+          <table class="data-table" data-table-name="${escapeHtml(field.name)}">
+            <thead>${headerHtml}</thead>
+            <tbody>${bodyRows}</tbody>
+          </table>
         </div>
-      `;
+        ${hasAdd ? `<div class="table-actions mt-2"><button type="button" class="btn-brsr secondary btn-brsr-sm js-add-row" data-table-name="${escapeHtml(field.name)}">Add Row</button></div>` : ''}
+      </div>`;
     }
 
-    return `
-      <div class="form-group" data-field-type="${fieldType}">
-        <label class="form-label">${escapeHtml(fieldLabel)}</label>
-        <textarea class="workspace-textarea form-textarea" ${dataValidation} ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
-        <div class="invalid-feedback"></div>
-      </div>
-    `;
+    return `<div class="form-group" data-field-type="${fieldType}">
+      <label class="form-label">${escapeHtml(fieldLabel)}</label>
+      <textarea class="workspace-textarea form-textarea" ${dataValidation} ${disabledAttr}>${escapeHtml(typeof fieldValue === 'string' ? fieldValue : '')}</textarea>
+      <div class="invalid-feedback"></div>
+    </div>`;
   }
 
+  // ============================================================
+  // Question Renderer - Builds the full question input UI
+  // ============================================================
   function renderQuestionInput(question, disabled = false) {
     const value = question.response_value || '';
-    const options = defaultChoiceOptions(question);
-    const schema = tableSchema(question);
+    const options = Array.isArray(question.options) ? question.options : [];
     const fields = Array.isArray(question.validation_rules && question.validation_rules.fields) ? question.validation_rules.fields : [];
     const qId = getQuestionId(question);
     const disabledAttr = disabled ? 'disabled aria-disabled="true"' : '';
 
     if (fields.length) {
-      return `
-        <div class="form-group">
-          <div class="choice-stack">
-            ${fields.map((field, index) => renderFieldControl(question, field, index, disabled)).join('')}
-          </div>
-        </div>
-      `;
+      return `<div class="form-group"><div class="choice-stack">${fields.map((field, index) => renderFieldControl(question, field, index, disabled)).join('')}</div></div>`;
     }
 
     if (question.question_type === 'textarea' || question.question_type === 'text') {
       const fieldType = question.field_type || question.question_type || 'text';
       const isRequired = question.required === true;
       const maxlength = getFieldMaxlength(fieldType);
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">Response</label>
-          <textarea class="workspace-textarea form-textarea" 
-                    id="responseValue-${escapeHtml(qId)}"
-                    data-validation="${fieldType}"
-                    data-required="${isRequired}"
-                    data-field-name="responseValue"
-                    ${maxlength ? `maxlength="${maxlength}"` : ''}
-                    placeholder="${escapeHtml(question.placeholder_text || 'Type your response here')}" 
-                    ${disabledAttr}>${escapeHtml(value)}</textarea>
-          <div class="invalid-feedback"></div>
-        </div>
-      `;
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">Response</label>
+        <textarea class="workspace-textarea form-textarea" id="responseValue-${escapeHtml(qId)}" data-validation="${fieldType}" data-required="${isRequired}" data-field-name="responseValue" ${maxlength ? `maxlength="${maxlength}"` : ''} placeholder="${escapeHtml(question.placeholder_text || 'Type your response here')}" ${disabledAttr}>${escapeHtml(value)}</textarea>
+        <div class="invalid-feedback"></div>
+      </div>`;
     }
 
     if (question.question_type === 'number' || question.question_type === 'decimal' || question.question_type === 'currency' || question.question_type === 'percentage' || question.question_type === 'year' || question.question_type === 'email' || question.question_type === 'url' || question.question_type === 'date' || question.question_type === 'phone') {
       const fieldType = question.field_type || question.question_type || 'text';
       const isRequired = question.required === true;
-      const typeMap = {
-        number: 'number',
-        decimal: 'text',
-        currency: 'text',
-        percentage: 'text',
-        year: 'number',
-        email: 'email',
-        url: 'url',
-        date: 'date',
-        phone: 'tel',
-      };
+      const typeMap = { number: 'number', decimal: 'text', currency: 'text', percentage: 'text', year: 'number', email: 'email', url: 'url', date: 'date', phone: 'tel' };
       const type = typeMap[question.question_type] || 'text';
       const maxlength = getFieldMaxlength(fieldType);
       const inputmode = getFieldInputmode(fieldType);
       const pattern = getFieldPattern(fieldType);
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">Response</label>
-          <input class="workspace-input" 
-                id="responseValue-${escapeHtml(qId)}"
-                type="${type}"
-                data-validation="${fieldType}"
-                data-required="${isRequired}"
-                data-field-name="responseValue"
-                ${maxlength ? `maxlength="${maxlength}"` : ''}
-                ${inputmode ? `inputmode="${inputmode}"` : ''}
-                ${pattern ? `pattern="${pattern}"` : ''}
-                value="${escapeHtml(value)}"
-                placeholder="${escapeHtml(question.placeholder_text || '')}" 
-                ${disabledAttr}>
-          <div class="invalid-feedback"></div>
-        </div>
-      `;
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">Response</label>
+        <input class="workspace-input" id="responseValue-${escapeHtml(qId)}" type="${type}" data-validation="${fieldType}" data-required="${isRequired}" data-field-name="responseValue" ${maxlength ? `maxlength="${maxlength}"` : ''} ${inputmode ? `inputmode="${inputmode}"` : ''} ${pattern ? `pattern="${pattern}"` : ''} value="${escapeHtml(value)}" placeholder="${escapeHtml(question.placeholder_text || '')}" ${disabledAttr}>
+        <div class="invalid-feedback"></div>
+      </div>`;
     }
 
     if (question.question_type === 'radio' || question.question_type === 'yes_no') {
       const fieldType = question.field_type || question.question_type || 'text';
       const isRequired = question.required === true;
-      return `
-        <div class="form-group" data-field-type="${fieldType}">
-          <label class="form-label">Response</label>
-          <div class="choice-stack">
-            ${options.map((option) => {
-              const label = option.label ?? option.value ?? option;
-              const optionValue = option.value ?? option.label ?? option;
-              const checked = String(optionValue) === String(value) ? 'checked' : '';
-              return `
-                <label class="choice-item">
-                  <input type="radio" 
-                        name="responseValue-${escapeHtml(qId)}" 
-                        value="${escapeHtml(optionValue)}" 
-                        data-validation="${fieldType}"
-                        data-required="${isRequired}"
-                        data-field-name="responseValue"
-                        ${checked} ${disabledAttr}>
-                  <span>${escapeHtml(label)}</span>
-                </label>
-              `;
-            }).join('')}
-          </div>
-          <div class="invalid-feedback"></div>
+      return `<div class="form-group" data-field-type="${fieldType}">
+        <label class="form-label">Response</label>
+        <div class="choice-stack">
+          ${options.map((option) => {
+            const label = option.label ?? option.value ?? option;
+            const optionValue = option.value ?? option.label ?? option;
+            const checked = String(optionValue) === String(value) ? 'checked' : '';
+            return `<label class="choice-item">
+              <input type="radio" name="responseValue-${escapeHtml(qId)}" value="${escapeHtml(optionValue)}" data-validation="${fieldType}" data-required="${isRequired}" data-field-name="responseValue" ${checked} ${disabledAttr}>
+              <span>${escapeHtml(label)}</span>
+            </label>`;
+          }).join('')}
         </div>
-      `;
+        <div class="invalid-feedback"></div>
+      </div>`;
     }
 
     if (question.question_type === 'checkbox' || question.question_type === 'multi_select') {
       const selected = String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
-      return `
-        <div class="form-group">
-          <label class="form-label">Choose applicable options</label>
-          <div class="choice-stack">
-            ${options.map((option) => {
-              const label = option.label ?? option.value ?? option;
-              const optionValue = option.value ?? option.label ?? option;
-              const checked = selected.includes(String(optionValue)) ? 'checked' : '';
-              return `
-                <label class="choice-item">
-                  <input type="checkbox" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr}>
-                  <span>${escapeHtml(label)}</span>
-                </label>
-              `;
-            }).join('')}
-          </div>
+      return `<div class="form-group">
+        <label class="form-label">Choose applicable options</label>
+        <div class="choice-stack">
+          ${options.map((option) => {
+            const label = option.label ?? option.value ?? option;
+            const optionValue = option.value ?? option.label ?? option;
+            const checked = selected.includes(String(optionValue)) ? 'checked' : '';
+            return `<label class="choice-item">
+              <input type="checkbox" value="${escapeHtml(optionValue)}" ${checked} ${disabledAttr}>
+              <span>${escapeHtml(label)}</span>
+            </label>`;
+          }).join('')}
         </div>
-      `;
+      </div>`;
     }
 
-    if (question.question_type === 'table' || question.question_type === 'nested_table' || question.question_type === 'matrix' || question.question_type === 'repeating_section') {
-      const columns = defaultTableColumns(question);
-      const rows = initTableRows(question);
-      const headerRows = Array.isArray(schema.header_rows) ? schema.header_rows : [];
-      const renderHeader = headerRows.length
-        ? headerRows.map((headerRow) => `
-            <tr>
-              ${headerRow.map((cell) => `<th>${escapeHtml(cell)}</th>`).join('')}
-              ${headerRow.length < columns.length ? `<th colspan="${columns.length - headerRow.length}"></th>` : ''}
-              <th style="width:48px;"></th>
-            </tr>
-          `).join('')
-        : `
-            <tr>
-              ${columns.map((column) => `<th>${escapeHtml(column.label || column.key)}</th>`).join('')}
-              <th style="width:48px;"></th>
-            </tr>
-          `;
-      return `
-        <div class="form-group">
-          <label class="form-label">Table Response</label>
-          <div class="table-container">
-            <table class="data-table" data-question-id="${escapeHtml(qId)}" data-column-keys="${escapeHtml(columns.map((column) => column.key || column.name).join('|'))}">
-              <thead>
-                ${renderHeader}
-              </thead>
-              <tbody>
-                ${rows.map((row, index) => `
-                  <tr>
-                    ${columns.map((column) => {
-              const key = column.key || column.name;
-              const cell = row?.[key] ?? '';
-              const inputType = column.type || 'text';
-              if (inputType === 'textarea') {
-                        return `<td><textarea data-key="${escapeHtml(key)}" placeholder="${escapeHtml(column.placeholder || '')}" ${disabledAttr}>${escapeHtml(cell)}</textarea></td>`;
-              }
-              if (inputType === 'select') {
-                const choices = Array.isArray(column.options) ? column.options : [];
-                        return `<td><select data-key="${escapeHtml(key)}" ${disabledAttr}>${choices.map((choice) => `<option value="${escapeHtml(choice)}" ${String(choice) === String(cell) ? 'selected' : ''}>${escapeHtml(choice)}</option>`).join('')}</select></td>`;
-              }
-                      return `<td><input data-key="${escapeHtml(key)}" type="text" value="${escapeHtml(cell)}" placeholder="${escapeHtml(column.placeholder || '')}" ${disabledAttr}></td>`;
-                    }).join('')}
-                    <td><button type="button" class="btn-brsr secondary js-remove-row" ${disabledAttr}>-</button></td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-          <div class="table-actions">
-            <button type="button" class="btn-brsr secondary js-add-row" ${disabledAttr}>Add Row</button>
-          </div>
-        </div>
-      `;
-    }
-
-    return `
-      <div class="form-group">
-        <label class="form-label">Response</label>
-        <textarea class="workspace-textarea form-textarea" id="responseValue-${escapeHtml(qId)}" ${disabledAttr}>${escapeHtml(value)}</textarea>
-      </div>
-    `;
+    return `<div class="form-group"><label class="form-label">Response</label><textarea class="workspace-textarea form-textarea" id="responseValue-${escapeHtml(qId)}" ${disabledAttr}>${escapeHtml(value)}</textarea></div>`;
   }
 
+  // ============================================================
+  // UI Renderers - Builds sidebar navigation and question cards
+  // ============================================================
   function renderSidebar(workspace) {
     const sectionSelect = document.getElementById('sectionSelect');
     sectionSelect.innerHTML = workspace.sections.map((section) => {
@@ -1899,6 +1694,7 @@
       await loadWorkspace(workspace.section.code, event.target.value, '', state.assignmentId);
     };
 
+    // Group questions by sub-section
     const grouped = groupQuestions(workspace.topics);
     const sidebarGroups = document.getElementById('sidebarGroups');
     sidebarGroups.innerHTML = grouped.map((group) => `
@@ -1906,12 +1702,10 @@
         <div class="nav-group-head">${escapeHtml(group.key)}</div>
         ${group.items.map((question) => {
           const qId = getQuestionId(question);
-          return `
-            <div class="question-item ${qId === workspace.active_question_id ? 'active' : ''}" data-question-id="${escapeHtml(qId)}">
-              <span class="question-dot ${statusClass(question.status)}"></span>
-              ${escapeHtml(question.question_number)}. ${escapeHtml(question.title)}
-            </div>
-          `;
+          return `<div class="question-item ${qId === workspace.active_question_id ? 'active' : ''}" data-question-id="${escapeHtml(qId)}">
+            <span class="question-dot ${statusClass(question.status)}"></span>
+            ${escapeHtml(question.question_number)}. ${escapeHtml(question.title)}
+          </div>`;
         }).join('')}
       </div>
     `).join('');
@@ -1926,11 +1720,30 @@
     });
   }
 
+  function groupQuestions(topics) {
+    const groups = [];
+    const map = new Map();
+    topics.forEach((question) => {
+      let key = question.sub_section || (question.section_code === 'section_a' ? 'General Disclosures' : 'Questions');
+      if (question.section_code === 'section_b') key = 'Policy & Governance Questions';
+      if (!map.has(key)) { const group = { key, items: [] }; map.set(key, group); groups.push(group); }
+      map.get(key).items.push(question);
+    });
+    const order = ['General Disclosures', 'Policy & Governance Questions', 'Essential Indicators', 'Leadership Indicators'];
+    groups.sort((a, b) => {
+      const indexA = order.indexOf(a.key), indexB = order.indexOf(b.key);
+      if (indexA === -1 && indexB === -1) return a.key.localeCompare(b.key);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+    return groups;
+  }
+
   function renderQuestionCard(question, isActive) {
     const selected = isActive ? 'active' : '';
     const qId = getQuestionId(question);
     const currentAssignment = state.workspace?.current_assignment || {};
-    const currentStageType = currentAssignment.workflow_stage_type || question.workflow_stage_type || '';
     const canAct = currentAssignment.can_act ?? question.can_act ?? false;
     const isReviewerView = Boolean(currentAssignment.is_assigned_reviewer && !currentAssignment.is_completed);
     const canSave = canAct && Boolean(currentAssignment.is_editable);
@@ -1939,259 +1752,51 @@
     
     let actionButtons = '';
     if (canSave && !isReviewerView) {
-      actionButtons = `
-        <div class="table-actions">
-          <button type="button" class="btn-brsr secondary js-save-question">Save Draft</button>
-        </div>
-      `;
+      actionButtons = `<div class="table-actions"><button type="button" class="btn-brsr secondary js-save-question">Save Draft</button></div>`;
     }
 
     const reviewerCommentBlock = isReviewerView ? `
       <div class="review-comment-box">
         <span class="review-label">Reviewer Comment</span>
-        <textarea
-          class="workspace-textarea review-comment-input js-review-comment-input"
-          data-question-id="${escapeHtml(qId)}"
-          placeholder="Add a comment for this question"
-        >${escapeHtml(question.review_remark || '')}</textarea>
+        <textarea class="workspace-textarea review-comment-input js-review-comment-input" data-question-id="${escapeHtml(qId)}" placeholder="Add a comment for this question">${escapeHtml(question.review_remark || '')}</textarea>
         <div class="review-comment-meta">Only the reviewer selected in workflow configuration can add or edit this comment.</div>
-        <div class="table-actions">
-          <button type="button" class="btn-brsr secondary js-save-review-comment" data-question-id="${escapeHtml(qId)}">Save Comment</button>
-        </div>
+        <div class="table-actions"><button type="button" class="btn-brsr secondary js-save-review-comment" data-question-id="${escapeHtml(qId)}">Save Comment</button></div>
       </div>
     ` : '';
     
-    return `
-      <div class="question-container ${selected}" id="question-${escapeHtml(qId)}" data-question-id="${escapeHtml(qId)}">
-        <div class="question-header">
-          <div class="question-header-left">
-            ${isReviewerView ? '' : `<input type="checkbox" class="question-checkbox js-question-select" data-question-id="${escapeHtml(qId)}">`}
-            <div>
-              <h3 class="question-title"><span class="question-number">${escapeHtml(question.question_number)}.</span>${escapeHtml(question.title)}</h3>
-            </div>
-          </div>
-          <span class="status-badge ${statusClass(question.status)}">${escapeHtml(badgeText)}</span>
+    return `<div class="question-container ${selected}" id="question-${escapeHtml(qId)}" data-question-id="${escapeHtml(qId)}">
+      <div class="question-header">
+        <div class="question-header-left">
+          ${isReviewerView ? '' : `<input type="checkbox" class="question-checkbox js-question-select" data-question-id="${escapeHtml(qId)}">`}
+          <div><h3 class="question-title"><span class="question-number">${escapeHtml(question.question_number)}.</span>${escapeHtml(question.title)}</h3></div>
         </div>
-        <div class="question-content">
-          <fieldset class="question-fieldset" ${isLocked ? 'disabled' : ''}>
-            ${renderQuestionInput(question, isLocked)}
-            <div class="form-group">
-              <label class="form-label">
-                  Supporting Documents
-                  <small>(Optional)</small>
-              </label>
-
-              <input
-                  type="file"
-                  class="workspace-input js-document-upload"
-                  data-question-id="${escapeHtml(qId)}"
-                  multiple
-                  ${isLocked ? "disabled" : ""}
-              >
-
-              ${
-                  Array.isArray(question.documents) && question.documents.length
-                      ? `
-                      <div class="uploaded-files">
-                          ${question.documents.map(doc => `
-                              <div class="uploaded-file">
-                                  <a href="${doc.url}" target="_blank">
-                                      📄 ${escapeHtml(doc.name)}
-                                  </a>
-                              </div>
-                          `).join("")}
-                      </div>
-                      `
-                      : ""
-              }
-            </div>
-            ${actionButtons}
-          </fieldset>
-          ${reviewerCommentBlock}
-        </div>
+        <span class="status-badge ${statusClass(question.status)}">${escapeHtml(badgeText)}</span>
       </div>
-    `;
-  }
-
-  function addTableRow(button) {
-    const formGroup = button.closest('.form-group');
-    if (!formGroup) {
-      console.error('Form group not found for add row button');
-      return;
-    }
-    
-    const table = formGroup.querySelector('.data-table');
-    if (!table) {
-      console.error('Table not found for add row button');
-      return;
-    }
-    
-    const tbody = table.querySelector("tbody");
-    if (!tbody) {
-      console.error('Table body not found');
-      return;
-    }
-    
-    const lastRow = tbody.rows[tbody.rows.length - 1];
-    if (!lastRow) {
-      console.error('No rows found to clone');
-      return;
-    }
-    
-    const newRow = lastRow.cloneNode(true);
-    const serialNo = tbody.rows.length + 1;
-    
-    if (newRow.cells.length > 0) {
-      newRow.cells[0].textContent = serialNo;
-    }
-    
-    newRow.querySelectorAll("input, textarea, select").forEach((input, index) => {
-      input.value = "";
-      input.classList.remove("is-valid", "is-invalid");
-      input.dataset.blurred = "false";
-      input.dataset.touched = "false";
-      
-      if (input.name) {
-        input.name = input.name.replace(/\d+$/, serialNo);
-      }
-      if (input.id) {
-        input.id = input.id.replace(/\d+$/, serialNo);
-      }
-      
-      if (input.dataset.formula) {
-        setTimeout(() => calculateTableRow(newRow), 10);
-      }
-    });
-    
-    tbody.appendChild(newRow);
-    updateSerialNumbers(table);
-    
-    if (typeof BRSRValidation !== 'undefined' && BRSRValidation.attachValidationToContainer) {
-      BRSRValidation.attachValidationToContainer(newRow);
-    }
-    
-    const deleteBtn = newRow.querySelector('.js-delete-row');
-    if (deleteBtn) {
-      deleteBtn.removeEventListener('click', deleteBtn._deleteRowHandler);
-      deleteBtn._deleteRowHandler = function(e) {
-        e.stopPropagation();
-        const row = this.closest('tr');
-        const tbody = row.closest('tbody');
-        if (tbody && tbody.rows.length > 1) {
-          row.remove();
-          updateSerialNumbers(table);
-          calculateTableRow(table);
-        } else {
-          showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
-        }
-      };
-      deleteBtn.addEventListener('click', deleteBtn._deleteRowHandler);
-    }
-    
-    const removeBtn = newRow.querySelector('.js-remove-row');
-    if (removeBtn) {
-      removeBtn.removeEventListener('click', removeBtn._removeRowHandler);
-      removeBtn._removeRowHandler = function(e) {
-        e.stopPropagation();
-        const row = this.closest('tr');
-        const tbody = row.closest('tbody');
-        if (tbody && tbody.rows.length > 1) {
-          row.remove();
-          updateSerialNumbers(table);
-          calculateTableRow(table);
-        } else {
-          showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
-        }
-      };
-      removeBtn.addEventListener('click', removeBtn._removeRowHandler);
-    }
-    
-    if (typeof calculateTableRow === 'function') {
-      calculateTableRow(table);
-    }
-  }
-
-  function updateSerialNumbers(table) {
-    const rows = table.querySelectorAll("tbody tr");
-    rows.forEach((row, index) => {
-      if (row.cells.length > 0) {
-        row.cells[0].textContent = index + 1;
-      }
-      
-      row.querySelectorAll("input, textarea, select").forEach(input => {
-        if (input.name) {
-          input.name = input.name.replace(/\d+$/, index + 1);
-        }
-        if (input.id) {
-          input.id = input.id.replace(/\d+$/, index + 1);
-        }
-      });
-    });
-  }
-
-  function calculateTableRow(container) {
-    if (!container) return;
-    
-    if (container.tagName === 'TABLE') {
-      container.querySelectorAll('tbody tr').forEach(row => {
-        calculateRowFormulas(row);
-      });
-    } else if (container.tagName === 'TR') {
-      calculateRowFormulas(container);
-    } else if (container.closest) {
-      const row = container.closest('tr');
-      if (row) {
-        calculateRowFormulas(row);
-      }
-    }
-  }
-
-  function calculateRowFormulas(row) {
-    row.querySelectorAll('input[data-formula]').forEach(output => {
-      const formula = output.dataset.formula;
-      if (!formula) return;
-      
-      let expression = formula;
-      const table = row.closest('table');
-      if (table) {
-        table.querySelectorAll('input[data-field-name]').forEach(input => {
-          const name = input.dataset.fieldName;
-          if (!name) return;
-          const value = parseFloat(input.value) || 0;
-          const regex = new RegExp("\\b" + name + "\\b", "g");
-          expression = expression.replace(regex, value);
-        });
-      }
-      
-      let result = "";
-      try {
-        result = eval(expression);
-        if (!isFinite(result)) {
-          result = 0;
-        }
-      } catch {
-        result = "";
-      }
-      
-      if (result !== "") {
-        const format = output.dataset.format || "number";
-        if (format === "percentage") {
-          output.value = `${Number(result)} %`;
-        } else {
-          output.value = Number(result);
-        }
-      } else {
-        output.value = "";
-      }
-    });
+      <div class="question-content">
+        <fieldset class="question-fieldset" ${isLocked ? 'disabled' : ''}>
+          ${renderQuestionInput(question, isLocked)}
+          <div class="form-group">
+            <label class="form-label">Supporting Documents <small>(Optional)</small></label>
+            <input type="file" class="workspace-input js-document-upload" data-question-id="${escapeHtml(qId)}" multiple ${isLocked ? "disabled" : ""}>
+            ${Array.isArray(question.documents) && question.documents.length ? `<div class="uploaded-files">${question.documents.map(doc => `<div class="uploaded-file"><a href="${doc.url}" target="_blank">📄 ${escapeHtml(doc.name)}</a></div>`).join("")}</div>` : ""}
+          </div>
+          ${actionButtons}
+        </fieldset>
+        ${reviewerCommentBlock}
+      </div>
+    </div>`;
   }
 
   function renderQuestionDeck(workspace, focusQuestionId) {
     const deck = document.getElementById('questionDeck');
-    const activeQuestion = workspace.topics.find((question) => {
+    const uniqueTopics = workspace.topics.filter((question, index, self) => {
+      const qId = getQuestionId(question);
+      return self.findIndex(t => getQuestionId(t) === qId) === index;
+    });
+    const activeQuestion = uniqueTopics.find((question) => {
       const qId = getQuestionId(question);
       return qId === (focusQuestionId || workspace.active_question_id);
-    }) || workspace.active_question || workspace.topics[0] || null;
+    }) || workspace.active_question || uniqueTopics[0] || null;
     state.activeQuestion = activeQuestion;
     state.questionId = activeQuestion ? getQuestionId(activeQuestion) : '';
 
@@ -2200,20 +1805,15 @@
       return;
     }
 
-    const grouped = groupQuestions(workspace.topics);
+    const grouped = groupQuestions(uniqueTopics);
     deck.innerHTML = grouped.map((group) => `
       <div class="group-block">
-        <div class="group-head">
-          <h3>${escapeHtml(group.key)}</h3>
-          <span class="pill">${group.items.length} questions</span>
-        </div>
-        <div class="group-body">
-          ${group.items.map((question) => {
-            const qId = getQuestionId(question);
-            const activeQId = getQuestionId(activeQuestion);
-            return renderQuestionCard(question, qId === activeQId);
-          }).join('')}
-        </div>
+        <div class="group-head"><h3>${escapeHtml(group.key)}</h3><span class="pill">${group.items.length} questions</span></div>
+        <div class="group-body">${group.items.map((question) => {
+          const qId = getQuestionId(question);
+          const activeQId = getQuestionId(activeQuestion);
+          return renderQuestionCard(question, qId === activeQId);
+        }).join('')}</div>
       </div>
     `).join('');
 
@@ -2223,10 +1823,6 @@
 
     deck.querySelectorAll('.question-container').forEach((card) => {
       const questionId = card.getAttribute('data-question-id');
-      const question = workspace.topics.find((item) => {
-        const qId = getQuestionId(item);
-        return qId === questionId;
-      });
       const header = card.querySelector('.question-header');
       header.addEventListener('click', (event) => {
         if (event.target.closest('input, button, textarea, select')) return;
@@ -2240,7 +1836,6 @@
         checkbox.checked = questionId === activeQId || workspace.selected_question_ids?.includes?.(questionId);
         checkbox.addEventListener('change', () => syncSelectionState(questionId, checkbox.checked));
       }
-
       if (sidebarItem) {
         const activeQId = getQuestionId(activeQuestion);
         sidebarItem.classList.toggle('active', questionId === activeQId);
@@ -2254,20 +1849,13 @@
       if (saveBtn) saveBtn.addEventListener('click', () => saveQuestion(questionId));
       if (saveCommentBtn) saveCommentBtn.addEventListener('click', () => saveReviewComment(questionId));
 
-      const tables = card.querySelectorAll('.data-table');
-      tables.forEach((table) => {
-        const addRowBtns = card.querySelectorAll('.js-add-row');
-        addRowBtns.forEach((addBtn) => {
+      card.querySelectorAll('.data-table').forEach((table) => {
+        card.querySelectorAll('.js-add-row').forEach((addBtn) => {
           addBtn.removeEventListener('click', addBtn._addRowHandler);
-          addBtn._addRowHandler = function(e) {
-            e.stopPropagation();
-            addTableRow(this);
-          };
+          addBtn._addRowHandler = function(e) { e.stopPropagation(); addTableRow(this); };
           addBtn.addEventListener('click', addBtn._addRowHandler);
         });
-        
-        const deleteBtns = table.querySelectorAll('.js-delete-row');
-        deleteBtns.forEach((btn) => {
+        table.querySelectorAll('.js-delete-row, .js-remove-row').forEach((btn) => {
           btn.removeEventListener('click', btn._deleteRowHandler);
           btn._deleteRowHandler = function(e) {
             e.stopPropagation();
@@ -2283,30 +1871,19 @@
           };
           btn.addEventListener('click', btn._deleteRowHandler);
         });
-        
-        const removeBtns = table.querySelectorAll('.js-remove-row');
-        removeBtns.forEach((btn) => {
-          btn.removeEventListener('click', btn._removeRowHandler);
-          btn._removeRowHandler = function(e) {
-            e.stopPropagation();
-            const row = this.closest('tr');
-            const tbody = row.closest('tbody');
-            if (tbody && tbody.rows.length > 1) {
-              row.remove();
-              updateSerialNumbers(table);
-              calculateTableRow(table);
-            } else {
-              showWorkspaceMessage('Cannot delete the last row. At least one row is required.', 'error');
-            }
-          };
-          btn.addEventListener('click', btn._removeRowHandler);
-        });
       });
     });
 
     updateQuestionHeader(workspace, activeQuestion);
     calculateFormulas();
     attachCalculationEvents();
+  }
+
+  function syncSelectionState(questionId, checked) {
+    const sidebarItem = document.querySelector(`.question-item[data-question-id="${CSS.escape(questionId)}"]`);
+    const card = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
+    if (sidebarItem) sidebarItem.classList.toggle('active', checked);
+    if (card) card.classList.toggle('question-selected', checked);
   }
 
   function updateQuestionHeader(workspace, question) {
@@ -2321,72 +1898,41 @@
       `<span class="pill brand">${escapeHtml(workspace.section.name)}</span>`,
       workspace.principle ? `<span class="pill success">${escapeHtml(workspace.principle.principle_name)}</span>` : '',
       question.is_required ? `<span class="pill warn">Required</span>` : '',
-      question.assignment_id ? `<span class="pill">${escapeHtml(question.assignment_id)}</span>` : '',
     ].filter(Boolean);
-    const contextPillsEl = document.getElementById('contextPills');
-    if (contextPillsEl) contextPillsEl.innerHTML = pills.join('');
+    document.getElementById('contextPills').innerHTML = pills.join('');
 
-    const activeLabel =
-      workspace.current_assignment?.workflow_task?.status_label
-      || workspace.current_assignment?.workflow_status_label
-      || workspace.latest_assignment?.workflow_task?.status_label
-      || workspace.latest_assignment?.workflow_stage
-      || 'Draft';
+    const activeLabel = workspace.current_assignment?.workflow_task?.status_label || workspace.latest_assignment?.workflow_stage || 'Draft';
     document.getElementById('assignmentBadge').textContent = activeLabel;
 
     const submitAssignmentBtn = document.getElementById('submitAssignmentBtn');
-    const canSubmitAssignment = Boolean(
-      workspace.current_assignment
-      && workspace.current_assignment.can_act
-      && Boolean(workspace.current_assignment.is_editable)
-    );
-    if (submitAssignmentBtn) {
-      submitAssignmentBtn.style.display = canSubmitAssignment ? '' : 'none';
-    }
+    const canSubmitAssignment = Boolean(workspace.current_assignment && workspace.current_assignment.can_act && Boolean(workspace.current_assignment.is_editable));
+    if (submitAssignmentBtn) submitAssignmentBtn.style.display = canSubmitAssignment ? '' : 'none';
 
     const assignmentLauncher = document.getElementById('assignmentLauncher');
     const stageType = workspace.current_assignment?.workflow_stage_type || '';
-    if (assignmentLauncher) {
-      assignmentLauncher.style.display = (!stageType || stageType === 'question_assignment') ? '' : 'none';
-    }
+    if (assignmentLauncher) assignmentLauncher.style.display = (!stageType || stageType === 'question_assignment') ? '' : 'none';
 
     fillAssignmentOptions(workspace);
   }
 
-  function syncSelectionState(questionId, checked) {
-    const sidebarItem = document.querySelector(`.question-item[data-question-id="${CSS.escape(questionId)}"]`);
-    const card = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
-    if (sidebarItem) sidebarItem.classList.toggle('active', checked);
-    if (card) card.classList.toggle('question-selected', checked);
-  }
-
+  // ============================================================
+  // Data Collection - Gathers user responses from the DOM
+  // ============================================================
   function getNumericAssignmentId() {
-    if (state.workspace?.current_assignment?.id) {
-      return state.workspace.current_assignment.id.toString();
-    }
-    if (state.workspace?.id) {
-      return state.workspace.id.toString();
-    }
-    if (state.assignmentId && !isNaN(parseInt(state.assignmentId))) {
-      return state.assignmentId.toString();
-    }
+    if (state.workspace?.current_assignment?.id) return state.workspace.current_assignment.id.toString();
+    if (state.workspace?.id) return state.workspace.id.toString();
+    if (state.assignmentId && !isNaN(parseInt(state.assignmentId))) return state.assignmentId.toString();
     if (state.workspace?.topics) {
       for (const topic of state.workspace.topics) {
-        if (topic.assignment_id && !isNaN(parseInt(topic.assignment_id))) {
-          return topic.assignment_id.toString();
-        }
+        if (topic.assignment_id && !isNaN(parseInt(topic.assignment_id))) return topic.assignment_id.toString();
       }
     }
     return null;
   }
 
   function collectQuestionPayload(questionId) {
-    const question = state.workspace.topics.find((item) => {
-      const qId = getQuestionId(item);
-      return qId === questionId;
-    });
+    const question = state.workspace.topics.find((item) => getQuestionId(item) === questionId);
     if (!question) return null;
-
     const container = document.querySelector(`.question-container[data-question-id="${CSS.escape(questionId)}"]`);
     if (!container) return null;
 
@@ -2394,14 +1940,8 @@
     if (!assignmentId && question.assignment_id && !isNaN(parseInt(question.assignment_id))) {
       assignmentId = question.assignment_id.toString();
     }
-    if (!assignmentId) {
-      assignmentId = question.assignment_id || '';
-    }
-
-    if (!assignmentId) {
-      console.error('No assignment ID found for question:', questionId);
-      return null;
-    }
+    if (!assignmentId) assignmentId = question.assignment_id || '';
+    if (!assignmentId) { console.error('No assignment ID found for question:', questionId); return null; }
 
     const payload = { assignment_id: assignmentId };
     const fields = Array.isArray(question.validation_rules && question.validation_rules.fields) ? question.validation_rules.fields : [];
@@ -2411,7 +1951,6 @@
       fields.forEach((field) => {
         const fieldName = field.name;
         if (!fieldName) return;
-
         if (field.kind === 'radio') {
           const checked = container.querySelector(`input[type="radio"][data-field-name="${CSS.escape(fieldName)}"]:checked`);
           responseJson[fieldName] = checked ? checked.value : '';
@@ -2483,17 +2022,13 @@
     return !isBlankResponseValue(payload?.response_value) || !isBlankResponseValue(payload?.response_json);
   }
 
+  // ============================================================
+  // API Operations - Save, Submit, Comment on questions
+  // ============================================================
   async function persistQuestion(questionId, { reload = false, showMessage = true } = {}) {
     const payload = collectQuestionPayload(questionId);
-    if (!payload) {
-      alert('Could not collect question data. Please ensure you have an active assignment.');
-      return false;
-    }
-
-    if (!payload.assignment_id) {
-      alert('No assignment found for this question. Please create an assignment first.');
-      return false;
-    }
+    if (!payload) { alert('Could not collect question data. Please ensure you have an active assignment.'); return false; }
+    if (!payload.assignment_id) { alert('No assignment found for this question. Please create an assignment first.'); return false; }
 
     try {
       const formData = new FormData();
@@ -2502,29 +2037,18 @@
       formData.append("response_json", JSON.stringify(payload.response_json || {}));
       const documentInput = document.querySelector(`.js-document-upload[data-question-id="${CSS.escape(questionId)}"]`);
       if (documentInput && documentInput.files.length) {
-          Array.from(documentInput.files).forEach(file => {
-              formData.append("documents", file);
-          });
+        Array.from(documentInput.files).forEach(file => formData.append("documents", file));
       }
 
       const response = await fetch(apiUrl(API_SAVE, questionId), {
-          method: "PUT",
-          headers: {"X-CSRFToken": getCookie("csrftoken"),},
-          body: formData,
+        method: "PUT",
+        headers: { "X-CSRFToken": getCookie("csrftoken") },
+        body: formData,
       });
-
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        alert(data.detail || 'Unable to save the question.');
-        return false;
-      }
-
-      if (showMessage) {
-        showWorkspaceMessage(data.message || `Draft saved for question ${questionId}.`, 'success');
-      }
-      if (reload) {
-        await loadWorkspace(state.sectionCode, state.principleSlug, questionId, state.assignmentId);
-      }
+      if (!response.ok) { alert(data.detail || 'Unable to save the question.'); return false; }
+      if (showMessage) showWorkspaceMessage(data.message || `Draft saved for question ${questionId}.`, 'success');
+      if (reload) await loadWorkspace(state.sectionCode, state.principleSlug, questionId, state.assignmentId);
       return true;
     } catch (error) {
       console.error('Error saving question:', error);
@@ -2541,65 +2065,38 @@
     const currentAssignment = state.workspace?.current_assignment || {};
     const topicIds = (state.workspace?.topics || []).map((item) => getQuestionId(item)).filter(Boolean);
     
-    if (typeof validateForm === 'function') {
-      if (!validateForm()) {
-        const firstInvalid = document.querySelector('.is-invalid');
-        if (firstInvalid) {
-          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          firstInvalid.focus();
-        }
-        showWorkspaceMessage('Please correct all highlighted fields before submitting.', 'error');
-        return;
-      }
-    }
-
-    if (!topicIds.length) {
-      alert('No questions found for this assignment.');
+    if (typeof validateForm === 'function' && !validateForm()) {
+      const firstInvalid = document.querySelector('.is-invalid');
+      if (firstInvalid) { firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' }); firstInvalid.focus(); }
+      showWorkspaceMessage('Please correct all highlighted fields before submitting.', 'error');
       return;
     }
 
+    if (!topicIds.length) { alert('No questions found for this assignment.'); return; }
+
     for (const questionId of topicIds) {
       const saved = await persistQuestion(questionId, { reload: false, showMessage: false });
-      if (!saved) {
-        return;
-      }
+      if (!saved) return;
     }
 
-    const payloads = topicIds
-      .map((questionId) => {
-        const payload = collectQuestionPayload(questionId);
-        return payload ? { questionId, payload } : null;
-      })
-      .filter(Boolean);
+    const payloads = topicIds.map((questionId) => {
+      const payload = collectQuestionPayload(questionId);
+      return payload ? { questionId, payload } : null;
+    }).filter(Boolean);
 
-    const missingQuestions = payloads
-      .filter(({ payload }) => !questionHasResponseData(payload))
-      .map(({ questionId, payload }) => {
-        const question = state.workspace.topics.find((item) => getQuestionId(item) === questionId);
-        return {
-          question_id: questionId,
-          question_number: question?.question_number || '',
-          title: question?.title || '',
-          section: question?.section_code || '',
-        };
-      });
+    const missingQuestions = payloads.filter(({ payload }) => !questionHasResponseData(payload)).map(({ questionId }) => {
+      const question = state.workspace.topics.find((item) => getQuestionId(item) === questionId);
+      return { question_id: questionId, question_number: question?.question_number || '', title: question?.title || '' };
+    });
 
     if (missingQuestions.length) {
-      const summary = missingQuestions
-        .slice(0, 8)
-        .map((item) => `${item.question_number ? `${item.question_number}. ` : ''}${item.title}`)
-        .join('\n');
-      const shouldSubmit = window.confirm(
-        `The following questions are still empty:\n${summary}${missingQuestions.length > 8 ? '\n…' : ''}\n\nDo you still want to submit the assignment?`
-      );
+      const summary = missingQuestions.slice(0, 8).map((item) => `${item.question_number ? `${item.question_number}. ` : ''}${item.title}`).join('\n');
+      const shouldSubmit = window.confirm(`The following questions are still empty:\n${summary}${missingQuestions.length > 8 ? '\n…' : ''}\n\nDo you still want to submit the assignment?`);
       if (!shouldSubmit) {
         const firstMissing = missingQuestions[0];
         if (firstMissing?.question_id) {
           const firstCard = document.getElementById(`question-${CSS.escape(firstMissing.question_id)}`);
-          if (firstCard) {
-            firstCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            firstCard.classList.add('active');
-          }
+          if (firstCard) { firstCard.scrollIntoView({ behavior: 'smooth', block: 'start' }); firstCard.classList.add('active'); }
         }
         return;
       }
@@ -2609,30 +2106,19 @@
     try {
       const response = await fetch(apiUrl(API_SUBMIT, submitQuestionId), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken'),
-        },
-        body: JSON.stringify({
-          assignment_id: currentAssignment.id || state.assignmentId,
-          force: missingQuestions.length > 0,
-        }),
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ assignment_id: currentAssignment.id || state.assignmentId, force: missingQuestions.length > 0 }),
       });
-
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         if (data.missing_questions && data.missing_questions.length) {
           const firstMissing = data.missing_questions[0];
           const firstCard = firstMissing?.question_id ? document.getElementById(`question-${CSS.escape(firstMissing.question_id)}`) : null;
-          if (firstCard) {
-            firstCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            firstCard.classList.add('active');
-          }
+          if (firstCard) { firstCard.scrollIntoView({ behavior: 'smooth', block: 'start' }); firstCard.classList.add('active'); }
         }
         alert(data.detail || 'Unable to submit the assignment.');
         return;
       }
-
       showWorkspaceMessage(data.message || 'Assignment submitted successfully.', 'success');
       await loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
     } catch (error) {
@@ -2643,44 +2129,21 @@
 
   async function saveReviewComment(questionId) {
     const currentAssignment = state.workspace?.current_assignment || {};
-    if (!currentAssignment.is_assigned_reviewer) {
-      alert('Only the selected reviewer can add comments for this assignment.');
-      return;
-    }
-
+    if (!currentAssignment.is_assigned_reviewer) { alert('Only the selected reviewer can add comments for this assignment.'); return; }
     const textarea = document.querySelector(`.js-review-comment-input[data-question-id="${CSS.escape(questionId)}"]`);
     const remark = textarea ? textarea.value.trim() : '';
-    if (!remark) {
-      alert('Please enter a reviewer comment before saving.');
-      if (textarea) textarea.focus();
-      return;
-    }
-
+    if (!remark) { alert('Please enter a reviewer comment before saving.'); if (textarea) textarea.focus(); return; }
     const assignmentId = currentAssignment.id || state.assignmentId;
-    if (!assignmentId) {
-      alert('No assignment found for this question.');
-      return;
-    }
+    if (!assignmentId) { alert('No assignment found for this question.'); return; }
 
     try {
       const response = await fetch(apiUrl(API_COMMENT, questionId), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken'),
-        },
-        body: JSON.stringify({
-          assignment_id: assignmentId,
-          remark,
-        }),
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ assignment_id: assignmentId, remark }),
       });
-
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        alert(data.detail || 'Unable to save the reviewer comment.');
-        return;
-      }
-
+      if (!response.ok) { alert(data.detail || 'Unable to save the reviewer comment.'); return; }
       showWorkspaceMessage(data.message || 'Reviewer comment saved successfully.', 'success');
       await loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
     } catch (error) {
@@ -2689,6 +2152,9 @@
     }
   }
 
+  // ============================================================
+  // Assignment Operations - Create assignments and load options
+  // ============================================================
   function fillAssignmentOptions(workspace) {
     const plantSelect = document.getElementById('assignmentPlant');
     const fySelect = document.getElementById('assignmentFinancialYear');
@@ -2709,13 +2175,8 @@
 
     assigneeSelect.innerHTML = '<option value="">Loading assignees...</option>';
     reviewerSelect.innerHTML = '<option value="">Loading reviewers...</option>';
-
-    if (workspace.plants.length) {
-      plantSelect.value = workspace.plants[0].id.toString();
-    }
-
+    if (workspace.plants.length) plantSelect.value = workspace.plants[0].id.toString();
     plantSelect.onchange = () => loadAssignmentTargets();
-
     loadAssignmentTargets();
   }
 
@@ -2724,45 +2185,22 @@
     const assigneeSelect = document.getElementById('assignmentAssignee');
     const reviewerSelect = document.getElementById('assignmentReviewer');
     const plantId = plantSelect.value;
-
-    if (!plantId) {
-      assigneeSelect.innerHTML = '<option value="">Select Plant First</option>';
-      reviewerSelect.innerHTML = '<option value="">Select Plant First</option>';
-      return;
-    }
+    if (!plantId) { assigneeSelect.innerHTML = '<option value="">Select Plant First</option>'; reviewerSelect.innerHTML = '<option value="">Select Plant First</option>'; return; }
 
     try {
       const params = new URLSearchParams({ plant_id: plantId });
-      const response = await fetch(`${API_ASSIGN_OPTIONS}?${params.toString()}`, {
-        headers: { 'Accept': 'application/json' },
-      });
+      const response = await fetch(`${API_ASSIGN_OPTIONS}?${params.toString()}`, { headers: { 'Accept': 'application/json' } });
       const payload = await response.json();
-
       const assignees = payload.assignees || [];
       const defaultAssignee = payload.default_assignee || null;
       const reviewers = payload.reviewers || [];
       const defaultReviewer = payload.default_reviewer || null;
 
-      assigneeSelect.innerHTML = assignees.length
-        ? ['<option value="">Select Assign To</option>']
-            .concat(assignees.map((item) => `<option value="${item.id}">${escapeHtml(item.name)}${item.department_name ? ` (${escapeHtml(item.department_name)})` : ''}</option>`))
-            .join('')
-        : '<option value="">No eligible assignee found</option>';
+      assigneeSelect.innerHTML = assignees.length ? ['<option value="">Select Assign To</option>'].concat(assignees.map((item) => `<option value="${item.id}">${escapeHtml(item.name)}${item.department_name ? ` (${escapeHtml(item.department_name)})` : ''}</option>`)).join('') : '<option value="">No eligible assignee found</option>';
+      reviewerSelect.innerHTML = reviewers.length ? ['<option value="">Select Reviewer</option>'].concat(reviewers.map((item) => `<option value="${item.id}">${escapeHtml(item.name)}${item.department_name ? ` (${escapeHtml(item.department_name)})` : ''}</option>`)).join('') : '<option value="">No eligible reviewer found</option>';
 
-      reviewerSelect.innerHTML = reviewers.length
-        ? ['<option value="">Select Reviewer</option>']
-            .concat(reviewers.map((item) => `<option value="${item.id}">${escapeHtml(item.name)}${item.department_name ? ` (${escapeHtml(item.department_name)})` : ''}</option>`))
-            .join('')
-        : '<option value="">No eligible reviewer found</option>';
-
-      const matchedAssignee = defaultAssignee || assignees[0] || null;
-      if (matchedAssignee) {
-        assigneeSelect.value = matchedAssignee.id.toString();
-      }
-      const matchedReviewer = defaultReviewer || null;
-      if (matchedReviewer) {
-        reviewerSelect.value = matchedReviewer.id.toString();
-      }
+      if (defaultAssignee || assignees[0]) assigneeSelect.value = (defaultAssignee || assignees[0]).id.toString();
+      if (defaultReviewer) reviewerSelect.value = defaultReviewer.id.toString();
     } catch (error) {
       console.error('Error loading assignees:', error);
       assigneeSelect.innerHTML = '<option value="">Error loading assignees</option>';
@@ -2770,35 +2208,9 @@
     }
   }
 
-  function calculateFormulas() {
-    document.querySelectorAll("input[data-formula]").forEach(function(field){
-      let formula = field.dataset.formula;
-      document.querySelectorAll("input[data-field-name]").forEach(function(input){
-        const fieldName = input.dataset.fieldName;
-        const value = parseFloat(input.value) || 0;
-        formula = formula.replaceAll(fieldName, value);
-      });
-      try{
-        let result = eval(formula);
-        if(isFinite(result)){
-          const format = field.dataset.format || "number";
-          if(format === "percentage"){
-            field.value = result.toFixed(2) + "%";
-          }
-          else{
-            field.value = result.toFixed(2);
-          }
-        }
-        else{
-          field.value = "";
-        }
-      }
-      catch(e){
-        field.value = "";
-      }
-    });
-  }
-
+  // ============================================================
+  // Selection & Modal Functions - For question selection and assignment modal
+  // ============================================================
   function getSelectedQuestions() {
     return Array.from(document.querySelectorAll('.question-checkbox:checked')).map((checkbox) => {
       const card = checkbox.closest('.question-container');
@@ -2810,42 +2222,24 @@
 
   function refreshSelectedList() {
     const selected = getSelectedQuestions();
-    document.getElementById('selectedQuestionList').innerHTML = selected.length
-      ? selected.map((item) => `<li>${escapeHtml(item.title)} <small>(${escapeHtml(item.id)})</small></li>`).join('')
-      : '<li>No questions selected yet.</li>';
+    document.getElementById('selectedQuestionList').innerHTML = selected.length ? selected.map((item) => `<li>${escapeHtml(item.title)} <small>(${escapeHtml(item.id)})</small></li>`).join('') : '<li>No questions selected yet.</li>';
     return selected;
   }
 
-  function openModal() {
-    refreshSelectedList();
-    document.getElementById('assignModal').classList.add('active');
-  }
-
-  function closeModal() {
-    document.getElementById('assignModal').classList.remove('active');
-  }
+  function openModal() { refreshSelectedList(); document.getElementById('assignModal').classList.add('active'); }
+  function closeModal() { document.getElementById('assignModal').classList.remove('active'); }
 
   async function submitAssignment(event) {
     event.preventDefault();
     const selected = refreshSelectedList();
-    if (!selected.length) {
-      alert('Please select at least one question.');
-      return;
-    }
-    if (!document.getElementById('assignmentAssigner').value) {
-      alert('No assigner could be resolved for your login.');
-      return;
-    }
-    if (!document.getElementById('assignmentAssignee').value) {
-      alert('No assignee could be resolved for the selected plant.');
-      return;
-    }
+    if (!selected.length) { alert('Please select at least one question.'); return; }
+    if (!document.getElementById('assignmentAssigner').value) { alert('No assigner could be resolved for your login.'); return; }
+    if (!document.getElementById('assignmentAssignee').value) { alert('No assignee could be resolved for the selected plant.'); return; }
 
     if (document.getElementById('scheduleRecurringToggle').checked) {
       const frequency = document.getElementById('scheduleFrequency').value;
       const schedulePayload = {
-        section_code: state.sectionCode,
-        principle_slug: state.principleSlug,
+        section_code: state.sectionCode, principle_slug: state.principleSlug,
         question_ids: selected.map((item) => item.id),
         name: document.getElementById('scheduleName').value,
         plant: document.getElementById('assignmentPlant').value,
@@ -2860,7 +2254,6 @@
         reviewer: document.getElementById('assignmentReviewer').value,
         notes: document.getElementById('assignmentNotes').value,
       };
-
       try {
         const response = await fetch(API_SCHEDULE_CREATE, {
           method: 'POST',
@@ -2875,16 +2268,12 @@
         } else {
           alert(data.detail || JSON.stringify(data) || 'Unable to create schedule.');
         }
-      } catch (error) {
-        console.error('Error creating schedule:', error);
-        alert('An error occurred while creating the schedule.');
-      }
+      } catch (error) { console.error('Error creating schedule:', error); alert('An error occurred while creating the schedule.'); }
       return;
     }
 
     const payload = {
-      section_code: state.sectionCode,
-      principle_slug: state.principleSlug,
+      section_code: state.sectionCode, principle_slug: state.principleSlug,
       question_ids: selected.map((item) => item.id),
       plant: document.getElementById('assignmentPlant').value,
       financial_year: document.getElementById('assignmentFinancialYear').value,
@@ -2903,7 +2292,6 @@
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
         body: JSON.stringify(payload),
       });
-      
       if (response.ok) {
         const data = await response.json().catch(() => ({}));
         sessionStorage.setItem('brsr_workspace_message', data.message || 'Assignment created successfully.');
@@ -2913,12 +2301,43 @@
         const data = await response.json().catch(() => ({}));
         alert(data.detail || 'Unable to create assignment.');
       }
-    } catch (error) {
-      console.error('Error creating assignment:', error);
-      alert('An error occurred while creating the assignment. Please check the console for details.');
-    }
+    } catch (error) { console.error('Error creating assignment:', error); alert('An error occurred while creating the assignment.'); }
   }
 
+  // ============================================================
+  // Calculation Functions - For formula fields in tables
+  // ============================================================
+  function calculateFormulas() {
+    document.querySelectorAll("[data-formula]").forEach(output => {
+      const formula = output.dataset.formula;
+      if (!formula) return;
+      let expression = formula;
+      document.querySelectorAll("[data-field-name]").forEach(input => {
+        const name = input.dataset.fieldName;
+        if (!name) return;
+        const value = parseFloat(input.value) || 0;
+        const regex = new RegExp("\\b" + name + "\\b", "g");
+        expression = expression.replace(regex, value);
+      });
+      let result = "";
+      try { result = eval(expression); if (!isFinite(result)) result = 0; } catch { result = ""; }
+      if (result !== "") {
+        const format = output.dataset.format || "number";
+        output.value = format === "percentage" ? `${Number(result)} %` : Number(result);
+      } else { output.value = ""; }
+    });
+  }
+
+  function attachCalculationEvents(parent = document) {
+    parent.querySelectorAll("[data-field-name]").forEach(input => {
+      if (input.dataset.formula) return;
+      input.addEventListener("input", calculateFormulas);
+    });
+  }
+
+  // ============================================================
+  // Workspace Loader - Fetches and initializes the workspace
+  // ============================================================
   async function loadWorkspace(sectionCode, principleSlug, questionId, assignmentId) {
     const params = new URLSearchParams();
     if (sectionCode) params.set('section_code', sectionCode);
@@ -2927,12 +2346,8 @@
     if (assignmentId) params.set('assignment_id', assignmentId);
 
     try {
-      const response = await fetch(`${API_WORKSPACE}?${params.toString()}`, {
-        headers: { 'Accept': 'application/json' },
-      });
+      const response = await fetch(`${API_WORKSPACE}?${params.toString()}`, { headers: { 'Accept': 'application/json' } });
       let workspace = await response.json();
-      
-      // Process financial year placeholders in the workspace data
       workspace = processWorkspaceData(workspace);
       
       state.workspace = workspace;
@@ -2942,10 +2357,7 @@
       state.assignmentId = workspace.assignment_id || assignmentId || state.assignmentId;
 
       const flashMessage = sessionStorage.getItem('brsr_workspace_message');
-      if (flashMessage) {
-        showWorkspaceMessage(flashMessage, 'success');
-        sessionStorage.removeItem('brsr_workspace_message');
-      }
+      if (flashMessage) { showWorkspaceMessage(flashMessage, 'success'); sessionStorage.removeItem('brsr_workspace_message'); }
 
       renderSidebar(workspace);
       renderQuestionDeck(workspace, workspace.active_question_id);
@@ -2956,15 +2368,15 @@
     }
   }
 
-  // Event Listeners
+  // ============================================================
+  // Event Listeners - Initializes all interactive elements
+  // ============================================================
   document.getElementById('openAssignModalBtn').addEventListener('click', openModal);
   document.getElementById('closeAssignModalBtn').addEventListener('click', closeModal);
   document.getElementById('cancelAssignmentBtn').addEventListener('click', closeModal);
   document.getElementById('submitAssignmentBtn').addEventListener('click', submitAssignmentResponses);
-  document.getElementById('assignModal').addEventListener('click', (event) => {
-    if (event.target.id === 'assignModal') closeModal();
-  });
-  
+  document.getElementById('assignModal').addEventListener('click', (event) => { if (event.target.id === 'assignModal') closeModal(); });
+
   const scheduleToggle = document.getElementById('scheduleRecurringToggle');
   const scheduleFieldsWrap = document.getElementById('scheduleFieldsWrap');
   const scheduleFrequencySelect = document.getElementById('scheduleFrequency');
@@ -2983,65 +2395,6 @@
   scheduleFrequencySelect.addEventListener('change', updateScheduleFieldVisibility);
   document.getElementById('assignmentForm').addEventListener('submit', submitAssignment);
 
-  // Load workspace
   loadWorkspace(state.sectionCode, state.principleSlug, state.questionId, state.assignmentId);
-
-  document.addEventListener("input", function(e){
-    if(e.target.matches("input[data-field-name]")){
-      calculateFormulas();
-    }
-  });
-
-  function attachCalculationEvents(container){
-    container.querySelectorAll("input").forEach(function(input){
-      input.addEventListener("input", function(){
-        calculateTableRow(this.closest("tr"));
-      });
-    });
-  }
-
-  function calculateFormulas() {
-    document.querySelectorAll("[data-formula]").forEach(output => {
-      const formula = output.dataset.formula;
-      if (!formula) return;
-      let expression = formula;
-      document.querySelectorAll("[data-field-name]").forEach(input => {
-        const name = input.dataset.fieldName;
-        if (!name) return;
-        const value = parseFloat(input.value) || 0;
-        const regex = new RegExp("\\b" + name + "\\b", "g");
-        expression = expression.replace(regex, value);
-      });
-
-      let result = "";
-      try {
-        result = eval(expression);
-        if (!isFinite(result)) {
-          result = 0;
-        }
-      }
-      catch {
-        result = "";
-      }
-
-      if (result !== "") {
-        const format = output.dataset.format || "number";
-        if (format === "percentage") {
-          output.value = `${Number(result)} %`;
-        } else {
-          output.value = Number(result);
-        }
-      } else {
-        output.value = "";
-      }
-    });
-  }
-
-  function attachCalculationEvents(parent = document) {
-    parent.querySelectorAll("[data-field-name]").forEach(input => {
-      if (input.dataset.formula) return;
-      input.addEventListener("input", calculateFormulas);
-    });
-  }
 </script>
 {% endblock %}
