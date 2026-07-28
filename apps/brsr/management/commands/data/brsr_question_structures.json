@@ -2283,18 +2283,66 @@
           {
             "kind": "table",
             "label": "Life Cycle Assessments (LCA) conducted",
+            "allow_add_rows": true,
+            "allow_delete_rows": true,
             "name": "lifeCycleAssessments",
-            "columns": ["NIC Code", "Name of Product /Service", "% Of total Turnover contributed", "Boundary for which the Life Cycle Perspective / Assessment Was conducted", "Whether conducted by independent external agency (Yes/No)", "Results communicated in public domain (Yes/No)"],
+            "columns": [
+              "S. No.",
+              "NIC Code",
+              "Name of Product /Service",
+              "% Of total Turnover contributed",
+              "Boundary for which the Life Cycle Perspective / Assessment Was conducted",
+              "Whether conducted by independent external agency (Yes/No)",
+              "Results communicated in public domain (Yes/No)"
+            ],
             "rows": [
               {
                 "label": "1",
                 "fields": [
-                  {"column": "NIC Code", "name": "l1_nic_code", "type": "text", "placeholder": "NIC Code"},
-                  {"column": "Name of Product /Service", "name": "l1_product_name", "type": "text", "placeholder": "Product/Service Name"},
-                  {"column": "% Of total Turnover contributed", "name": "l1_turnover_percent", "type": "number"},
-                  {"column": "Boundary for which the Life Cycle Perspective / Assessment Was conducted", "name": "l1_boundary", "type": "text", "placeholder": "e.g., Cradle-to-Gate"},
-                  {"column": "Whether conducted by independent external agency (Yes/No)", "name": "l1_external_agency", "type": "select", "options": [{"value": "", "label": "Select"}, {"value": "Yes", "label": "Yes"}, {"value": "No", "label": "No"}]},
-                  {"column": "Results communicated in public domain (Yes/No)", "name": "l1_public_domain", "type": "select", "options": [{"value": "", "label": "Select"}, {"value": "Yes", "label": "Yes"}, {"value": "No", "label": "No"}]}
+                  {
+                    "column": "NIC Code",
+                    "name": "l1_nic_code",
+                    "type": "text",
+                    "placeholder": "NIC Code"
+                  },
+                  {
+                    "column": "Name of Product /Service",
+                    "name": "l1_product_name",
+                    "type": "text",
+                    "placeholder": "Product/Service Name"
+                  },
+                  {
+                    "column": "% Of total Turnover contributed",
+                    "name": "l1_turnover_percent",
+                    "type": "number",
+                    "placeholder": "%"
+                  },
+                  {
+                    "column": "Boundary for which the Life Cycle Perspective / Assessment Was conducted",
+                    "name": "l1_boundary",
+                    "type": "text",
+                    "placeholder": "e.g., Cradle-to-Gate"
+                  },
+                  {
+                    "column": "Whether conducted by independent external agency (Yes/No)",
+                    "name": "l1_external_agency",
+                    "type": "select",
+                    "options": [
+                      { "value": "", "label": "Select" },
+                      { "value": "Yes", "label": "Yes" },
+                      { "value": "No", "label": "No" }
+                    ]
+                  },
+                  {
+                    "column": "Results communicated in public domain (Yes/No)",
+                    "name": "l1_public_domain",
+                    "type": "select",
+                    "options": [
+                      { "value": "", "label": "Select" },
+                      { "value": "Yes", "label": "Yes" },
+                      { "value": "No", "label": "No" }
+                    ]
+                  }
                 ]
               }
             ]
@@ -2309,10 +2357,42 @@
         "help_text": "",
         "fields": [
           {
-            "kind": "textarea",
-            "label": "Significant Social/Environmental Concerns",
+            "kind": "table",
+            "label": "Significant Social/Environmental Concerns and Risks",
             "name": "significantConcerns",
-            "placeholder": "Describe any significant social or environmental concerns..."
+            "allow_add_rows": true,
+            "allow_delete_rows": true,
+            "columns": [
+              "S. No.",
+              "Name of Product / Service",
+              "Description of the risk / concern",
+              "Action Taken"
+            ],
+            "rows": [
+              {
+                "label": "1",
+                "fields": [
+                  {
+                    "column": "Name of Product / Service",
+                    "name": "product_name",
+                    "type": "text",
+                    "placeholder": "Enter product/service name"
+                  },
+                  {
+                    "column": "Description of the risk / concern",
+                    "name": "risk_description",
+                    "type": "textarea",
+                    "placeholder": "Describe the risk or concern"
+                  },
+                  {
+                    "column": "Action Taken",
+                    "name": "action_taken",
+                    "type": "textarea",
+                    "placeholder": "Describe actions taken to mitigate"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -2327,7 +2407,7 @@
             "kind": "table",
             "label": "Recycled or reused input material",
             "name": "recycledMaterial",
-            "columns": ["Indicate input material", "Recycled or re-used input material to total material", "FY {FY0} Current Financial Year", "FY {FY1} Previous Financial Year"],
+            "columns": ["Indicate input material", "FY {FY0} Current Financial Year", "FY {FY1} Previous Financial Year"],
             "rows": [
               {
                 "label": null,
@@ -2373,13 +2453,29 @@
             "kind": "table",
             "label": "Reclaimed products by category",
             "name": "reclaimedByCategory",
-            "columns": ["Indicate product category", "Reclaimed products and their packaging materials as % of total products sold in respective category"],
+            "allow_add_rows": true,
+            "allow_delete_rows": true,
+            "columns": [
+              "S. No.",
+              "Indicate product category",
+              "Reclaimed products and their packaging materials as % of total products sold in respective category"
+            ],
             "rows": [
               {
-                "label": null,
+                "label": "1",
                 "fields": [
-                  {"column": "Indicate product category", "name": "l5_product_category", "type": "text", "placeholder": "Product category"},
-                  {"column": "Reclaimed products and their packaging materials as % of total products sold in respective category", "name": "l5_reclaimed_percent", "type": "number", "placeholder": "%"}
+                  {
+                    "column": "Indicate product category",
+                    "name": "l5_product_category",
+                    "type": "text",
+                    "placeholder": "e.g., Automotive Parts"
+                  },
+                  {
+                    "column": "Reclaimed products and their packaging materials as % of total products sold in respective category",
+                    "name": "l5_reclaimed_percent",
+                    "type": "text",
+                    "placeholder": "e.g., 5%"
+                  }
                 ]
               }
             ]
