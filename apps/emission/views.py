@@ -14,6 +14,8 @@ from .models import *
 from django.shortcuts import get_object_or_404
 from apps.notifications.services import NotificationService
 from apps.notifications.models import Notification,Timesheet
+from apps.organizations.models import ApprovalConfigurationTemplate
+from apps.organizations.workflow_configuration_engine import WorkflowConfigurationEngine
 
 
 class EmissionsDashboardView(TemplateView):
@@ -277,6 +279,8 @@ class EmissionAssignmentDashboardView(LoginRequiredMixin, TemplateView):
         
         return context
 
+
+import traceback
 class SaveEmissionAssignmentAPIView(APIView):
 
     @transaction.atomic
@@ -289,21 +293,33 @@ class SaveEmissionAssignmentAPIView(APIView):
             # ----------------------------------------
             # Check if Assignment already exists
             # ----------------------------------------
-            existing = EmissionAssignment.objects.filter(
-                company_id=data.get("company"),
-                plant_id=data.get("plant"),
-                financial_year_id=data.get("financial_year"),
-                financial_month_id=data.get("financial_month"),
-                scope_id=data.get("scope_id"),
-            ).first()
+            source_ids = data.get("source_ids", [])
 
-            if existing:
+            existing_sources = EmissionAssignmentSource.objects.filter(
+                assignment__company_id=data.get("company"),
+                assignment__plant_id=data.get("plant"),
+                assignment__financial_year_id=data.get("financial_year"),
+                assignment__financial_month_id=data.get("financial_month"),
+                assignment__assignee_id=data.get("assignee"),  
+                source_id__in=source_ids,
+            ).select_related("source")
+
+            print("existing_sources",existing_sources)
+
+            if existing_sources.exists():
+                assigned_sources = ", ".join(
+                    existing_sources.values_list("source__source_name", flat=True).distinct()
+                )
+
                 return Response(
                     {
                         "success": False,
-                        "message": "This scope is already assigned."
+                        "message": (
+                            f"The selected user is already assigned to the following source(s): "
+                            f"{assigned_sources}"
+                        ),
                     },
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
             # ----------------------------------------
@@ -349,6 +365,37 @@ class SaveEmissionAssignmentAPIView(APIView):
 
                 )
 
+            # -------------------------------------------------------
+            # Start Workflow
+            # -------------------------------------------------------
+
+            workflow_template = ApprovalConfigurationTemplate.objects.filter(
+                company_id=assignment.company_id,is_active=True,).first()
+
+            if not workflow_template:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "No active EMISSION workflow configuration found for this company."
+                    },
+                    status=400,)
+
+            # Save template in assignment
+            assignment.workflow_template = workflow_template
+            assignment.save(update_fields=["workflow_template"])
+
+            # Create workflow task (starts at first stage)
+            workflow_task = WorkflowConfigurationEngine.start(template=workflow_template,target=assignment,
+                first_assignee=request.user,)
+
+            # Skip Question Assignment stage
+            workflow_task = WorkflowConfigurationEngine.advance_to_next_stage(
+                task=workflow_task,user=request.user,next_assignee=assignment.assignee,)
+
+            # Save workflow task
+            assignment.workflow_task = workflow_task
+            assignment.save(update_fields=["workflow_task"])
+
             # ----------------------------------------
             # Create Notification
             # ----------------------------------------
@@ -364,7 +411,10 @@ class SaveEmissionAssignmentAPIView(APIView):
                 status=status.HTTP_201_CREATED,
             )
 
+        
+
         except Exception as e:
+            traceback.print_exc()   # <-- Prints the full error in the terminal
 
             return Response(
                 {
@@ -601,24 +651,12 @@ class CategoryActivitiesView(View):
 
             if assignment:
 
-                is_assignee = assignment.assignee == request.user
-                is_assigner = assignment.assigner == request.user
-
-                is_reviewer = (
-                    hasattr(request.user, "role")
-                    and request.user.role
-                    and request.user.role.role_code == "REVIEWER"
-                )
+                is_assignee = assignment.assignee_id == request.user.id
+                is_assigner = assignment.assigner_id == request.user.id
+                is_reviewer = assignment.reviewer_id == request.user.id
 
                 if not (is_assignee or is_assigner or is_reviewer):
                     return JsonResponse({"activities": []})
-
-                assigned_source_ids = list(
-                    assignment.assignment_sources.values_list(
-                        "source_id",
-                        flat=True,
-                    )
-                )
 
         activities = (
             EmissionActivity.objects.filter(
@@ -763,6 +801,36 @@ class SaveEmissionTransactionsView(View):
             month_id = data["financial_month"]
             assignment_id = data.get("assignment")
 
+            assignment = None
+            assigned_source_ids = set()
+
+            # ---------------------------------------------------
+            # Assignment Permission Validation
+            # ---------------------------------------------------
+            if assignment_id:
+
+                assignment = get_object_or_404(EmissionAssignment,id=assignment_id,)
+
+                is_assigner = assignment.assigner_id == request.user.id
+                is_assignee = assignment.assignee_id == request.user.id
+
+                # Reviewer can review but cannot save
+                if not (is_assigner or is_assignee):
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "message": "You are not authorized to save this assignment.",
+                        },
+                        status=403,
+                    )
+
+                assigned_source_ids = set(
+                    assignment.assignment_sources.values_list(
+                        "source_id",
+                        flat=True,
+                    )
+                )
+
             rows = data.get("rows", [])
 
             for row in rows:
@@ -772,12 +840,27 @@ class SaveEmissionTransactionsView(View):
                 if not quantity:
                     continue
 
+                source_id = row["source"]
+
+                # ---------------------------------------------------
+                # Validate Source belongs to Assignment
+                # ---------------------------------------------------
+                if assignment and source_id not in assigned_source_ids:
+
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "message": f"Source {source_id} is not assigned to this assignment.",
+                        },
+                        status=403,
+                    )
+
                 transaction_obj, created = (
                     EmissionTransaction.objects.update_or_create(
 
                         assignment_id=assignment_id,
                         activity_id=row["activity"],
-                        source_id=row["source"],
+                        source_id=source_id,
 
                         defaults={
                             "company_id": company_id,
@@ -794,24 +877,37 @@ class SaveEmissionTransactionsView(View):
                     )
                 )
 
-                # Trigger calculation
+                # Recalculate emission
                 transaction_obj.save()
 
-                if assignment_id:
-                    EmissionAssignment.objects.filter(id=assignment_id,assignee=request.user,
-                        status="ASSIGNED",).update(status="IN_PROGRESS")
+            # ---------------------------------------------------
+            # Update Assignment Status
+            # ---------------------------------------------------
+            if (
+                assignment
+                and assignment.assignee_id == request.user.id
+                and assignment.status == "ASSIGNED"
+            ):
+                assignment.status = "IN_PROGRESS"
+                assignment.save(update_fields=["status"])
 
-            return JsonResponse({
-                "success": True,
-                "message": "Transactions saved successfully."
-            })
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Transactions saved successfully.",
+                }
+            )
 
         except Exception as e:
 
-            return JsonResponse({
-                "success": False,
-                "message": str(e)
-            })
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": str(e),
+                },
+                status=500,
+            )
+        
 
 from django.db.models import Sum
 
@@ -864,6 +960,21 @@ class LoadEmissionTransactionsView(View):
         # All Plants
         # ----------------------------------------------------
         elif plant == "ALL":
+
+            assignment = get_object_or_404(EmissionAssignment,id=assignment_id,)
+
+            is_assigner = assignment.assigner_id == request.user.id
+            is_assignee = assignment.assignee_id == request.user.id
+            is_reviewer = assignment.reviewer_id == request.user.id
+
+            if not (is_assigner or is_assignee or is_reviewer):
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "You are not authorized to access this assignment.",
+                    },
+                    status=403,
+                )
 
             transactions = (
 
@@ -994,9 +1105,7 @@ class ScopeCategoriesView(View):
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
 from apps.accounts.models import User
-
 
 class PlantUsersAPIView(APIView):
 
@@ -1007,13 +1116,24 @@ class PlantUsersAPIView(APIView):
         if not plant_id:
             return Response({
                 "success": False,
-                "users": []
+                "assignees": [],
+                "reviewers": [],
             })
 
-        users = (
-            User.objects
-            .filter(
+        assignees = (
+            User.objects.filter(
                 assigned_plants__id=plant_id,
+                role__role_code="DEPT-USER",
+                is_active=True,
+            )
+            .distinct()
+            .order_by("full_name", "username")
+        )
+
+        reviewers = (
+            User.objects.filter(
+                assigned_plants__id=plant_id,
+                role__role_code="DEPT-APPR",
                 is_active=True,
             )
             .distinct()
@@ -1022,7 +1142,8 @@ class PlantUsersAPIView(APIView):
 
         return Response({
             "success": True,
-            "users": [
+
+            "assignees": [
                 {
                     "id": user.id,
                     "name": user.full_name or user.get_full_name() or user.username,
@@ -1030,9 +1151,21 @@ class PlantUsersAPIView(APIView):
                     "designation": user.designation,
                     "department": user.department.name if user.department else "",
                 }
-                for user in users
-            ]
+                for user in assignees
+            ],
+
+            "reviewers": [
+                {
+                    "id": user.id,
+                    "name": user.full_name or user.get_full_name() or user.username,
+                    "employee_code": user.employee_code,
+                    "designation": user.designation,
+                    "department": user.department.name if user.department else "",
+                }
+                for user in reviewers
+            ],
         })
+    
 
 class EmissionAssignmentDashboardViewCompact(LoginRequiredMixin, TemplateView):
     login_url = "accounts:login"
@@ -1284,6 +1417,61 @@ class SubmitAssignmentView(View):
         
 
 
+
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+import json
+
+class CheckAssignedSourcesAPIView(APIView):
+
+    def post(self, request):
+
+        data = request.data
+
+        assigned = EmissionAssignmentSource.objects.filter(
+            assignment__company_id=data.get("company"),
+            assignment__plant_id=data.get("plant"),
+            assignment__financial_year_id=data.get("financial_year"),
+            assignment__financial_month_id=data.get("financial_month"),
+            assignment__assignee_id=data.get("assignee"),   # <-- Added
+            source_id__in=data.get("source_ids", [])
+        ).select_related(
+            "assignment__assignee",
+            "source"
+        )
+
+        print("Incoming source_ids:", data.get("source_ids"))
+        print(
+            list(
+                EmissionAssignmentSource.objects.filter(
+                    assignment__assignee_id=data.get("assignee")
+                ).values(
+                    "source_id",
+                    "source__source_name",
+                    "assignment__assignment_code"
+                )
+            )
+        )
+
+        assigned_sources = []
+
+        for obj in assigned:
+
+            assigned_sources.append({
+                "source_id": obj.source_id,
+                "assignment_id": obj.assignment_id,
+                "source_name": obj.source.source_name,
+                "assignee": obj.assignment.assignee.get_full_name()
+            })
+            print("assigned_sources", assigned_sources)
+        return Response({
+            "success": True,
+            "assigned_sources": assigned_sources
+        })
 
 
 

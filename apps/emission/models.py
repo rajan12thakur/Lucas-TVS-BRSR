@@ -290,6 +290,14 @@ class EmissionAssignment(models.Model):
         related_name="assigned_emission_assignments"
     )
 
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="review_emission_assignments",
+        null=True,
+        blank=True,
+    )
+
     due_date = models.DateField(
         null=True,
         blank=True,
@@ -332,19 +340,6 @@ class EmissionAssignment(models.Model):
             "-financial_year",
             "financial_month",
             "plant",
-        ]
-
-        constraints = [
-            models.UniqueConstraint(
-                fields=[
-                    "company",
-                    "plant",
-                    "financial_year",
-                    "financial_month",
-                    "scope",
-                ],
-                name="uq_env_emission_assignment"
-            )
         ]
 
     @property
@@ -438,7 +433,8 @@ class EmissionTransaction(models.Model):
     source = models.ForeignKey(
         EmissionSource,
         on_delete=models.PROTECT,
-        default="MANUAL",
+        null=True,
+        blank=True,
         related_name="transactions",
     )
 

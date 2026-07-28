@@ -1711,6 +1711,12 @@
                         </select>
                     </div>
                     <div class="col-md-6">
+                        <label class="tool-label">Reviewer</label>
+                        <select class="workspace-select" id="reviewerSelect" required>
+                            <option value="">Select Reviewer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
                         <label class="tool-label">Due Date</label>
                         <input class="workspace-input" type="date" id="dueDateInput" required>
                     </div>
@@ -1736,7 +1742,7 @@
                         <label class="tool-label">Notes</label>
                         <textarea class="workspace-textarea" rows="3" id="assignNotes" placeholder="Add instructions for the assignee..."></textarea>
                     </div>
-                    <div class="col-12">
+                    <div class="col-4">
                         <label class="tool-label">Assigned Scope</label>
                         <div class="p-3 bg-light rounded-3" style="border:1px solid var(--border);">
                             <strong>Scope:</strong> <span id="assignScopeName">{{ scope.name }}</span><br>
@@ -1745,6 +1751,14 @@
                             <strong>Financial Year:</strong> <span id="assignFY">-</span><br>
                             <strong>Financial Month:</strong> <span id="assignMonth">-</span><br>
                             <strong>Category:</strong> <span id="assignCategory">-</span>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <label class="tool-label">Selected Emission Sources</label>
+
+                        <div id="selectedSourcesBox" class="p-3 bg-light rounded-3" style="border:1px solid var(--border);
+                                    min-height:140px; max-height:180px; overflow:auto;">
+                            <span class="text-muted">No emission source selected.</span>
                         </div>
                     </div>
                 </div>
@@ -2011,6 +2025,7 @@ function loadCategoryData(category) {
 
             loadTransactions();
             applyUploadedRows();
+            toggleQuantityFields();
 
             setTimeout(function () {
                 updateReviewSummary();
@@ -3062,12 +3077,107 @@ const closeAssignBtn = document.getElementById('closeAssignScopeModal');
 const cancelAssignBtn = document.getElementById('cancelAssignScope');
 const assignForm = document.getElementById('assignScopeForm');
 
+const assigneeSelect = document.getElementById("assigneeSelect");
+
+if (assigneeSelect) {
+    assigneeSelect.addEventListener("change", function () {
+        checkAssignedSources();
+    });
+}
+
+function checkAssignedSources() {
+
+    const assignee = document.getElementById("assigneeSelect").value;
+    if (!assignee) {
+        return;
+    }
+
+    // Collect selected source IDs from the modal
+    const sourceIds = [];
+
+    document.querySelectorAll(".selected-source-item").forEach(function (item) {
+        sourceIds.push(parseInt(item.dataset.source));
+    });
+
+    if (sourceIds.length === 0) {
+        return;
+    }
+
+    fetch("/emission/api/assignment/check-assigned-sources/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify({
+
+            company: document.getElementById("company").value,
+            plant: document.getElementById("assignPlantSelect").value,
+            financial_year: document.getElementById("financialYear").value,
+            financial_month: document.getElementById("financialMonth").value,
+            assignee: assignee,
+            source_ids: sourceIds
+        })
+    })
+
+    .then(response => response.json())
+    .then(result => {
+        if (!result.success) {
+            return;
+        }
+        console.log("Assigned Sources :", result.assigned_sources);
+        updateAssignedSourcesUI(result.assigned_sources);
+    })
+    .catch(error => {
+        console.error(error);
+        showToast("Unable to verify assigned sources.", "error");
+    });
+}
+
+
+function updateAssignedSourcesUI(assignedSources) {
+    document.querySelectorAll(".selected-source-item").forEach(function (item) {
+        const sourceId = parseInt(item.dataset.source);
+        const assigned = assignedSources.find(function (x) {
+            return parseInt(x.source_id) === sourceId;
+        });
+        const statusArea = item.querySelector(".status-area");
+        if (!statusArea) return;
+        if (assigned) {
+            statusArea.innerHTML = `
+                <div class="text-end">
+                    <div class="small text-danger fw-bold mb-1">
+                        Assigned
+                    </div>
+                    <div class="small text-muted mb-2">
+                        ${assigned.assignee}
+                    </div>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger remove-assignment"
+                        data-assignment="${assigned.assignment_id}"
+                        data-source="${assigned.source_id}">
+                        <i class="feather-trash"></i>
+                    </button>
+                </div>
+            `;
+        } else {
+            statusArea.innerHTML = `
+                <i class="feather-check-circle text-success"></i>
+            `;
+        }
+    });
+}
+
 const assignPlantSelect = document.getElementById("assignPlantSelect");
 if (assignPlantSelect) {
     assignPlantSelect.addEventListener("change", function () {
         const plantId = this.value;
         const assignee = document.getElementById("assigneeSelect");
+        const reviewer = document.getElementById("reviewerSelect");
+
         assignee.innerHTML = '<option value="">Select User</option>';
+        reviewer.innerHTML = '<option value="">Select Reviewer</option>';
 
         if (!plantId) return;
 
@@ -3075,19 +3185,77 @@ if (assignPlantSelect) {
             .then(response => response.json())
             .then(result => {
                 if (!result.success) return;
-                result.users.forEach(function (user) {
+                // -----------------------
+                // Assignees
+                // -----------------------
+                result.assignees.forEach(function(user){
                     assignee.innerHTML += `
                         <option value="${user.id}">
-                            ${user.name} (${user.employee_code})
+                            ${user.name} (${user.department})
                         </option>
                     `;
                 });
+                // -----------------------
+                // Reviewers
+                // -----------------------
+                result.reviewers.forEach(function(user){
+                    reviewer.innerHTML += `
+                        <option value="${user.id}">
+                            ${user.name} (${user.department})
+                        </option>
+                    `;
+                });
+
             });
     });
 }
 
 if (assignBtn) {
     assignBtn.addEventListener("click", function () {
+
+        // Check at least one source is selected
+        const checkedSources = document.querySelectorAll(
+            "#activityTableBody .activity-checkbox:checked"
+        );
+
+        if (checkedSources.length === 0) {
+            showToast(
+                "Please select at least one emission source before assigning.",
+                "warning"
+            );
+            return;   // Don't open the modal
+        }
+
+
+        // Build selected emission sources list
+        const sourceBox = document.getElementById("selectedSourcesBox");
+        sourceBox.innerHTML = "";
+
+        checkedSources.forEach(function (checkbox) {
+
+            const row = checkbox.closest("tr");
+
+            const sourceId = row.dataset.source;
+            const activity = row.cells[1].innerText.trim();
+            const source = row.cells[2].innerText.trim();
+
+
+
+            sourceBox.innerHTML += `
+            <div class="selected-source-item d-flex justify-content-between align-items-start border-bottom py-2"
+                data-source="${sourceId}">
+                <div>
+                    <div class="fw-semibold">${source}</div>
+                    <small class="text-muted">${activity}</small>
+                </div>
+                <div class="status-area">
+                    <i class="feather-check-circle text-success"></i>
+                </div>
+            </div>
+            `;
+        });
+
+
         const company = document.getElementById("company");
         const plant = document.getElementById("plant");
         const fy = document.getElementById("financialYear");
@@ -3132,6 +3300,7 @@ if (assignForm) {
 
         const activeCategory = document.querySelector(".category-item.active");
         const assignee = document.getElementById('assigneeSelect').value;
+        const reviewer = document.getElementById("reviewerSelect").value;
         const dueDate = document.getElementById('dueDateInput').value;
         const priority = document.getElementById('prioritySelect').value;
         const frequency = document.getElementById('frequencySelect').value;
@@ -3139,6 +3308,10 @@ if (assignForm) {
 
         if (!assignee) {
             showToast('Please select an assignee.', 'error');
+            return;
+        }
+        if (!reviewer) {
+            showToast("Please select a reviewer.", "error");
             return;
         }
         if (!dueDate) {
@@ -3163,6 +3336,7 @@ if (assignForm) {
             financial_month: document.getElementById("financialMonth").value,
             category_id: activeCategory ? activeCategory.dataset.categoryId : "",
             assignee: assignee,
+            reviewer: reviewer,  
             due_date: dueDate,
             priority: priority.toUpperCase(),
             frequency: frequency.toUpperCase(),
@@ -3336,5 +3510,57 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+function toggleQuantityFields() {
+    const isAllPlants = document.getElementById("plant").value === "ALL";
+
+    document.querySelectorAll(".quantity").forEach(function (input) {
+        input.readOnly = isAllPlants;
+
+        if (isAllPlants) {
+            input.style.backgroundColor = "#f3f4f6";
+            input.style.cursor = "not-allowed";
+            input.style.opacity = "0.8";
+        } else {
+            input.style.backgroundColor = "";
+            input.style.cursor = "";
+            input.style.opacity = "1";
+        }
+    });
+}
+
+document.getElementById("plant").addEventListener("change", function () {
+
+    const activeCategory = document.querySelector(".category-item.active");
+
+    if (activeCategory) {
+        loadCategoryData(activeCategory);
+    }
+
+});
+
+document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".remove-assignment");
+    if (!btn) return;
+
+    removeAssignedSource(
+        btn.dataset.assignment,
+        btn.dataset.source
+    );
+});
+
+function removeAssignedSource(assignmentId, sourceId) {
+    const sourceCard = document.querySelector(`.selected-source-item[data-source="${sourceId}"]`);
+    if (sourceCard) {
+        sourceCard.remove();
+    }
+
+    const checkbox = document.querySelector(`#activityTableBody tr[data-source="${sourceId}"] .activity-checkbox`);
+    if (checkbox) {
+        checkbox.checked = false;
+    }
+
+    showToast("Source removed from current selection.", "success");
+}
 </script>
 {% endblock %}
